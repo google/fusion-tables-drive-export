@@ -1,0 +1,23 @@
+{
+  "name": "fusion-tables-drive-export",
+  "description": "Export Google Fusion Tables to Google Drive",
+  "version": "1.0.0",
+  "license": "",
+  "author": "Ubilabs",
+  "engines": {
+    "node": ">=8"
+  },
+  "repository": "https://github.com/ubilabs/fusion-tables-drive-export",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "googleapis": "^35.0.0",
+    "json2csv": "^4.3.0",
+    "p-limit": "^2.0.0"
+  },
+  "devDependencies": {}
+}
