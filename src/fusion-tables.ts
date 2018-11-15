@@ -2,7 +2,7 @@ import {google} from 'googleapis';
 import {parse as json2csv} from 'json2csv';
 import {OAuth2Client} from 'google-auth-library';
 import {ITable} from './interfaces/table';
-import { ICsv } from './interfaces/csv';
+import {ICsv} from './interfaces/csv';
 
 const fusiontables = google.fusiontables('v2');
 
@@ -30,7 +30,7 @@ export default class {
         return result.data.items
           .filter(table => table.tableId)
           .map(table => ({
-            id: table.tableId || '',
+            id: table.tableId || '',
             name: table.name || table.tableId || ''
           }));
       });

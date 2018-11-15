@@ -14,7 +14,13 @@
     "start": "npm run build:live",
     "build": "tsc -p .",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "test": "tslint -p . -e '**/*.json' && npm run build"
+    "prettier:ci": "prettier --list-different \"src/**/**.ts\"",
+    "prettier:fix": "prettier --write \"**/**.ts\"",
+    "test": "npm run prettier:ci && tslint -p . -e '**/*.json' && npm run build"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "bracketSpacing": false
   },
   "dependencies": {
     "express": "^4.16.4",
@@ -28,6 +34,7 @@
     "@types/node": "^10.12.8",
     "@types/p-limit": "^2.0.0",
     "nodemon": "^1.18.6",
+    "prettier": "^1.15.2",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typescript": "^3.1.6"

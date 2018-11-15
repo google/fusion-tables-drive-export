@@ -2,7 +2,7 @@ import express from 'express';
 import {google} from 'googleapis';
 import credentials from './credentials.json';
 import DoExport from './do-export';
-import { isString } from 'util';
+import {isString} from 'util';
 
 const app = express();
 
@@ -14,7 +14,7 @@ const oauth2Client = new google.auth.OAuth2(
 
 const scope = [
   'https://www.googleapis.com/auth/fusiontables.readonly',
-  'https://www.googleapis.com/auth/drive.file',
+  'https://www.googleapis.com/auth/drive.file'
 ];
 
 app.get('/', (req, res) => {
@@ -27,11 +27,13 @@ app.get('/auth', (req, res) => {
 });
 
 app.get('/auth/callback', (req, res) => {
-  oauth2Client.getToken(req.query.code)
+  oauth2Client
+    .getToken(req.query.code)
     .then(({tokens}) => {
       oauth2Client.setCredentials(tokens);
       const doExport = new DoExport(oauth2Client);
-      doExport.start()
+      doExport
+        .start()
         .then(result => console.log('DONE!'))
         .catch(error => console.error(error));
       res.status(200).send('<p><a href="/auth">Retry!</a></p>');

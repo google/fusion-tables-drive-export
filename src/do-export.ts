@@ -16,10 +16,11 @@ export default class {
     return new Promise((resolve, reject) => {
       const limit = pLimit(1);
 
-      this.fusionTables.getTables()
-        .then(tables => Promise.all(
-          tables.map(table => limit(() => this.saveTable(table)))
-        ))
+      this.fusionTables
+        .getTables()
+        .then(tables =>
+          Promise.all(tables.map(table => limit(() => this.saveTable(table))))
+        )
         .then(resolve)
         .catch(reject);
     });
@@ -27,11 +28,10 @@ export default class {
 
   private saveTable(table: ITable): Promise<ICsv> {
     console.log(`Starting to save ${table.name}.`);
-    return this.fusionTables.getCSV(table)
-      .then(csv => {
-        fs.writeFileSync('./export/' + csv.filename, csv.data);
-        console.log(`Saved ${csv.filename}.`);
-        return csv;
-      });
+    return this.fusionTables.getCSV(table).then(csv => {
+      fs.writeFileSync('./export/' + csv.filename, csv.data);
+      console.log(`Saved ${csv.filename}.`);
+      return csv;
+    });
   }
 }
