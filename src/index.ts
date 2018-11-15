@@ -41,7 +41,7 @@ app.get('/auth/callback', (req, res) => {
 
 if (module === require.main) {
   const server = app.listen(process.env.PORT || 3000, () => {
-    const address = server.address()
+    const address = server.address();
     const port = isString(address) ? address : address.port;
     console.log(`App listening on port ${port}`);
   });

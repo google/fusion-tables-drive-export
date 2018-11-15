@@ -7,7 +7,7 @@ import { ICsv } from './interfaces/csv';
 const fusiontables = google.fusiontables('v2');
 
 export default class {
-  oauth2Client: OAuth2Client;
+  private oauth2Client: OAuth2Client;
 
   constructor(oauth2Client: OAuth2Client) {
     this.oauth2Client = oauth2Client;
@@ -16,7 +16,7 @@ export default class {
   /**
    * Get the tables for the authenticated user account
    */
-  getTables(): Promise<ITable[]> {
+  public getTables(): Promise<ITable[]> {
     return fusiontables.table
       .list({
         auth: this.oauth2Client,
@@ -36,7 +36,7 @@ export default class {
       });
   }
 
-  getCSV(table: ITable): Promise<ICsv> {
+  public getCSV(table: ITable): Promise<ICsv> {
     return fusiontables.query
       .sqlGet({
         auth: this.oauth2Client,
@@ -48,6 +48,6 @@ export default class {
       .then(csv => ({
         filename: `${table.name}.csv`,
         data: csv
-      }))
+      }));
   }
 }

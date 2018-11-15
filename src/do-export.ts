@@ -6,13 +6,13 @@ import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 
 export default class {
-  fusionTables: FusionTables;
+  private fusionTables: FusionTables;
 
   constructor(oauth2Client: OAuth2Client) {
     this.fusionTables = new FusionTables(oauth2Client);
   }
 
-  start() {
+  public start() {
     return new Promise((resolve, reject) => {
       const limit = pLimit(1);
 
@@ -25,13 +25,13 @@ export default class {
     });
   }
 
-  saveTable(table: ITable): Promise<ICsv> {
+  private saveTable(table: ITable): Promise<ICsv> {
     console.log(`Starting to save ${table.name}.`);
     return this.fusionTables.getCSV(table)
       .then(csv => {
         fs.writeFileSync('./export/' + csv.filename, csv.data);
         console.log(`Saved ${csv.filename}.`);
         return csv;
-      })
+      });
   }
 }
