@@ -1,9 +1,14 @@
-const fs = require('fs');
-const FusionTables = require('./fusion-tables');
-const pLimit = require('p-limit');
+import fs from 'fs';
+import FusionTables from './fusion-tables';
+import pLimit from 'p-limit';
+import {OAuth2Client} from 'google-auth-library';
+import {ITable} from './interfaces/table';
+import {ICsv} from './interfaces/csv';
 
-module.exports = class {
-  constructor(oauth2Client) {
+export default class {
+  fusionTables: FusionTables;
+
+  constructor(oauth2Client: OAuth2Client) {
     this.fusionTables = new FusionTables(oauth2Client);
   }
 
@@ -20,7 +25,7 @@ module.exports = class {
     });
   }
 
-  saveTable(table) {
+  saveTable(table: ITable): Promise<ICsv> {
     console.log(`Starting to save ${table.name}.`);
     return this.fusionTables.getCSV(table)
       .then(csv => {

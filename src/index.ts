@@ -1,7 +1,8 @@
-const express = require('express');
-const {google} = require('googleapis');
-const credentials = require('./credentials.json');
-const DoExport = require('./src/do-export');
+import express from 'express';
+import {google} from 'googleapis';
+import credentials from './credentials.json';
+import DoExport from './do-export';
+import { isString } from 'util';
 
 const app = express();
 
@@ -11,7 +12,7 @@ const oauth2Client = new google.auth.OAuth2(
   credentials.web.redirect_uris[0]
 );
 
-const scopes = [
+const scope = [
   'https://www.googleapis.com/auth/fusiontables.readonly',
   'https://www.googleapis.com/auth/drive.file',
 ];
@@ -21,7 +22,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/auth', (req, res) => {
-  const url = oauth2Client.generateAuthUrl({scope: scopes});
+  const url = oauth2Client.generateAuthUrl({scope});
   res.redirect(303, url);
 });
 
@@ -40,7 +41,8 @@ app.get('/auth/callback', (req, res) => {
 
 if (module === require.main) {
   const server = app.listen(process.env.PORT || 3000, () => {
-    const port = server.address().port;
+    const address = server.address()
+    const port = isString(address) ? address : address.port;
     console.log(`App listening on port ${port}`);
   });
 }
