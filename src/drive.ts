@@ -28,7 +28,7 @@ export default class {
         auth: this.oauth2Client,
         requestBody: {
           mimeType: 'application/vnd.google-apps.spreadsheet',
-          name: csv.filename
+          name: csv.name
         },
         media: {
           body: stream

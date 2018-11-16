@@ -49,6 +49,7 @@ export default class {
       .then(data => [data.columns].concat(data.rows))
       .then(json => json2csv(json, {header: false}))
       .then(csv => ({
+        name: table.name,
         filename: `${table.name}.csv`,
         data: csv
       }));

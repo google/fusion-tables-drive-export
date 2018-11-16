@@ -36,7 +36,7 @@ export default class {
       .getCSV(table)
       .then(csv => this.drive.uploadCsv(csv))
       .then(csv => {
-        console.log(`###### Saved ${csv.filename}.`);
+        console.log(`###### Saved ${csv.name}.`);
         return csv;
       });
   }
