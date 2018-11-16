@@ -26,12 +26,13 @@ export default class {
     });
   }
 
-  private saveTable(table: ITable): Promise<ICsv> {
+  private async saveTable(table: ITable): Promise<ICsv> {
     console.log(`Starting to save ${table.name}.`);
-    return this.fusionTables.getCSV(table).then(csv => {
-      fs.writeFileSync('./export/' + csv.filename, csv.data);
-      console.log(`Saved ${csv.filename}.`);
-      return csv;
-    });
+
+    const csv = await this.fusionTables.getCSV(table);
+
+    fs.writeFileSync('./export/' + csv.filename, csv.data);
+    console.log(`Saved ${csv.filename}.`);
+    return csv;
   }
 }
