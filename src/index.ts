@@ -17,8 +17,11 @@ const scope = [
   'https://www.googleapis.com/auth/drive.file'
 ];
 
+app.set('view engine', 'pug');
+app.use(express.static('assets'));
+
 app.get('/', (req, res) => {
-  res.status(200).send('<p><a href="/auth">Log in with Google</a></p>');
+  res.render('index');
 });
 
 app.get('/auth', (req, res) => {
@@ -36,7 +39,8 @@ app.get('/auth/callback', (req, res) => {
         .start()
         .then(result => console.log('DONE!'))
         .catch(error => console.error(error));
-      res.status(200).send('<p><a href="/auth">Retry!</a></p>');
+
+      res.render('export');
     })
     .catch(error => res.status(500).send(error));
 });
