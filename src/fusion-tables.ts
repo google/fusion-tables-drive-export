@@ -36,6 +36,9 @@ export default class {
       });
   }
 
+  /**
+   * Get the CSV export for a table
+   */
   public getCSV(table: ITable): Promise<ICsv> {
     return fusiontables.query
       .sqlGet({
