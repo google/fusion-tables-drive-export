@@ -1,4 +1,5 @@
 import express from 'express';
+import helmet from 'helmet';
 import {google} from 'googleapis';
 import credentials from './credentials.json';
 import DoExport from './do-export';
@@ -18,6 +19,7 @@ const scope = [
 ];
 
 app.set('view engine', 'pug');
+app.use(helmet());
 app.use(express.static('assets'));
 
 app.get('/', (req, res) => {
