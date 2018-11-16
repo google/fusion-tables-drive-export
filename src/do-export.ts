@@ -1,5 +1,6 @@
 import fs from 'fs';
 import FusionTables from './fusion-tables';
+import Drive from './drive';
 import pLimit from 'p-limit';
 import {OAuth2Client} from 'google-auth-library';
 import {ITable} from './interfaces/table';
@@ -7,9 +8,11 @@ import {ICsv} from './interfaces/csv';
 
 export default class {
   private fusionTables: FusionTables;
+  private drive: Drive;
 
   constructor(oauth2Client: OAuth2Client) {
     this.fusionTables = new FusionTables(oauth2Client);
+    this.drive = new Drive(oauth2Client);
   }
 
   public start() {
@@ -26,13 +29,15 @@ export default class {
     });
   }
 
-  private async saveTable(table: ITable): Promise<ICsv> {
-    console.log(`Starting to save ${table.name}.`);
+  private saveTable(table: ITable): Promise<ICsv> {
+    console.log(`###### Starting to save ${table.name}.`);
 
-    const csv = await this.fusionTables.getCSV(table);
-
-    fs.writeFileSync('./export/' + csv.filename, csv.data);
-    console.log(`Saved ${csv.filename}.`);
-    return csv;
+    return this.fusionTables
+      .getCSV(table)
+      .then(csv => this.drive.uploadCsv(csv))
+      .then(csv => {
+        console.log(`###### Saved ${csv.filename}.`);
+        return csv;
+      });
   }
 }
