@@ -1,23 +1,11 @@
 import express from 'express';
 import helmet from 'helmet';
 import cookieSession from 'cookie-session';
-import {google} from 'googleapis';
-import credentials from './credentials.json';
-import DoExport from './do-export';
+import {getOAuthClient, getAuthUrl} from './auth';
+import doExport from './do-export';
 import {isString} from 'util';
 
 const app = express();
-
-const oauth2Client = new google.auth.OAuth2(
-  credentials.web.client_id,
-  credentials.web.client_secret,
-  credentials.web.redirect_uris[0]
-);
-
-const scope = [
-  'https://www.googleapis.com/auth/fusiontables.readonly',
-  'https://www.googleapis.com/auth/drive.file'
-];
 
 app.set('view engine', 'pug');
 app.use(helmet());
@@ -43,11 +31,12 @@ app.get('/auth', (req, res) => {
     return;
   }
 
-  const url = oauth2Client.generateAuthUrl({scope});
+  const url = getAuthUrl();
   res.redirect(303, url);
 });
 
 app.get('/auth/callback', (req, res) => {
+  const oauth2Client = getOAuthClient();
   oauth2Client
     .getToken(req.query.code)
     .then(({tokens}) => {
@@ -69,10 +58,9 @@ app.get('/export', (req, res) => {
     return;
   }
 
+  const oauth2Client = getOAuthClient();
   oauth2Client.setCredentials(tokens);
-  const doExport = new DoExport(oauth2Client);
-  doExport
-    .start()
+  doExport(oauth2Client)
     .then(result => console.log('DONE!'))
     .catch(error => console.error(error));
 

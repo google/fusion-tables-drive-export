@@ -27,7 +27,7 @@ export default class {
       .create({
         auth: this.oauth2Client,
         requestBody: {
-          mimeType: 'application/vnd.google-apps.spreadsheet',
+          mimeType: 'text/csv',
           name: csv.name
         },
         media: {
