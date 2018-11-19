@@ -2,6 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cookieSession from 'cookie-session';
 import {getOAuthClient, getAuthUrl} from './auth';
+import FusionTables from './fusion-tables';
 import doExport from './do-export';
 import {isString} from 'util';
 
@@ -60,11 +61,17 @@ app.get('/export', (req, res) => {
 
   const oauth2Client = getOAuthClient();
   oauth2Client.setCredentials(tokens);
-  doExport(oauth2Client)
-    .then(result => console.log('DONE!'))
-    .catch(error => console.error(error));
+  const fusionTables = new FusionTables(oauth2Client);
 
-  res.render('export');
+  fusionTables
+    .getTables()
+    .then(tables => {
+      res.render('export', {tables});
+      doExport(oauth2Client, tables)
+        .then(result => console.log('DONE!'))
+        .catch(error => console.error(error));
+    })
+    .catch(error => res.render('error', {error}));
 });
 
 app.get('/logout', (req, res) => {

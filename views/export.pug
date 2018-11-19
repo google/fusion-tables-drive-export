@@ -2,3 +2,11 @@ extends layout.pug
 
 block content
   a(href="/auth") Retry!
+
+  h2 Exporting these tables in the background:
+
+  p Check your Google Drive for the exported files.
+
+  ul
+    each table in tables
+      li= table.name
