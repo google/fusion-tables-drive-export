@@ -32,12 +32,12 @@ app.get('/auth', (req, res) => {
     return;
   }
 
-  const url = getAuthUrl();
+  const url = getAuthUrl(req);
   res.redirect(303, url);
 });
 
 app.get('/auth/callback', (req, res) => {
-  const oauth2Client = getOAuthClient();
+  const oauth2Client = getOAuthClient(req);
   oauth2Client
     .getToken(req.query.code)
     .then(({tokens}) => {
@@ -59,7 +59,7 @@ app.get('/export', (req, res) => {
     return;
   }
 
-  const oauth2Client = getOAuthClient();
+  const oauth2Client = getOAuthClient(req);
   oauth2Client.setCredentials(tokens);
   const fusionTables = new FusionTables(oauth2Client);
 

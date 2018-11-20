@@ -8,14 +8,16 @@
     "node": ">=8"
   },
   "repository": "https://github.com/ubilabs/fusion-tables-drive-export",
-  "main": "src/main.js",
+  "main": "lib/index.js",
   "private": true,
   "scripts": {
-    "start": "npm run build:live",
+    "start": "node lib/index.js",
+    "start:dev": "npm run build:live",
     "build": "tsc -p .",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "prettier:ci": "prettier --list-different \"src/**/**.ts\"",
     "prettier:fix": "prettier --write \"**/**.ts\"",
+    "deploy": "npm run test && npm run build && gcloud app deploy",
     "test": "npm run prettier:ci && tslint -p . -e '**/*.json' && npm run build"
   },
   "prettier": {
