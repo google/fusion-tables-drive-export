@@ -15,7 +15,7 @@ export default class {
   /**
    * Get the tables for the authenticated user account
    */
-  public uploadCsv(csv: ICsv): Promise<ICsv> {
+  public async uploadCsv(csv: ICsv): Promise<ICsv> {
     const stream = new Readable();
     stream._read = () => {
       return;
@@ -23,17 +23,17 @@ export default class {
     stream.push(csv.data);
     stream.push(null);
 
-    return drive.files
-      .create({
-        auth: this.oauth2Client,
-        requestBody: {
-          mimeType: 'text/csv',
-          name: csv.name
-        },
-        media: {
-          body: stream
-        }
-      })
-      .then(() => csv);
+    await drive.files.create({
+      auth: this.oauth2Client,
+      requestBody: {
+        mimeType: 'text/csv',
+        name: csv.name
+      },
+      media: {
+        body: stream
+      }
+    });
+
+    return csv;
   }
 }

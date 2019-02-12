@@ -16,42 +16,40 @@ export default class {
   /**
    * Get the tables for the authenticated user account
    */
-  public getTables(): Promise<ITable[]> {
-    return fusiontables.table
-      .list({
-        auth: this.oauth2Client,
-        maxResults: 1000
-      })
-      .then(result => {
-        if (!result.data.items) {
-          return [];
-        }
+  public async getTables(): Promise<ITable[]> {
+    const result = await fusiontables.table.list({
+      auth: this.oauth2Client,
+      maxResults: 1000
+    });
 
-        return result.data.items
-          .filter(table => table.tableId)
-          .map(table => ({
-            id: table.tableId || '',
-            name: table.name || table.tableId || ''
-          }));
-      });
+    if (!result.data.items) {
+      return [];
+    }
+
+    return result.data.items
+      .filter(table => table.tableId)
+      .map(table => ({
+        id: table.tableId || '',
+        name: table.name || table.tableId || ''
+      }));
   }
 
   /**
    * Get the CSV export for a table
    */
-  public getCSV(table: ITable): Promise<ICsv> {
-    return fusiontables.query
-      .sqlGet({
-        auth: this.oauth2Client,
-        sql: `SELECT * FROM ${table.id}`
-      })
-      .then(result => result.data)
-      .then(data => [data.columns].concat(data.rows))
-      .then(json => json2csv(json, {header: false}))
-      .then(csv => ({
-        name: table.name,
-        filename: `${table.name}.csv`,
-        data: csv
-      }));
+  public async getCSV(table: ITable): Promise<ICsv> {
+    const {data} = await fusiontables.query.sqlGet({
+      auth: this.oauth2Client,
+      sql: `SELECT * FROM ${table.id}`
+    });
+
+    const json = [data.columns].concat(data.rows);
+    const csv = json2csv(json, {header: false});
+
+    return {
+      name: table.name,
+      filename: `${table.name}.csv`,
+      data: csv
+    };
   }
 }

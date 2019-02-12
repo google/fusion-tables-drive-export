@@ -24,18 +24,16 @@ export default function(
   });
 }
 
-function saveTable(
+async function saveTable(
   table: ITable,
   fusionTables: FusionTables,
   drive: Drive
 ): Promise<ICsv> {
   console.log(`###### Starting to save ${table.name}.`);
+  const csv = await fusionTables.getCSV(table);
 
-  return fusionTables
-    .getCSV(table)
-    .then(csv => drive.uploadCsv(csv))
-    .then(csv => {
-      console.log(`###### Saved ${csv.name}.`);
-      return csv;
-    });
+  await drive.uploadCsv(csv);
+
+  console.log(`###### Saved ${csv.name}.`);
+  return csv;
 }
