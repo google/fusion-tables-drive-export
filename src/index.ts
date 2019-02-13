@@ -5,6 +5,7 @@ import {getOAuthClient, getAuthUrl} from './auth';
 import FusionTables from './fusion-tables';
 import doExport from './do-export';
 import {isString} from 'util';
+import { AddressInfo } from 'net';
 
 const app = express();
 
@@ -81,7 +82,7 @@ app.get('/logout', (req, res) => {
 
 if (module === require.main) {
   const server = app.listen(process.env.PORT || 3000, () => {
-    const address = server.address();
+    const address = server.address() as string | AddressInfo;
     const port = isString(address) ? address : address.port;
     console.log(`App listening on port ${port}`);
   });

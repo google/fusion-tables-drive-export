@@ -17,16 +17,16 @@ export default class {
    * Get the tables for the authenticated user account
    */
   public async getTables(): Promise<ITable[]> {
-    const result = await fusiontables.table.list({
+    const {data} = await fusiontables.table.list({
       auth: this.oauth2Client,
       maxResults: 1000
     });
 
-    if (!result.data.items) {
+    if (!data.items) {
       return [];
     }
 
-    return result.data.items
+    return data.items
       .filter(table => table.tableId)
       .map(table => ({
         id: table.tableId || '',
