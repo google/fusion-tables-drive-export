@@ -1,6 +1,8 @@
 import {google} from 'googleapis';
 import {parse as json2csv} from 'json2csv';
+import wkx from 'wkx';
 import {OAuth2Client} from 'google-auth-library';
+import isGeojson from './is-geojson';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 
@@ -43,7 +45,7 @@ export default class {
       sql: `SELECT * FROM ${table.id}`
     });
 
-    const json = [data.columns].concat(data.rows);
+    const json = convertGeoToWkt([data.columns].concat(data.rows));
     const csv = json2csv(json, {header: false});
 
     return {
@@ -52,4 +54,31 @@ export default class {
       data: csv
     };
   }
+}
+
+/**
+ * Convert all Geo things to WKT
+ */
+function convertGeoToWkt(
+  json: Array<string[] | undefined>
+): Array<string[] | undefined> {
+  return json
+    .filter(row => row)
+    .map(row => {
+      if (!row) {
+        return;
+      }
+
+      return row.map((cell: any) => {
+        if (!isGeojson(cell)) {
+          return cell;
+        }
+
+        if (!cell.type) {
+          cell = cell.geometry;
+        }
+
+        return wkx.Geometry.parseGeoJSON(cell).toWkt();
+      });
+    });
 }
