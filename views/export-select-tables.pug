@@ -1,0 +1,14 @@
+extends layout.pug
+
+block content
+  h2 Select the tables to export:
+
+  form(action="/export" method="POST")
+    ul
+      each table in tables
+        li
+          label
+            input(type="checkbox", checked="checked", name="tableIds[]", value=table.id)
+            = table.name
+
+    button(type="submit") Export!
