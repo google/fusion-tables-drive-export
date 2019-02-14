@@ -26,13 +26,17 @@ export default class {
     await drive.files.create({
       auth: this.oauth2Client,
       requestBody: {
-        mimeType: 'text/csv',
+        mimeType: 'application/vnd.google-apps.spreadsheet',
         name: csv.name
       },
       media: {
+        mimeType: 'text/csv',
         body: stream
       }
-    });
+    } as any);
+    // Need to set as any as somehow the typing from Google expects mediaType
+    // but it just works with mimeType (which the examples also use…).
+    // Issue opened: https://github.com/googleapis/google-api-nodejs-client/issues/1598
 
     return csv;
   }
