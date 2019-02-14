@@ -81,7 +81,7 @@ app.post('/export', (req, res) => {
     return;
   }
 
-  const tableIds = req.body.tableIds || [];
+  const tableIds = req.body.tableIds || [];
 
   const oauth2Client = getOAuthClient(req);
   oauth2Client.setCredentials(tokens);

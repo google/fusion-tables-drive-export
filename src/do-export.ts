@@ -1,4 +1,3 @@
-import {getOAuthClient} from './auth';
 import FusionTables from './fusion-tables';
 import Drive from './drive';
 import pLimit from 'p-limit';
