@@ -4,11 +4,12 @@ block content
   h2 Select the tables to export:
 
   form(action="/export" method="POST")
-    ul
+    ul.checkbox-list
       each table in tables
         li
-          label
-            input(type="checkbox", checked="checked", name="tableIds[]", value=table.id)
+          input(type="checkbox", checked="checked", name="tableIds[]", id=table.id value=table.id)
+          label(for=table.id)
             = table.name
 
-    button(type="submit") Export!
+    p
+      button(type="submit") Export!

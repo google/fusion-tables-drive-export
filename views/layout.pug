@@ -10,4 +10,10 @@ html
       a(href="/", title="Go to the start page")
         h1 Export Fusion Tables
 
-    block content
+      if isSignedIn
+        a(href="/logout") Log out
+      else
+        a(href="/auth") Log in with Google
+
+    main
+      block content

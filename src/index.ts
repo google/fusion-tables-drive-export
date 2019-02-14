@@ -25,11 +25,13 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-  res.render('index');
+  const isSignedIn = Boolean(req.session && req.session.tokens);
+  res.render('index', {isSignedIn});
 });
 
 app.get('/auth', (req, res) => {
-  if (req.session && req.session.tokens) {
+  const isSignedIn = Boolean(req.session && req.session.tokens);
+  if (isSignedIn) {
     res.redirect(303, '/export');
     return;
   }
@@ -68,7 +70,7 @@ app.get('/export', (req, res) => {
   fusionTables
     .getTables()
     .then(tables => {
-      res.render('export-select-tables', {tables});
+      res.render('export-select-tables', {tables, isSignedIn: Boolean(tokens)});
     })
     .catch(error => res.render('error', {error}));
 });
@@ -91,7 +93,7 @@ app.post('/export', (req, res) => {
     .getTables()
     .then(tables => tables.filter(table => tableIds.includes(table.id)))
     .then(tables => {
-      res.render('export-in-progress', {tables});
+      res.render('export-in-progress', {tables, isSignedIn: Boolean(tokens)});
       doExport(oauth2Client, tables)
         .then(result => console.log('DONE!'))
         .catch(error => console.error(error));
