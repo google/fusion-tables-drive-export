@@ -10,6 +10,9 @@ block content
           input(type="checkbox", checked="checked", name="tableIds[]", id=table.id value=table.id)
           label(for=table.id)
             = table.name
+            | &emsp;
+            a(href="https://fusiontables.google.com/DataSource?docid=" + table.id, title=table.name, target="_blank")
+              small Open
 
     p
       button(type="submit") Export!
