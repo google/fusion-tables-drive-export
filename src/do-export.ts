@@ -30,10 +30,11 @@ async function saveTable(
   drive: Drive
 ): Promise<ICsv> {
   console.log(`###### Starting to save ${table.name}.`);
+
   const csv = await fusionTables.getCSV(table);
+  const driveFile = await drive.uploadCsv(csv);
 
-  await drive.uploadCsv(csv);
-
+  console.log(`###### Drive ID for ${csv.name}: ${driveFile.id}`);
   console.log(`###### Saved ${csv.name}.`);
   return csv;
 }

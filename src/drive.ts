@@ -1,5 +1,5 @@
 import {Readable} from 'stream';
-import {google} from 'googleapis';
+import {google, drive_v3} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import {ICsv} from './interfaces/csv';
 
@@ -15,7 +15,7 @@ export default class {
   /**
    * Get the tables for the authenticated user account
    */
-  public async uploadCsv(csv: ICsv): Promise<ICsv> {
+  public async uploadCsv(csv: ICsv): Promise<drive_v3.Schema$File> {
     const stream = new Readable();
     stream._read = () => {
       return;
@@ -23,7 +23,7 @@ export default class {
     stream.push(csv.data);
     stream.push(null);
 
-    await drive.files.create({
+    const file = await drive.files.create({
       auth: this.oauth2Client,
       requestBody: {
         mimeType: 'application/vnd.google-apps.spreadsheet',
@@ -33,11 +33,11 @@ export default class {
         mimeType: 'text/csv',
         body: stream
       }
-    } as any);
-    // Need to set as any as somehow the typing from Google expects mediaType
+    } as drive_v3.Params$Resource$Files$Create);
+    // Need to set this as somehow the typing from Google expects mediaType
     // but it just works with mimeType (which the examples also use…).
     // Issue opened: https://github.com/googleapis/google-api-nodejs-client/issues/1598
 
-    return csv;
+    return file.data;
   }
 }
