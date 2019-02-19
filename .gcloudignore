@@ -19,4 +19,4 @@ tslint.json
 
 # Node.js dependencies:
 node_modules/
-src/
+server-src/

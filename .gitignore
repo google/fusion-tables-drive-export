@@ -1,4 +1,4 @@
 export
 node_modules
 .DS_Store
-lib
+server

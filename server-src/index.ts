@@ -10,9 +10,10 @@ import {AddressInfo} from 'net';
 const app = express();
 
 app.set('view engine', 'pug');
+app.set('views', './server-views');
 app.use(express.urlencoded({extended: true}));
 app.use(helmet());
-app.use(express.static('assets'));
+app.use(express.static('server-assets'));
 app.use(
   cookieSession({
     name: 'fusiontables',

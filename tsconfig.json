@@ -1,11 +1,11 @@
 {
-  "include": ["./src/**/*"],
+  "include": ["./server-src/**/*"],
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
     "lib": ["es6","dom"],
-    "outDir": "lib",
-    "rootDir": "src",
+    "outDir": "server",
+    "rootDir": "server-src",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
