@@ -13,9 +13,44 @@ export default class {
   }
 
   /**
-   * Get the tables for the authenticated user account
+   * Upload the CSV
    */
-  public async uploadCsv(csv: ICsv): Promise<drive_v3.Schema$File> {
+  public async upload(csv: ICsv): Promise<drive_v3.Schema$File> {
+    if (csv.hasLargeCells) {
+      return this.uploadAsCsv(csv);
+    }
+
+    try {
+      const file = this.uploadAsSheet(csv);
+      return file;
+    } catch (error) {
+      return this.uploadAsCsv(csv);
+    }
+  }
+
+  /**
+   * Upload the file as a CSV
+   */
+  private async uploadAsCsv(csv: ICsv): Promise<drive_v3.Schema$File> {
+    const mimeType = 'text/csv';
+    return this.doUpload(csv, mimeType);
+  }
+
+  /**
+   * Upload the file as a Google Sheet
+   */
+  private async uploadAsSheet(csv: ICsv): Promise<drive_v3.Schema$File> {
+    const mimeType = 'application/vnd.google-apps.spreadsheet';
+    return this.doUpload(csv, mimeType);
+  }
+
+  /**
+   * Upload the CSV
+   */
+  private async doUpload(
+    csv: ICsv,
+    mimeType: string
+  ): Promise<drive_v3.Schema$File> {
     const stream = new Readable();
     stream._read = () => {
       return;
@@ -26,7 +61,7 @@ export default class {
     const file = await drive.files.create({
       auth: this.oauth2Client,
       requestBody: {
-        mimeType: 'application/vnd.google-apps.spreadsheet',
+        mimeType,
         name: csv.name
       },
       media: {

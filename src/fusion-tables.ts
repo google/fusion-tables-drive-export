@@ -1,8 +1,6 @@
 import {google} from 'googleapis';
-import {parse as json2csv} from 'json2csv';
-import wkx from 'wkx';
+import fetch from 'node-fetch';
 import {OAuth2Client} from 'google-auth-library';
-import isGeojson from './is-geojson';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 
@@ -40,13 +38,21 @@ export default class {
    * Get the CSV export for a table
    */
   public async getCSV(table: ITable): Promise<ICsv> {
-    const {data} = await fusiontables.query.sqlGet({
-      auth: this.oauth2Client,
-      sql: `SELECT * FROM ${table.id}`
-    });
+    const {token} = await this.oauth2Client.getAccessToken();
+    const query = `SELECT * FROM ${table.id}`;
+    const url =
+      'https://www.googleapis.com/fusiontables/v2/query' +
+      `?sql=${encodeURIComponent(query)}&alt=media`;
+    const options = {
+      headers: {
+        'Accept-Encoding': 'gzip',
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    };
 
-    const json = convertGeoToWkt([data.columns].concat(data.rows));
-    const csv = json2csv(json, {header: false});
+    const response = await fetch(url, options);
+    const csv = await response.text();
 
     return {
       name: table.name,
@@ -54,31 +60,4 @@ export default class {
       data: csv
     };
   }
-}
-
-/**
- * Convert all Geo things to WKT
- */
-function convertGeoToWkt(
-  json: Array<string[] | undefined>
-): Array<string[] | undefined> {
-  return json
-    .filter(row => row)
-    .map(row => {
-      if (!row) {
-        return;
-      }
-
-      return row.map((cell: any) => {
-        if (!isGeojson(cell)) {
-          return cell;
-        }
-
-        if (!cell.type) {
-          cell = cell.geometry;
-        }
-
-        return wkx.Geometry.parseGeoJSON(cell).toWkt();
-      });
-    });
 }
