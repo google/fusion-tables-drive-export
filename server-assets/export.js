@@ -27,8 +27,9 @@ source.addEventListener('message', function(event) {
       data.driveFile.id + '/" title="Open ' + data.driveFile.name +
       ' Spreadsheet" target="_blank"><small>Open Spreadsheet</small></a>';
   } else {
-    driveLink = '&emsp;<a href="https://drive.google.com/drive/my-drive" ' +
-      'title="Find CSV in Drive" target="_blank"><small>Open Drive</small></a>';
+    driveLink = '&emsp;<a href="https://drive.google.com/open?id=' +
+      data.driveFile.id + '" title="Open ' + data.driveFile.name +
+      ' CSV" target="_blank"><small>Open CSV</small></a>';
   }
 
   $listEntry.innerHTML += driveLink
