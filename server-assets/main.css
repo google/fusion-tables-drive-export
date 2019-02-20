@@ -127,3 +127,15 @@ main {
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
+
+.fusiontable--loading::before {
+  content: '⏳';
+  margin-right: .5em;
+  vertical-align: middle;
+}
+
+.fusiontable--success::before {
+  content: '🎉';
+  margin-right: .5em;
+  vertical-align: middle;
+}

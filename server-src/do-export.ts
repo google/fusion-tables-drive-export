@@ -6,7 +6,7 @@ import Papa from 'papaparse';
 import {DOMParser} from 'xmldom';
 import toGeoJson from '@tmcw/togeojson';
 import wkx from 'wkx';
-import {OAuth2Client} from 'google-auth-library';
+import {OAuth2Client, Credentials} from 'google-auth-library';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 
@@ -17,8 +17,9 @@ const DRIVE_CELL_LIMIT = 50000;
  */
 export default function(
   oauth2Client: OAuth2Client,
+  emitter: mitt.Emitter,
   tables: ITable[]
-): Promise<ICsv[]> {
+): Promise<void> {
   const fusionTables = new FusionTables(oauth2Client);
   const drive = new Drive(oauth2Client);
 
@@ -26,9 +27,19 @@ export default function(
     const limit = pLimit(1);
 
     Promise.all(
-      tables.map(table => limit(() => saveTable(table, fusionTables, drive)))
+      tables.map(table =>
+        limit(() =>
+          saveTable({
+            table,
+            emitter,
+            fusionTables,
+            drive,
+            credentials: oauth2Client.credentials
+          })
+        )
+      )
     )
-      .then(resolve)
+      .then(() => resolve())
       .catch(reject);
   });
 }
@@ -36,16 +47,22 @@ export default function(
 /**
  * Save a table from FusionTables to Drive
  */
-async function saveTable(
-  table: ITable,
-  fusionTables: FusionTables,
-  drive: Drive
-): Promise<ICsv> {
+interface ISaveTableOptions {
+  table: ITable;
+  emitter: mitt.Emitter;
+  fusionTables: FusionTables;
+  drive: Drive;
+  credentials: Credentials;
+}
+async function saveTable(options: ISaveTableOptions): Promise<ICsv> {
+  const {table, fusionTables, drive, emitter, credentials} = options;
   console.log(`###### Starting to save ${table.name}.`);
 
   const csv = await fusionTables.getCSV(table);
   const csvWithWkt = convertGeoToWkt(csv);
   const driveFile = await drive.upload(csvWithWkt);
+
+  emitter.emit('table-finished', {table, driveFile, credentials});
 
   console.log(`###### Saved! Drive ID for ${driveFile.name}: ${driveFile.id}`);
   return csv;

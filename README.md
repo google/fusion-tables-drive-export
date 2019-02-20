@@ -19,14 +19,14 @@ Export Google Fusion Tables to Google Drive.
 Make sure you have the following tools installed:
 
 * git
-* npm
+* yarn
 
 ### Installation
 
 After cloning the repository, install all dependencies:
 
 ```sh
-npm install # install dependencies
+yarn # install dependencies
 ```
 
 ### Develop
@@ -34,7 +34,7 @@ npm install # install dependencies
 Run the following command to start the server on localhost:
 
 ```sh
-npm start # start the server
+yarn run start:dev # start the server
 ```
 
 ### Deploy
@@ -50,7 +50,7 @@ gcloud init
 Then run the following command to deploy the application:
 
 ```sh
-npm run deploy
+yarn run deploy
 ```
 
 ## Hosting

@@ -1,13 +1,16 @@
 import express from 'express';
 import helmet from 'helmet';
 import cookieSession from 'cookie-session';
+import mitt from 'mitt';
 import {getOAuthClient, getAuthUrl} from './auth';
 import FusionTables from './fusion-tables';
 import doExport from './do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
+import {ITableFinishedEmitterData} from './interfaces/table-finished-emitter-data';
 
 const app = express();
+const emitter = new mitt();
 
 app.set('view engine', 'pug');
 app.set('views', './server-views');
@@ -56,6 +59,36 @@ app.get('/auth/callback', (req, res) => {
     .catch(error => res.status(500).send(error));
 });
 
+app.get('/export/updates', (req, res) => {
+  const isSignedIn = Boolean(req.session && req.session.tokens);
+
+  if (!isSignedIn) {
+    res.status(401);
+  }
+
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*'
+  });
+
+  res.write('data: ' + null + '\n\n');
+
+  emitter.on('table-finished', (data: ITableFinishedEmitterData) => {
+    if (
+      req.session &&
+      JSON.stringify(data.credentials) === JSON.stringify(req.session.tokens)
+    ) {
+      const dataToWrite = {
+        table: data.table,
+        driveFile: data.driveFile
+      };
+      res.write('data: ' + JSON.stringify(dataToWrite) + '\n\n');
+    }
+  });
+});
+
 app.get('/export', (req, res) => {
   const tokens = req.session && req.session.tokens;
 
@@ -95,8 +128,8 @@ app.post('/export', (req, res) => {
     .then(tables => tables.filter(table => tableIds.includes(table.id)))
     .then(tables => {
       res.render('export-in-progress', {tables, isSignedIn: Boolean(tokens)});
-      doExport(oauth2Client, tables)
-        .then(result => console.log('DONE!'))
+      doExport(oauth2Client, emitter, tables)
+        .then(() => console.log('DONE!'))
         .catch(error => console.error(error));
     })
     .catch(error => res.render('error', {error}));

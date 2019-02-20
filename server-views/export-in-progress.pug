@@ -5,6 +5,8 @@ block content
 
   ul
     each table in tables
-      li= table.name
+      li.fusiontable(data-id=table.id)= table.name
 
   p Check your Google Drive for the exported files.
+
+  script(src="export.js")
