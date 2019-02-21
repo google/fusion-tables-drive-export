@@ -22,23 +22,20 @@ source.addEventListener(
     $listEntry.classList.remove('fusiontable--loading');
     $listEntry.classList.add('fusiontable--success');
 
-    var driveLink = '';
-
-    if (data.driveFile.mimeType === 'application/vnd.google-apps.spreadsheet') {
-      driveLink =
-        '&emsp;<a href="https://docs.google.com/spreadsheets/d/' +
-        data.driveFile.id +
-        '/" title="Open ' +
-        data.driveFile.name +
-        ' Spreadsheet" target="_blank"><small>Open Spreadsheet</small></a>';
-    } else {
-      driveLink =
-        '&emsp;<a href="https://drive.google.com/open?id=' +
-        data.driveFile.id +
-        '" title="Open ' +
-        data.driveFile.name +
-        ' CSV" target="_blank"><small>Open CSV</small></a>';
-    }
+    var type =
+      data.driveFile.mimeType === 'application/vnd.google-apps.spreadsheet'
+        ? 'Spreadsheet'
+        : 'CSV';
+    var driveLink =
+      '&emsp;<a href="https://docs.google.com/spreadsheets/d/' +
+      data.driveFile.id +
+      '/" title="Open ' +
+      data.driveFile.name +
+      ' ' +
+      type +
+      '" target="_blank"><small>Open ' +
+      type +
+      '</small></a>';
 
     $listEntry.innerHTML += driveLink;
   },
