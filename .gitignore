@@ -2,3 +2,5 @@ export
 node_modules
 .DS_Store
 server
+.cache
+dist
