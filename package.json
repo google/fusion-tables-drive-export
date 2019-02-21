@@ -12,11 +12,13 @@
   "private": true,
   "scripts": {
     "start": "node server/index.js",
-    "start:dev": "yarn run build:live",
-    "build": "tsc -p .",
-    "build:live": "nodemon --watch 'server-src/**/*.ts' --exec 'ts-node' server-src/index.ts",
-    "prettier:ci": "prettier --list-different \"server-src/**/**.ts\"",
-    "prettier:fix": "prettier --write \"**/**.ts\"",
+    "start:dev": "yarn run start:dev:server",
+    "start:dev:server": "yarn run build:server:live",
+    "build": "yarn run build:server",
+    "build:server": "tsc -p .",
+    "build:server:live": "nodemon --watch 'server-src/**/*.ts' --exec 'ts-node' server-src/index.ts",
+    "prettier:ci": "prettier --list-different '{server-assets/*.js,server-src/**/*.ts}'",
+    "prettier:fix": "prettier --write '{server-assets/*.js,server-src/**/*.ts}'",
     "deploy": "yarn run test && yarn run build && gcloud app deploy",
     "test": "yarn run prettier:ci && tslint -p . -e '**/*.json' && yarn run build"
   },
