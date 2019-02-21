@@ -6,31 +6,41 @@ source.onopen = function() {
   });
 };
 
-source.addEventListener('message', function(event) {
-  var data = JSON.parse(event.data);
+source.addEventListener(
+  'message',
+  function(event) {
+    var data = JSON.parse(event.data);
 
-  if (!data) {
-    return;
-  }
+    if (!data) {
+      return;
+    }
 
-  var $listEntry = document.querySelector(
-    '.fusiontable[data-id="' + data.table.id + '"]'
-  );
+    var $listEntry = document.querySelector(
+      '.fusiontable[data-id="' + data.table.id + '"]'
+    );
 
-  $listEntry.classList.remove('fusiontable--loading');
-  $listEntry.classList.add('fusiontable--success');
+    $listEntry.classList.remove('fusiontable--loading');
+    $listEntry.classList.add('fusiontable--success');
 
-  var driveLink = '';
+    var driveLink = '';
 
-  if (data.driveFile.mimeType === 'application/vnd.google-apps.spreadsheet') {
-    driveLink = '&emsp;<a href="https://docs.google.com/spreadsheets/d/' +
-      data.driveFile.id + '/" title="Open ' + data.driveFile.name +
-      ' Spreadsheet" target="_blank"><small>Open Spreadsheet</small></a>';
-  } else {
-    driveLink = '&emsp;<a href="https://drive.google.com/open?id=' +
-      data.driveFile.id + '" title="Open ' + data.driveFile.name +
-      ' CSV" target="_blank"><small>Open CSV</small></a>';
-  }
+    if (data.driveFile.mimeType === 'application/vnd.google-apps.spreadsheet') {
+      driveLink =
+        '&emsp;<a href="https://docs.google.com/spreadsheets/d/' +
+        data.driveFile.id +
+        '/" title="Open ' +
+        data.driveFile.name +
+        ' Spreadsheet" target="_blank"><small>Open Spreadsheet</small></a>';
+    } else {
+      driveLink =
+        '&emsp;<a href="https://drive.google.com/open?id=' +
+        data.driveFile.id +
+        '" title="Open ' +
+        data.driveFile.name +
+        ' CSV" target="_blank"><small>Open CSV</small></a>';
+    }
 
-  $listEntry.innerHTML += driveLink
-}, false);
+    $listEntry.innerHTML += driveLink;
+  },
+  false
+);
