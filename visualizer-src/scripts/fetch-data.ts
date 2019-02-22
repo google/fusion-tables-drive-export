@@ -10,19 +10,20 @@ export default async function(): Promise<any> {
     return null;
   }
 
-  const id = hash.replace('#file=', '');
-  const url = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`;
+  const fileId = hash.replace('#file=', '');
 
   try {
+    const response = await gapi.client.drive.files.export({
+      fileId,
+      alt: 'media',
+      mimeType: 'text/csv'
+    });
 
-    const response = await fetch(url);
-    const csv = await response.text();
-
-    if (csv.startsWith('<!DOCTYPE html>')) {
+    if (response.statusText !== 'OK') {
       return null;
     }
 
-    const parsed = Papa.parse(csv);
+    const parsed = Papa.parse(response.body);
     return parsed.data;
   } catch (error) {
     console.error(error);
