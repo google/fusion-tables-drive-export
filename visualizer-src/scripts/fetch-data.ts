@@ -14,21 +14,51 @@ export default async function(): Promise<any> {
   const fileId = hash.replace('#file=', '');
 
   try {
-    const response = await gapi.client.drive.files.export({
-      fileId,
-      alt: 'media',
-      mimeType: 'text/csv'
-    });
-
-    if (response.statusText !== 'OK') {
-      return null;
-    }
-
-    const parsed = Papa.parse(response.body);
+    const rawData = await fetchData(fileId);
+    const parsed = Papa.parse(rawData.body);
     const analyzedData = parseGeoPoints(parsed.data);
     return analyzedData;
   } catch (error) {
-    console.error(error);
+    console.error('ERROR fetching data!', error);
     return null;
   }
+}
+
+async function fetchData(
+  fileId: string
+): Promise<gapi.client.Response<gapi.client.drive.File | void>> {
+  try {
+    return await fetchSpreadsheet(fileId);
+  } catch (error) {
+    return await fetchCsv(fileId);
+  }
+}
+
+/**
+ * Fetch a Spreadsheet and return that content
+ */
+async function fetchSpreadsheet(
+  fileId: string
+): Promise<gapi.client.Response<void>> {
+  const response = await gapi.client.drive.files.export({
+    fileId,
+    alt: 'media',
+    mimeType: 'text/csv'
+  });
+
+  return response;
+}
+
+/**
+ * Fetch a CSV and return that content
+ */
+async function fetchCsv(
+  fileId: string
+): Promise<gapi.client.Response<gapi.client.drive.File>> {
+  const response = await gapi.client.drive.files.get({
+    fileId,
+    alt: 'media'
+  });
+
+  return response;
 }
