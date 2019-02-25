@@ -27,9 +27,9 @@ source.addEventListener(
         ? 'Spreadsheet'
         : 'CSV';
     var driveLink =
-      '&emsp;<a href="https://docs.google.com/spreadsheets/d/' +
+      '&emsp;<a href="https://drive.google.com/open?id=' +
       data.driveFile.id +
-      '/" title="Open ' +
+      '" title="Open ' +
       data.driveFile.name +
       ' ' +
       type +
