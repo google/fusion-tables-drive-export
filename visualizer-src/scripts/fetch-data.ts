@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import parseGeoPoints from './parse-geo-points';
 
 /**
  * Fetch a CSV and return it as JSON
@@ -24,7 +25,8 @@ export default async function(): Promise<any> {
     }
 
     const parsed = Papa.parse(response.body);
-    return parsed.data;
+    const analyzedData = parseGeoPoints(parsed.data);
+    return analyzedData;
   } catch (error) {
     console.error(error);
     return null;
