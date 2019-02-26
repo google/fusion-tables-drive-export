@@ -42,11 +42,22 @@ function openInfowindow(
   feature: GeoJSON.Feature,
   position: google.maps.LatLng
 ) {
-  if (!feature || !map || !position) {
+  if (!feature || !map || !position) {
     return;
   }
 
-  infowindow.setContent(JSON.stringify(feature.properties));
+  infowindow.setContent(createContent(feature.properties));
   infowindow.setPosition(position);
   infowindow.open(map);
+}
+
+/**
+ * Create the content for the infowindow
+ */
+function createContent(data: {[key: string]: any}): string {
+  return `<table>
+    ${Object.keys(data)
+      .map(key => `<tr><td><b>${key}</b></td><td>${data[key]}</td></tr>`)
+      .join('')}
+    </table>`;
 }
