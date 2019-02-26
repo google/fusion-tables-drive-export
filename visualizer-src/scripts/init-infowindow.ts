@@ -5,12 +5,12 @@ import {LAYER_ID} from './config';
  * Initialize an infowindow that shows the clicked data
  */
 export default function(map: google.maps.Map, deck: Deck): void {
-  window.addEventListener('mousemove', event => {
+  map.addListener('mousemove', event => {
     if (!(deck as any).layerManager) {
       return;
     }
 
-    const {clientX: x, clientY: y} = event;
+    const {x, y} = event.pixel;
     const picked = deck.pickObject({x, y, radius: 0, layerIds: [LAYER_ID]});
     document.body.classList.toggle('cursor-pointer', picked);
   });
