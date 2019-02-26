@@ -4,7 +4,7 @@ import parseGeoPoints from './parse-geo-points';
 /**
  * Fetch a CSV and return it as JSON
  */
-export default async function(): Promise<any> {
+export default async function(): Promise<string[][]> {
   const {hash} = document.location;
 
   if (!hash || !hash.startsWith('#file=')) {

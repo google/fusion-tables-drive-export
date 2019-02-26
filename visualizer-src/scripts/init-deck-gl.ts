@@ -1,5 +1,6 @@
 import {Deck} from '@deck.gl/core';
 import {INITIAL_VIEW_STATE} from './config';
+import initOverlay from './init-overlay';
 
 /**
  * Initialize Deck.gl on the Google Map
@@ -29,6 +30,8 @@ export default function initDeck(map: google.maps.Map): Deck {
     },
     layers: []
   });
+
+  initOverlay(map, deck);
 
   return deck;
 }
