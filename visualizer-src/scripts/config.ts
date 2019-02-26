@@ -13,3 +13,5 @@ export const INITIAL_VIEW_STATE = {
   zoom: 2,
   pitch: 0
 };
+
+export const LAYER_ID = 'geojson-layer';

@@ -57,12 +57,6 @@ export default function initOverlay(
     const latitude = centerContainer.lat();
     const longitude = centerContainer.lng();
     deck.setProps({viewState: {zoom, latitude, longitude}});
-
-    // if (deck.layerManager) {
-    //   deck.animationLoop._setupFrame();
-    //   deck.animationLoop._updateCallbackData(); // call callback
-    //   deck.animationLoop.onRender(deck.animationLoop.animationProps); // end callback
-    // }
   };
 
   return overlay;

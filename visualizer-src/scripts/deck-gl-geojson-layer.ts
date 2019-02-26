@@ -1,11 +1,33 @@
-import {GeoJsonLayer} from '@deck.gl/layers';
 import wkx from 'wkx';
+import {GeoJsonLayer} from '@deck.gl/layers';
+import {LAYER_ID} from './config';
 
 /**
  * Create a GeoJSON layer from the data
  * Converts the WKT data to GeoJSON
  */
-export default function(data: string[][]): GeoJsonLayer {
+export default function(
+  data: string[][]
+): GeoJsonLayer {
+  return new GeoJsonLayer({
+    id: LAYER_ID,
+    data: createGeojsonFromData(data),
+    pickable: true,
+    stroked: true,
+    filled: true,
+    lineWidthMinPixels: 1,
+    pointRadiusMinPixels: 3,
+    getFillColor: [217, 236, 236, 125],
+    getRadius: 100
+  });
+}
+
+/**
+ * Create a GeoJSON FeatureCollection from the source data
+ */
+function createGeojsonFromData(
+  data: string[][]
+): GeoJSON.FeatureCollection<GeoJSON.GeometryObject> {
   const featureCollection: GeoJSON.FeatureCollection = {
     type: 'FeatureCollection',
     features: []
@@ -30,20 +52,7 @@ export default function(data: string[][]): GeoJsonLayer {
     }
   });
 
-  return new GeoJsonLayer({
-    id: 'geojson-layer',
-    data: featureCollection,
-    pickable: true,
-    stroked: true,
-    filled: true,
-    lineWidthMinPixels: 1,
-    pointRadiusMinPixels: 3,
-    getFillColor: [217, 236, 236, 125],
-    getRadius: 100
-    // onHover: ({object, x, y}) => {
-    //   const tooltip = object.properties.name || object.properties.station;
-    // }
-  });
+  return featureCollection;
 }
 
 /**
