@@ -21,7 +21,9 @@ export default function(): Promise<google.maps.Map> {
     },
     // Adding 1 to the zoom level get us close to each other
     zoom: INITIAL_VIEW_STATE.zoom + 1,
-    tilt: INITIAL_VIEW_STATE.pitch
+    tilt: INITIAL_VIEW_STATE.pitch,
+    mapTypeControl: false,
+    streetViewControl: false
   };
 
   return new Promise(resolve => {
