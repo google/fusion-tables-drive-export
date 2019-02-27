@@ -21,8 +21,8 @@
     "build:visualizer": "parcel build ./visualizer-src/index.html -d ./server-static/visualizer  --public-url /visualizer/",
     "prettier:ci": "prettier --list-different '{visualizer-src/**/*.ts,server-static/*.js,server-src/**/*.ts}'",
     "prettier:fix": "prettier --write '{visualizer-src/**/*.ts,server-static/*.js,server-src/**/*.ts}'",
-    "deploy": "yarn run test && yarn run build && gcloud app deploy",
-    "test": "yarn run prettier:ci && tslint -p . -e '**/*.json' && yarn run build"
+    "deploy": "yarn run test && yarn run build && gcloud app deploy --project forward-ellipse-230710",
+    "test": "yarn run prettier:ci && tslint -p . -e '**/*.json'"
   },
   "prettier": {
     "singleQuote": true,
