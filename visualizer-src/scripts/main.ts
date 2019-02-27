@@ -14,6 +14,11 @@ import initInfowindow from './init-infowindow';
   document.getElementById('signin').style.display = 'none';
 
   const data = await fetchData();
+
+  if (!data) {
+    return;
+  }
+
   const geojsonLayer = deckGlGeojsonLayer(data);
   deck.setProps({layers: [geojsonLayer as any]});
 })();
