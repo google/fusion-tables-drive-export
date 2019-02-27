@@ -36,8 +36,14 @@ source.addEventListener(
       '" target="_blank"><small>Open ' +
       type +
       '</small></a>';
+    var visualizerLink =
+      '&emsp;<a href="/visualizer/#file=' +
+      data.driveFile.id +
+      '" title="Open ' +
+      data.driveFile.name +
+      ' visualization" target="_blank"><small>Open Visualization</small></a>';
 
-    $listEntry.innerHTML += driveLink;
+    $listEntry.innerHTML += driveLink+ ', ' + visualizerLink;
   },
   false
 );
