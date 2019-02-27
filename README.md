@@ -34,14 +34,12 @@ yarn # install dependencies
 Run the following command to start the server on localhost:
 
 ```sh
-yarn run start:dev # start the server
+yarn run start:dev # start the server and the visualizer
 ```
 
 ### Deploy
 
-Create a [Google Cloud Platform project](https://console.cloud.google.com) and install the [Google Cloud SDK](https://cloud.google.com/sdk/).
-
-Initialize the Cloud SDK by running:
+Install the [Google Cloud SDK](https://cloud.google.com/sdk/) and initialize it by running:
 
 ```sh
 gcloud init
@@ -55,4 +53,4 @@ yarn run deploy
 
 ## Hosting
 
-The project is hosted at [AppEngine](https://console.cloud.google.com/appengine?organizationId=793274810740&project=earth-voyager&serviceId=default&duration=PT1H)
+The project is hosted at [AppEngine](https://console.cloud.google.com/appengine/start?project=forward-ellipse-230710&serviceId=default)
