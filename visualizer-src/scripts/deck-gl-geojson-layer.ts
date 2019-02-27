@@ -6,9 +6,7 @@ import {LAYER_ID} from './config';
  * Create a GeoJSON layer from the data
  * Converts the WKT data to GeoJSON
  */
-export default function(
-  data: string[][]
-): GeoJsonLayer {
+export default function(data: string[][]): GeoJsonLayer {
   return new GeoJsonLayer({
     id: LAYER_ID,
     data: createGeojsonFromData(data),
