@@ -1,4 +1,4 @@
-import {Deck} from '@deck.gl/core';
+import {Deck, Controller} from '@deck.gl/core';
 import {INITIAL_VIEW_STATE} from './config';
 import initOverlay from './init-overlay';
 
@@ -19,15 +19,7 @@ export default function initDeck(map: google.maps.Map): Deck {
     height: canvasEl.height,
     initialViewState: INITIAL_VIEW_STATE,
     // Google maps has no rotating capabilities, so we disable rotation here.
-    controller: {
-      scrollZoom: false,
-      dragPan: false,
-      dragRotate: false,
-      doubleClickZoom: false,
-      touchZoom: false,
-      touchRotate: false,
-      keyboard: false
-    },
+    controller: false,
     layers: []
   });
 
