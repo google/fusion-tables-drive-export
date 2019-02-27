@@ -16,7 +16,7 @@ app.set('view engine', 'pug');
 app.set('views', './server-views');
 app.use(express.urlencoded({extended: true}));
 app.use(helmet());
-app.use(express.static('server-assets'));
+app.use(express.static('server-static'));
 app.use(
   cookieSession({
     name: 'fusiontables',
