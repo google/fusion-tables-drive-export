@@ -43,7 +43,7 @@ source.addEventListener(
       data.driveFile.name +
       ' visualization" target="_blank"><small>Open Visualization</small></a>';
 
-    $listEntry.innerHTML += driveLink+ ', ' + visualizerLink;
+    $listEntry.innerHTML += driveLink + ', ' + visualizerLink;
   },
   false
 );
