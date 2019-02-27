@@ -13,10 +13,15 @@
 .git
 .gitignore
 
+# Node.js dependencies:
+node_modules/
+
+
 .editorconfig
 tsconfig.json
 tslint.json
+yarn-error.log
 
-# Node.js dependencies:
-node_modules/
 server-src/
+visualizer-src/
+.cache/

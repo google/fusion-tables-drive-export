@@ -4,3 +4,4 @@ node_modules
 server
 .cache
 server-static/visualizer
+yarn-error.log
