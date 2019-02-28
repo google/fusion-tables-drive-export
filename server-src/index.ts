@@ -66,7 +66,9 @@ app.get('/export/updates', (req, res) => {
     res.status(401);
   }
 
-  const tableFinishedHandler = (data: ITableFinishedEmitterData) => {
+  emitter.on('table-finished', tableFinishedHandler);
+
+  function tableFinishedHandler(data: ITableFinishedEmitterData) {
     if (
       req.session &&
       JSON.stringify(data.credentials) === JSON.stringify(req.session.tokens)
@@ -78,9 +80,7 @@ app.get('/export/updates', (req, res) => {
 
       emitter.off('table-finished', tableFinishedHandler);
     }
-  };
-
-  emitter.on('table-finished', tableFinishedHandler);
+  }
 });
 
 app.get('/export', (req, res) => {
