@@ -66,27 +66,21 @@ app.get('/export/updates', (req, res) => {
     res.status(401);
   }
 
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    Connection: 'keep-alive',
-    'Access-Control-Allow-Origin': '*'
-  });
-
-  res.write('data: ' + null + '\n\n');
-
-  emitter.on('table-finished', (data: ITableFinishedEmitterData) => {
+  const tableFinishedHandler = (data: ITableFinishedEmitterData) => {
     if (
       req.session &&
       JSON.stringify(data.credentials) === JSON.stringify(req.session.tokens)
     ) {
-      const dataToWrite = {
+      res.json({
         table: data.table,
         driveFile: data.driveFile
-      };
-      res.write('data: ' + JSON.stringify(dataToWrite) + '\n\n');
+      });
+
+      emitter.off('table-finished', tableFinishedHandler);
     }
-  });
+  };
+
+  emitter.on('table-finished', tableFinishedHandler);
 });
 
 app.get('/export', (req, res) => {
