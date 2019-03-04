@@ -8,6 +8,7 @@ import doExport from './do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
 import {ITableFinishedEmitterData} from './interfaces/table-finished-emitter-data';
+import handleError from './handle-error';
 
 const app = express();
 const emitter = new mitt();
@@ -100,7 +101,7 @@ app.get('/export', (req, res) => {
     .then(tables => {
       res.render('export-select-tables', {tables, isSignedIn: Boolean(tokens)});
     })
-    .catch(error => res.render('error', {error}));
+    .catch(error => handleError(error, req, res));
 });
 
 app.post('/export', (req, res) => {
@@ -126,7 +127,7 @@ app.post('/export', (req, res) => {
         .then(() => console.log('DONE!'))
         .catch(error => console.error(error));
     })
-    .catch(error => res.render('error', {error}));
+    .catch(error => handleError(error, req, res));
 });
 
 app.get('/logout', (req, res) => {
