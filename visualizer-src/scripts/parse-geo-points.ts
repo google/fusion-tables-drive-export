@@ -1,5 +1,6 @@
 const latLngPairs: Array<[string, string]> = [
   ['Latitude', 'Longitude'],
+  ['latitude', 'longitude'],
   ['Lat', 'Lng'],
   ['Lat', 'Lon'],
   ['Lat', 'Long'],
