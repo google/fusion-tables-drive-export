@@ -2,6 +2,7 @@ import {Readable} from 'stream';
 import {google, drive_v3} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import {ICsv} from './interfaces/csv';
+import {DRIVE_FOLDER} from './config';
 
 const drive = google.drive('v3');
 
@@ -45,12 +46,49 @@ export default class {
   }
 
   /**
+   * Get the ID for the Fusion Tables folder
+   */
+  private async getFolderId(): Promise<string> {
+    const response = await drive.files.list({
+      auth: this.oauth2Client,
+      q: `name='${DRIVE_FOLDER}' and 'root' in parents and trashed = false`
+    });
+    const files = response.data.files;
+
+    if (files && files.length > 0 && files[0].id) {
+      return files[0].id;
+    }
+
+    return this.createFolder();
+  }
+
+  /**
+   * Create the Fusion Tables folder
+   */
+  private async createFolder(): Promise<string> {
+    const response = await drive.files.create({
+      auth: this.oauth2Client,
+      resource: {
+        name: DRIVE_FOLDER,
+        mimeType: 'application/vnd.google-apps.folder'
+      }
+    } as drive_v3.Params$Resource$Files$Create);
+
+    if (response.statusText !== 'OK') {
+      console.error('ERROR!', response);
+    }
+
+    return response.data.id as string;
+  }
+
+  /**
    * Upload the CSV
    */
   private async doUpload(
     csv: ICsv,
     mimeType: string
   ): Promise<drive_v3.Schema$File> {
+    const folderId = await this.getFolderId();
     const stream = new Readable();
     stream._read = () => {
       return;
@@ -62,7 +100,8 @@ export default class {
       auth: this.oauth2Client,
       requestBody: {
         mimeType,
-        name: csv.name
+        name: csv.name,
+        parents: [folderId]
       },
       media: {
         mimeType: 'text/csv',
