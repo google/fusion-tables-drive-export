@@ -2,7 +2,7 @@ import {Readable} from 'stream';
 import {google, drive_v3} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import {ICsv} from './interfaces/csv';
-import {DRIVE_FOLDER} from './config';
+import {DRIVE_ARCHIVE_FOLDER, getDriveSubfolderName} from './config';
 
 const drive = google.drive('v3');
 
@@ -46,12 +46,12 @@ export default class {
   }
 
   /**
-   * Get the ID for the Fusion Tables folder
+   * Get the ID for the Fusion Tables Archive folder
    */
-  private async getFolderId(): Promise<string> {
+  private async getArchiveFolderId(): Promise<string> {
     const response = await drive.files.list({
       auth: this.oauth2Client,
-      q: `name='${DRIVE_FOLDER}' and 'root' in parents and trashed = false`
+      q: `name='${DRIVE_ARCHIVE_FOLDER}' and 'root' in parents and trashed = false`
     });
     const files = response.data.files;
 
@@ -59,17 +59,39 @@ export default class {
       return files[0].id;
     }
 
-    return this.createFolder();
+    return this.createArchiveFolder();
+  }
+
+  /**
+   * Create the Fusion Tables Archive folder
+   */
+  private async createArchiveFolder(): Promise<string> {
+    const response = await drive.files.create({
+      auth: this.oauth2Client,
+      resource: {
+        name: DRIVE_ARCHIVE_FOLDER,
+        mimeType: 'application/vnd.google-apps.folder'
+      }
+    } as drive_v3.Params$Resource$Files$Create);
+
+    if (response.statusText !== 'OK') {
+      console.error('ERROR!', response);
+    }
+
+    return response.data.id as string;
   }
 
   /**
    * Create the Fusion Tables folder
    */
-  private async createFolder(): Promise<string> {
+  private async createSubfolder(): Promise<string> {
+    const archiveFolderId = await this.getArchiveFolderId();
+
     const response = await drive.files.create({
       auth: this.oauth2Client,
       resource: {
-        name: DRIVE_FOLDER,
+        name: getDriveSubfolderName(),
+        parents: [archiveFolderId],
         mimeType: 'application/vnd.google-apps.folder'
       }
     } as drive_v3.Params$Resource$Files$Create);
@@ -88,7 +110,7 @@ export default class {
     csv: ICsv,
     mimeType: string
   ): Promise<drive_v3.Schema$File> {
-    const folderId = await this.getFolderId();
+    const folderId = await this.createSubfolder();
     const stream = new Readable();
     stream._read = () => {
       return;
