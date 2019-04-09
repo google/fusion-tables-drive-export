@@ -122,7 +122,7 @@ export default class {
       auth: this.oauth2Client,
       requestBody: {
         mimeType,
-        name: csv.name,
+        name: `ft-${csv.name}`,
         parents: [folderId]
       },
       media: {
