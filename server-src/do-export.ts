@@ -1,6 +1,6 @@
 /// <reference path="./interfaces/togeojson.d.ts" />
 import FusionTables from './fusion-tables';
-import Drive from './drive';
+import uploadToDrive from './drive/upload';
 import pLimit from 'p-limit';
 import Papa from 'papaparse';
 import {DOMParser} from 'xmldom';
@@ -16,27 +16,18 @@ const DRIVE_CELL_LIMIT = 50000;
  * Export a table from FusionTables and save it to Drive
  */
 export default function(
-  oauth2Client: OAuth2Client,
+  auth: OAuth2Client,
   emitter: mitt.Emitter,
   tables: ITable[]
 ): Promise<void> {
-  const fusionTables = new FusionTables(oauth2Client);
-  const drive = new Drive(oauth2Client);
+  const fusionTables = new FusionTables(auth);
 
   return new Promise((resolve, reject) => {
     const limit = pLimit(1);
 
     Promise.all(
       tables.map(table =>
-        limit(() =>
-          saveTable({
-            table,
-            emitter,
-            fusionTables,
-            drive,
-            credentials: oauth2Client.credentials
-          })
-        )
+        limit(() => saveTable({table, emitter, fusionTables, auth}))
       )
     )
       .then(() => resolve())
@@ -51,18 +42,21 @@ interface ISaveTableOptions {
   table: ITable;
   emitter: mitt.Emitter;
   fusionTables: FusionTables;
-  drive: Drive;
-  credentials: Credentials;
+  auth: OAuth2Client;
 }
 async function saveTable(options: ISaveTableOptions): Promise<ICsv> {
-  const {table, fusionTables, drive, emitter, credentials} = options;
+  const {table, fusionTables, auth, emitter} = options;
   console.log(`###### Starting to save ${table.name}.`);
 
   const csv = await fusionTables.getCSV(table);
   const csvWithWkt = convertGeoToWkt(csv);
-  const driveFile = await drive.upload(csvWithWkt);
+  const driveFile = await uploadToDrive(auth, csvWithWkt);
 
-  emitter.emit('table-finished', {table, driveFile, credentials});
+  emitter.emit('table-finished', {
+    table,
+    driveFile,
+    credentials: auth.credentials
+  });
 
   console.log(`###### Saved! Drive ID for ${driveFile.name}: ${driveFile.id}`);
   return csv;
