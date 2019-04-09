@@ -1,5 +1,6 @@
 /// <reference path="./interfaces/togeojson.d.ts" />
 import getFusiontableCsv from './fusiontables/get-csv';
+import createDriveUploadFolder from './drive/create-upload-folder';
 import uploadToDrive from './drive/upload';
 import pLimit from 'p-limit';
 import Papa from 'papaparse';
@@ -20,12 +21,13 @@ export default function(
   emitter: mitt.Emitter,
   tables: ITable[]
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const limit = pLimit(1);
+    const folderId = await createDriveUploadFolder(auth);
 
     Promise.all(
       tables.map(table =>
-        limit(() => saveTable({table, emitter, auth}))
+        limit(() => saveTable({table, emitter, auth, folderId}))
       )
     )
       .then(() => resolve())
@@ -40,14 +42,15 @@ interface ISaveTableOptions {
   table: ITable;
   emitter: mitt.Emitter;
   auth: OAuth2Client;
+  folderId: string;
 }
 async function saveTable(options: ISaveTableOptions): Promise<ICsv> {
-  const {table, auth, emitter} = options;
+  const {table, auth, emitter, folderId} = options;
   console.log(`###### Starting to save ${table.name}.`);
 
   const csv = await getFusiontableCsv(auth, table);
   const csvWithWkt = convertGeoToWkt(csv);
-  const driveFile = await uploadToDrive(auth, csvWithWkt);
+  const driveFile = await uploadToDrive(auth, folderId, csvWithWkt);
 
   emitter.emit('table-finished', {
     table,
