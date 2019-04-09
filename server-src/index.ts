@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import cookieSession from 'cookie-session';
 import mitt from 'mitt';
 import {getOAuthClient, getAuthUrl} from './auth';
-import FusionTables from './fusion-tables';
+import getFusiontables from './fusiontables/get-tables';
 import doExport from './do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
@@ -94,10 +94,8 @@ app.get('/export', (req, res) => {
 
   const oauth2Client = getOAuthClient(req);
   oauth2Client.setCredentials(tokens);
-  const fusionTables = new FusionTables(oauth2Client);
 
-  fusionTables
-    .getTables()
+  getFusiontables(oauth2Client)
     .then(tables => {
       res.render('export-select-tables', {tables, isSignedIn: Boolean(tokens)});
     })
@@ -116,10 +114,8 @@ app.post('/export', (req, res) => {
 
   const oauth2Client = getOAuthClient(req);
   oauth2Client.setCredentials(tokens);
-  const fusionTables = new FusionTables(oauth2Client);
 
-  fusionTables
-    .getTables()
+  getFusiontables(oauth2Client)
     .then(tables => tables.filter(table => tableIds.includes(table.id)))
     .then(tables => {
       res.render('export-in-progress', {tables, isSignedIn: Boolean(tokens)});

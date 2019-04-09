@@ -1,12 +1,12 @@
 /// <reference path="./interfaces/togeojson.d.ts" />
-import FusionTables from './fusion-tables';
+import getFusiontableCsv from './fusiontables/get-csv';
 import uploadToDrive from './drive/upload';
 import pLimit from 'p-limit';
 import Papa from 'papaparse';
 import {DOMParser} from 'xmldom';
 import toGeoJson from '@tmcw/togeojson';
 import wkx from 'wkx';
-import {OAuth2Client, Credentials} from 'google-auth-library';
+import {OAuth2Client} from 'google-auth-library';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 
@@ -20,14 +20,12 @@ export default function(
   emitter: mitt.Emitter,
   tables: ITable[]
 ): Promise<void> {
-  const fusionTables = new FusionTables(auth);
-
   return new Promise((resolve, reject) => {
     const limit = pLimit(1);
 
     Promise.all(
       tables.map(table =>
-        limit(() => saveTable({table, emitter, fusionTables, auth}))
+        limit(() => saveTable({table, emitter, auth}))
       )
     )
       .then(() => resolve())
@@ -41,14 +39,13 @@ export default function(
 interface ISaveTableOptions {
   table: ITable;
   emitter: mitt.Emitter;
-  fusionTables: FusionTables;
   auth: OAuth2Client;
 }
 async function saveTable(options: ISaveTableOptions): Promise<ICsv> {
-  const {table, fusionTables, auth, emitter} = options;
+  const {table, auth, emitter} = options;
   console.log(`###### Starting to save ${table.name}.`);
 
-  const csv = await fusionTables.getCSV(table);
+  const csv = await getFusiontableCsv(auth, table);
   const csvWithWkt = convertGeoToWkt(csv);
   const driveFile = await uploadToDrive(auth, csvWithWkt);
 
