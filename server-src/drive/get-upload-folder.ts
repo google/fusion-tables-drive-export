@@ -5,7 +5,7 @@ import {DRIVE_ARCHIVE_FOLDER, getDriveSubfolderName} from '../config';
 const drive = google.drive('v3');
 
 /**
- * Create the Fusion Tables folder
+ * Get or create the Fusion Tables folder
  */
 export default async function(auth: OAuth2Client): Promise<string> {
   const archiveFolderId = await getArchiveFolderId(auth);

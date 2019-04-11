@@ -1,6 +1,6 @@
 /// <reference path="./interfaces/togeojson.d.ts" />
 import getFusiontableCsv from './fusiontables/get-csv';
-import createDriveUploadFolder from './drive/create-upload-folder';
+import getDriveUploadFolder from './drive/get-upload-folder';
 import uploadToDrive from './drive/upload';
 import pLimit from 'p-limit';
 import Papa from 'papaparse';
@@ -23,7 +23,7 @@ export default function(
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     const limit = pLimit(1);
-    const folderId = await createDriveUploadFolder(auth);
+    const folderId = await getDriveUploadFolder(auth);
 
     Promise.all(
       tables.map(table =>
