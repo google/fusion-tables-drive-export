@@ -2,12 +2,9 @@ import {Readable} from 'stream';
 import {google, drive_v3} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import {ICsv} from '../interfaces/csv';
+import {MIME_TYPES} from '../config';
 
 const drive = google.drive('v3');
-const MIME_TYPES = {
-  csv: 'text/csv',
-  spreadsheet: 'application/vnd.google-apps.spreadsheet'
-};
 
 /**
  * Upload the CSV
