@@ -1,7 +1,7 @@
 import {google, drive_v3, sheets_v4} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import {ISheet} from '../interfaces/sheet';
-import { ITable } from '../interfaces/table';
+import {ITable} from '../interfaces/table';
 
 const sheets = google.sheets('v4');
 
@@ -15,9 +15,13 @@ export default async function(
   driveFile: drive_v3.Schema$File
 ): Promise<void> {
   const {spreadsheetId, sheetId} = sheet;
-  const tableLink = `https://fusiontables.google.com/DataSource?docid=${table.id}`;
+  const tableLink = `https://fusiontables.google.com/DataSource?docid=${
+    table.id
+  }`;
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
-  const visualizerLink = `http://localhost:3000/visualizer/#file=${driveFile.id}`;
+  const visualizerLink = `http://localhost:3000/visualizer/#file=${
+    driveFile.id
+  }`;
 
   const response = await sheets.spreadsheets.batchUpdate({
     auth,
@@ -27,15 +31,17 @@ export default async function(
         {
           appendCells: {
             sheetId,
-            rows: [{
-              values: [
-                {userEnteredValue: {stringValue: driveFile.name}},
-                {userEnteredValue: {stringValue: tableLink}},
-                {userEnteredValue: {stringValue: fileLink}},
-                {userEnteredValue: {stringValue: visualizerLink}},
-                {userEnteredValue: {stringValue: new Date().toISOString()}}
-              ]
-            }],
+            rows: [
+              {
+                values: [
+                  {userEnteredValue: {stringValue: driveFile.name}},
+                  {userEnteredValue: {stringValue: tableLink}},
+                  {userEnteredValue: {stringValue: fileLink}},
+                  {userEnteredValue: {stringValue: visualizerLink}},
+                  {userEnteredValue: {stringValue: new Date().toISOString()}}
+                ]
+              }
+            ],
             fields: 'userEnteredValue'
           }
         }

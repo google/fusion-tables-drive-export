@@ -7,9 +7,14 @@ const sheets = google.sheets('v4');
 /**
  * Add a message for this export
  */
-export default async function(auth: OAuth2Client, sheet: ISheet, folderId: string): Promise<void> {
+export default async function(
+  auth: OAuth2Client,
+  sheet: ISheet,
+  folderId: string
+): Promise<void> {
   const {spreadsheetId, sheetId} = sheet;
-  const message = '=HYPERLINK(' +
+  const message =
+    '=HYPERLINK(' +
     `"https://drive.google.com/drive/folders/${folderId}",` +
     '"Open Export folder")';
 

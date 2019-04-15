@@ -19,7 +19,12 @@ export default async function(
   }
 
   try {
-    const file = doUpload({auth, csv, mimeType: MIME_TYPES.spreadsheet, folderId});
+    const file = doUpload({
+      auth,
+      csv,
+      mimeType: MIME_TYPES.spreadsheet,
+      folderId
+    });
     return file;
   } catch (error) {
     return doUpload({auth, csv, mimeType: MIME_TYPES.csv, folderId});

@@ -8,7 +8,7 @@ import {ISheet} from '../interfaces/sheet';
 const drive = google.drive('v3');
 const sheets = google.sheets('v4');
 
-const headerRowContent =  [
+const headerRowContent = [
   'Exported file name',
   'Source Fusiontable',
   'Exported Spreadsheet/CSV',
@@ -21,7 +21,11 @@ const headerRowContent =  [
  */
 export default async function(auth: OAuth2Client): Promise<ISheet> {
   const archiveFolderId = await getArchiveFolder(auth);
-  const spreadsheetId = await findFile(auth, DRIVE_ARCHIVE_INDEX_SHEET, archiveFolderId);
+  const spreadsheetId = await findFile(
+    auth,
+    DRIVE_ARCHIVE_INDEX_SHEET,
+    archiveFolderId
+  );
 
   if (!spreadsheetId) {
     return createSheet(auth, archiveFolderId);
@@ -38,14 +42,18 @@ export default async function(auth: OAuth2Client): Promise<ISheet> {
 /**
  * Get the first sheet in a spreadsheet
  */
-async function getFirstSheet(auth: OAuth2Client, spreadsheetId: string): Promise<number> {
+async function getFirstSheet(
+  auth: OAuth2Client,
+  spreadsheetId: string
+): Promise<number> {
   const sheetsResponse = await sheets.spreadsheets.get({
     auth,
     spreadsheetId,
     fields: 'sheets'
   });
 
-  const firstSheet = (sheetsResponse.data.sheets as sheets_v4.Schema$Sheet[])[0];
+  const firstSheet = (sheetsResponse.data
+    .sheets as sheets_v4.Schema$Sheet[])[0];
   const sheetId = firstSheet.properties && firstSheet.properties.sheetId;
 
   if (!sheetId) {
@@ -58,7 +66,10 @@ async function getFirstSheet(auth: OAuth2Client, spreadsheetId: string): Promise
 /**
  * Create the Archive Index Sheet with a title row
  */
-async function createSheet(auth: OAuth2Client, archiveFolderId: string): Promise<ISheet> {
+async function createSheet(
+  auth: OAuth2Client,
+  archiveFolderId: string
+): Promise<ISheet> {
   const createResponse = await drive.files.create({
     auth,
     resource: {
@@ -100,8 +111,7 @@ async function createSheet(auth: OAuth2Client, archiveFolderId: string): Promise
                 }
               }
             },
-            fields:
-              'userEnteredFormat(textFormat,horizontalAlignment)'
+            fields: 'userEnteredFormat(textFormat,horizontalAlignment)'
           }
         },
         {
