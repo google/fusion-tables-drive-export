@@ -52,5 +52,68 @@ async function createSheet(auth: OAuth2Client, archiveFolderId: string): Promise
 
   const spreadsheetId = createResponse.data.id as string;
 
+  const sheetsResponse = await sheets.spreadsheets.get({
+    auth,
+    spreadsheetId,
+    fields: 'sheets'
+  });
+
+  const firstSheet = (sheetsResponse.data.sheets as sheets_v4.Schema$Sheet[])[0];
+  const sheetId = firstSheet.properties && firstSheet.properties.sheetId as number;
+
+  await sheets.spreadsheets.batchUpdate({
+    auth,
+    spreadsheetId,
+    requestBody: {
+      requests: [
+        {
+          repeatCell: {
+            range: {
+              sheetId,
+              startRowIndex: 0,
+              endRowIndex: 1
+            },
+            cell: {
+              userEnteredFormat: {
+                horizontalAlignment: 'CENTER',
+                textFormat: {
+                  fontSize: 12,
+                  bold: true
+                }
+              }
+            },
+            fields:
+              'userEnteredFormat(textFormat,horizontalAlignment)'
+          }
+        },
+        {
+          updateDimensionProperties: {
+            range: {
+              sheetId,
+              dimension: 'COLUMNS',
+              startIndex: 0,
+              endIndex: 5
+            },
+            properties: {
+              pixelSize: 250
+            },
+            fields: 'pixelSize'
+          }
+        },
+        {
+          updateSheetProperties: {
+            properties: {
+              sheetId,
+              gridProperties: {
+                frozenRowCount: 1
+              }
+            },
+            fields: 'gridProperties.frozenRowCount'
+          }
+        }
+      ]
+    }
+  } as sheets_v4.Params$Resource$Spreadsheets$Batchupdate);
+
   return spreadsheetId;
 }
