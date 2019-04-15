@@ -3,6 +3,7 @@ import {OAuth2Client} from 'google-auth-library';
 import getArchiveFolder from './get-archive-folder';
 import findFile from './find-file';
 import {DRIVE_ARCHIVE_INDEX_SHEET, MIME_TYPES} from '../config';
+import {ISheet} from '../interfaces/sheet';
 
 const drive = google.drive('v3');
 const sheets = google.sheets('v4');
@@ -18,21 +19,46 @@ const headerRowContent =  [
 /**
  * Get the Archive Index Sheet
  */
-export default async function(auth: OAuth2Client): Promise<string> {
+export default async function(auth: OAuth2Client): Promise<ISheet> {
   const archiveFolderId = await getArchiveFolder(auth);
-  const sheetId = await findFile(auth, DRIVE_ARCHIVE_INDEX_SHEET, archiveFolderId);
+  const spreadsheetId = await findFile(auth, DRIVE_ARCHIVE_INDEX_SHEET, archiveFolderId);
 
-  if (sheetId) {
-    return sheetId;
+  if (!spreadsheetId) {
+    return createSheet(auth, archiveFolderId);
   }
 
-  return createSheet(auth, archiveFolderId);
+  const sheetId = await getFirstSheet(auth, spreadsheetId);
+
+  return {
+    spreadsheetId,
+    sheetId
+  };
+}
+
+/**
+ * Get the first sheet in a spreadsheet
+ */
+async function getFirstSheet(auth: OAuth2Client, spreadsheetId: string): Promise<number> {
+  const sheetsResponse = await sheets.spreadsheets.get({
+    auth,
+    spreadsheetId,
+    fields: 'sheets'
+  });
+
+  const firstSheet = (sheetsResponse.data.sheets as sheets_v4.Schema$Sheet[])[0];
+  const sheetId = firstSheet.properties && firstSheet.properties.sheetId;
+
+  if (!sheetId) {
+    throw new Error('No sheet in Spreadsheet found not found');
+  }
+
+  return sheetId;
 }
 
 /**
  * Create the Archive Index Sheet with a title row
  */
-async function createSheet(auth: OAuth2Client, archiveFolderId: string): Promise<string> {
+async function createSheet(auth: OAuth2Client, archiveFolderId: string): Promise<ISheet> {
   const createResponse = await drive.files.create({
     auth,
     resource: {
@@ -51,15 +77,7 @@ async function createSheet(auth: OAuth2Client, archiveFolderId: string): Promise
   }
 
   const spreadsheetId = createResponse.data.id as string;
-
-  const sheetsResponse = await sheets.spreadsheets.get({
-    auth,
-    spreadsheetId,
-    fields: 'sheets'
-  });
-
-  const firstSheet = (sheetsResponse.data.sheets as sheets_v4.Schema$Sheet[])[0];
-  const sheetId = firstSheet.properties && firstSheet.properties.sheetId as number;
+  const sheetId = await getFirstSheet(auth, spreadsheetId);
 
   await sheets.spreadsheets.batchUpdate({
     auth,
@@ -115,5 +133,8 @@ async function createSheet(auth: OAuth2Client, archiveFolderId: string): Promise
     }
   } as sheets_v4.Params$Resource$Spreadsheets$Batchupdate);
 
-  return spreadsheetId;
+  return {
+    spreadsheetId,
+    sheetId
+  };
 }
