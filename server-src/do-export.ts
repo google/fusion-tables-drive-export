@@ -10,6 +10,10 @@ import wkx from 'wkx';
 import {OAuth2Client} from 'google-auth-library';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
+import {ISheet} from './interfaces/sheet';
+import getArchiveIndexSheet from './drive/get-archive-index-sheet';
+import insertExportRowInIndexSheet from './drive/insert-export-row-in-index-sheet';
+import logFileExportInIndexSheet from './drive/log-file-export-in-index-sheet';
 
 const DRIVE_CELL_LIMIT = 50000;
 
@@ -24,10 +28,12 @@ export default function(
   return new Promise(async (resolve, reject) => {
     const limit = pLimit(1);
     const folderId = await getDriveUploadFolder(auth);
+    const archiveSheet = await getArchiveIndexSheet(auth);
+    await insertExportRowInIndexSheet(auth, archiveSheet, folderId);
 
     Promise.all(
       tables.map(table =>
-        limit(() => saveTable({table, emitter, auth, folderId}))
+        limit(() => saveTable({table, emitter, auth, folderId, archiveSheet}))
       )
     )
       .then(() => resolve())
@@ -43,14 +49,16 @@ interface ISaveTableOptions {
   emitter: mitt.Emitter;
   auth: OAuth2Client;
   folderId: string;
+  archiveSheet: ISheet;
 }
 async function saveTable(options: ISaveTableOptions): Promise<ICsv> {
-  const {table, auth, emitter, folderId} = options;
+  const {table, auth, emitter, folderId, archiveSheet} = options;
   console.log(`###### Starting to save ${table.name}.`);
 
   const csv = await getFusiontableCsv(auth, table);
   const csvWithWkt = convertGeoToWkt(csv);
   const driveFile = await uploadToDrive(auth, folderId, csvWithWkt);
+  await logFileExportInIndexSheet(auth, archiveSheet, table, driveFile);
 
   emitter.emit('table-finished', {
     table,
