@@ -35,7 +35,7 @@ export default async function(auth: OAuth2Client): Promise<ITable[]> {
   return tables
     .filter(table => table.ownedByUser)
     .map(table => ({
-      id: table.tableId || '',
-      name: table.name || table.tableId || ''
+      id: table.tableId as string,
+      name: table.name || table.tableId as string
     }));
 }
