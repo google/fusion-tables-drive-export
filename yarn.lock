@@ -734,7 +734,7 @@
     "@parcel/utils" "^1.11.0"
     physical-cpu-count "^2.0.0"
 
-"@tmcw/togeojson@3.0.0":
+"@tmcw/togeojson@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-3.0.0.tgz#90bf3c8895334a3efee181dbeb9659ecc5d8f701"
   integrity sha512-CZrt6vjD6qns932dlSny/ANLkSSbWcK7Rgt2j6+gHeZTRsFdUQAeda/AfxC5spKtHB7DENGw5B5Gu7FPQwUUjw==
@@ -6907,13 +6907,6 @@ with@^5.0.0:
   dependencies:
     acorn "^3.1.0"
     acorn-globals "^3.0.0"
-
-wkx@^0.4.6:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/wkx/-/wkx-0.4.6.tgz#228ab592e6457382ea6fb79fc825058d07fce523"
-  integrity sha512-LHxXlzRCYQXA9ZHgs8r7Gafh0gVOE8o3QmudM1PIkOdkXXjW7Thcl+gb2P2dRuKgW8cqkitCRZkkjtmWzpHi7A==
-  dependencies:
-    "@types/node" "*"
 
 wordwrap@0.0.2:
   version "0.0.2"

@@ -1,4 +1,3 @@
-import wkx from 'wkx';
 import {GeoJsonLayer} from '@deck.gl/layers';
 import {LAYER_ID} from './config';
 
@@ -43,7 +42,7 @@ function createGeojsonFromData(
       return;
     }
 
-    const geoJsonFeature = getGeoJsonFromWkt(row[geometryIndex], columns, row);
+    const geoJsonFeature = getGeoJsonWithProperties(row[geometryIndex], columns, row);
 
     if (geoJsonFeature) {
       featureCollection.features.push(geoJsonFeature);
@@ -57,31 +56,28 @@ function createGeojsonFromData(
  * Convert the WKT to GeoJSON.
  * As there might be the feature wrapper missing, add it.
  */
-function getGeoJsonFromWkt(
-  wkt: string,
+function getGeoJsonWithProperties(
+  geoJsonString: string,
   columns: string[],
   row: string[]
 ): GeoJSON.Feature<any> {
-  if (!wkt) {
+  if (!geoJsonString) {
     return;
   }
 
-  const geoJson = wkx.Geometry.parse(wkt).toGeoJSON() as GeoJSON.GeometryObject;
-
-  return {
-    type: 'Feature',
-    geometry: geoJson,
-    properties: columns.reduce(
-      (all: {[name: string]: any}, current: string, currentIndex: number) => {
-        if (current === 'geometry') {
-          return all;
-        }
-
-        all[current] = row[currentIndex] || '';
-
+  const geoJson = JSON.parse(geoJsonString) as GeoJSON.Feature<any>;
+  geoJson.properties = columns.reduce(
+    (all: {[name: string]: any}, current: string, currentIndex: number) => {
+      if (current === 'geometry') {
         return all;
-      },
-      {}
-    )
-  };
+      }
+
+      all[current] = row[currentIndex] || '';
+
+      return all;
+    },
+    {}
+  );
+
+  return geoJson;
 }
