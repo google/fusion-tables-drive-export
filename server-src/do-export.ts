@@ -1,6 +1,7 @@
 /// <reference path="./interfaces/togeojson.d.ts" />
 import getFusiontableCsv from './fusiontables/get-csv';
 import getDriveUploadFolder from './drive/get-upload-folder';
+import transferFilePermissions from './drive/transfer-file-permissions';
 import uploadToDrive from './drive/upload';
 import pLimit from 'p-limit';
 import Papa from 'papaparse';
@@ -59,6 +60,7 @@ async function saveTable(options: ISaveTableOptions): Promise<ICsv> {
   const csvWithWkt = convertGeoToWkt(csv);
   const driveFile = await uploadToDrive(auth, folderId, csvWithWkt);
   await logFileExportInIndexSheet(auth, archiveSheet, table, driveFile);
+  await transferFilePermissions(auth, table.id, driveFile.id as string);
 
   emitter.emit('table-finished', {
     table,
