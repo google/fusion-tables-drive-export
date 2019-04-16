@@ -24,7 +24,8 @@ const DRIVE_CELL_LIMIT = 50000;
 export default function(
   auth: OAuth2Client,
   emitter: mitt.Emitter,
-  tables: ITable[]
+  tables: ITable[],
+  origin: string
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     const limit = pLimit(1);
@@ -34,7 +35,9 @@ export default function(
 
     Promise.all(
       tables.map(table =>
-        limit(() => saveTable({table, emitter, auth, folderId, archiveSheet}))
+        limit(() =>
+          saveTable({table, emitter, auth, folderId, archiveSheet, origin})
+        )
       )
     )
       .then(() => resolve())
@@ -51,15 +54,16 @@ interface ISaveTableOptions {
   auth: OAuth2Client;
   folderId: string;
   archiveSheet: ISheet;
+  origin: string;
 }
 async function saveTable(options: ISaveTableOptions): Promise<ICsv> {
-  const {table, auth, emitter, folderId, archiveSheet} = options;
+  const {table, auth, emitter, folderId, archiveSheet, origin} = options;
   console.log(`###### Starting to save ${table.name}.`);
 
   const csv = await getFusiontableCsv(auth, table);
   const csvWithWkt = convertGeoToWkt(csv);
   const driveFile = await uploadToDrive(auth, folderId, csvWithWkt);
-  await logFileExportInIndexSheet(auth, archiveSheet, table, driveFile);
+  await logFileExportInIndexSheet(auth, origin, archiveSheet, table, driveFile);
   await transferFilePermissions(auth, table.id, driveFile.id as string);
 
   emitter.emit('table-finished', {

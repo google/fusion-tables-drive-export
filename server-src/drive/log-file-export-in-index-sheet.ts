@@ -10,6 +10,7 @@ const sheets = google.sheets('v4');
  */
 export default async function(
   auth: OAuth2Client,
+  origin: string,
   sheet: ISheet,
   table: ITable,
   driveFile: drive_v3.Schema$File
@@ -19,9 +20,7 @@ export default async function(
     table.id
   }`;
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
-  const visualizerLink = `http://localhost:3000/visualizer/#file=${
-    driveFile.id
-  }`;
+  const visualizerLink = `${origin}/visualizer/#file=${driveFile.id}`;
 
   const response = await sheets.spreadsheets.batchUpdate({
     auth,
