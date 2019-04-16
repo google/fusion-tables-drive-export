@@ -1,4 +1,5 @@
 export const DRIVE_ARCHIVE_FOLDER = 'ft-archive';
+export const DRIVE_ARCHIVE_INDEX_SHEET = 'ft-exports-index';
 
 export const getDriveSubfolderName = () => {
   const now = new Date();
@@ -9,4 +10,10 @@ export const getDriveSubfolderName = () => {
   const m = String(now.getMinutes()).padStart(2, '0');
 
   return `export-${Y}${M}${D}-${h}${m}`;
+};
+
+export const MIME_TYPES = {
+  csv: 'text/csv',
+  spreadsheet: 'application/vnd.google-apps.spreadsheet',
+  folder: 'application/vnd.google-apps.folder'
 };

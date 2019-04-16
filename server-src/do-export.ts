@@ -1,6 +1,6 @@
 /// <reference path="./interfaces/togeojson.d.ts" />
 import getFusiontableCsv from './fusiontables/get-csv';
-import createDriveUploadFolder from './drive/create-upload-folder';
+import getDriveUploadFolder from './drive/get-upload-folder';
 import transferFilePermissions from './drive/transfer-file-permissions';
 import uploadToDrive from './drive/upload';
 import pLimit from 'p-limit';
@@ -11,6 +11,10 @@ import wkx from 'wkx';
 import {OAuth2Client} from 'google-auth-library';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
+import {ISheet} from './interfaces/sheet';
+import getArchiveIndexSheet from './drive/get-archive-index-sheet';
+import insertExportRowInIndexSheet from './drive/insert-export-row-in-index-sheet';
+import logFileExportInIndexSheet from './drive/log-file-export-in-index-sheet';
 
 const DRIVE_CELL_LIMIT = 50000;
 
@@ -20,15 +24,20 @@ const DRIVE_CELL_LIMIT = 50000;
 export default function(
   auth: OAuth2Client,
   emitter: mitt.Emitter,
-  tables: ITable[]
+  tables: ITable[],
+  origin: string
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     const limit = pLimit(1);
-    const folderId = await createDriveUploadFolder(auth);
+    const folderId = await getDriveUploadFolder(auth);
+    const archiveSheet = await getArchiveIndexSheet(auth);
+    await insertExportRowInIndexSheet(auth, archiveSheet, folderId);
 
     Promise.all(
       tables.map(table =>
-        limit(() => saveTable({table, emitter, auth, folderId}))
+        limit(() =>
+          saveTable({table, emitter, auth, folderId, archiveSheet, origin})
+        )
       )
     )
       .then(() => resolve())
@@ -44,14 +53,17 @@ interface ISaveTableOptions {
   emitter: mitt.Emitter;
   auth: OAuth2Client;
   folderId: string;
+  archiveSheet: ISheet;
+  origin: string;
 }
 async function saveTable(options: ISaveTableOptions): Promise<ICsv> {
-  const {table, auth, emitter, folderId} = options;
+  const {table, auth, emitter, folderId, archiveSheet, origin} = options;
   console.log(`###### Starting to save ${table.name}.`);
 
   const csv = await getFusiontableCsv(auth, table);
   const csvWithWkt = convertGeoToWkt(csv);
   const driveFile = await uploadToDrive(auth, folderId, csvWithWkt);
+  await logFileExportInIndexSheet(auth, origin, archiveSheet, table, driveFile);
   await transferFilePermissions(auth, table.id, driveFile.id as string);
 
   emitter.emit('table-finished', {

@@ -112,6 +112,7 @@ app.post('/export', (req, res) => {
 
   const tableIds = req.body.tableIds || [];
 
+  const origin = `${req.protocol}://${req.headers.host}`;
   const oauth2Client = getOAuthClient(req);
   oauth2Client.setCredentials(tokens);
 
@@ -119,7 +120,7 @@ app.post('/export', (req, res) => {
     .then(tables => tables.filter(table => tableIds.includes(table.id)))
     .then(tables => {
       res.render('export-in-progress', {tables, isSignedIn: Boolean(tokens)});
-      doExport(oauth2Client, emitter, tables)
+      doExport(oauth2Client, emitter, tables, origin)
         .then(() => console.log('DONE!'))
         .catch(error => console.error(error));
     })
