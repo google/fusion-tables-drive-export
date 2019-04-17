@@ -1,4 +1,4 @@
-import express, { Response, Request } from 'express';
+import express, {Response, Request} from 'express';
 import helmet from 'helmet';
 import boom from 'boom';
 import cookieSession from 'cookie-session';

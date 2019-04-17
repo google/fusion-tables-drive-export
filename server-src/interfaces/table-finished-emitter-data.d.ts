@@ -7,6 +7,6 @@ import {Credentials} from 'google-auth-library';
  */
 export type ITableFinishedEmitterData = {
   readonly table: ITable;
-  readonly driveFile: drive_v3.Schema$File;
+  readonly driveFile: drive_v3.Schema$File | null;
   readonly credentials: Credentials;
 };
