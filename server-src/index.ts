@@ -1,5 +1,6 @@
-import express from 'express';
+import express, { Response, Request } from 'express';
 import helmet from 'helmet';
+import boom from 'boom';
 import cookieSession from 'cookie-session';
 import mitt from 'mitt';
 import {getOAuthClient, getAuthUrl} from './auth';
@@ -8,7 +9,6 @@ import doExport from './do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
 import {ITableFinishedEmitterData} from './interfaces/table-finished-emitter-data';
-import handleError from './handle-error';
 
 const app = express();
 const emitter = new mitt();
@@ -18,6 +18,7 @@ app.set('views', './server-views');
 app.use(express.urlencoded({extended: true}));
 app.use(helmet());
 app.use(express.static('server-static'));
+
 app.use(
   cookieSession({
     name: 'fusiontables',
@@ -36,16 +37,20 @@ app.get('/', (req, res) => {
 
 app.get('/auth', (req, res) => {
   const isSignedIn = Boolean(req.session && req.session.tokens);
+
   if (isSignedIn) {
-    res.redirect(303, '/export');
-    return;
+    return res.redirect(303, '/export');
   }
 
   const url = getAuthUrl(req);
   res.redirect(303, url);
 });
 
-app.get('/auth/callback', (req, res) => {
+app.get('/auth/callback', (req, res, next) => {
+  if (!req.query.code) {
+    return next(boom.badRequest());
+  }
+
   const oauth2Client = getOAuthClient(req);
   oauth2Client
     .getToken(req.query.code)
@@ -57,14 +62,14 @@ app.get('/auth/callback', (req, res) => {
       req.session.tokens = tokens;
       res.redirect(303, '/export');
     })
-    .catch(error => res.status(500).send(error));
+    .catch(error => next(boom.badImplementation(error)));
 });
 
-app.get('/export/updates', (req, res) => {
+app.get('/export/updates', (req, res, next) => {
   const isSignedIn = Boolean(req.session && req.session.tokens);
 
   if (!isSignedIn) {
-    res.status(401);
+    return next(boom.unauthorized());
   }
 
   emitter.on('table-finished', tableFinishedHandler);
@@ -84,12 +89,11 @@ app.get('/export/updates', (req, res) => {
   }
 });
 
-app.get('/export', (req, res) => {
+app.get('/export', (req, res, next) => {
   const tokens = req.session && req.session.tokens;
 
   if (!tokens) {
-    res.redirect(303, '/');
-    return;
+    return res.redirect(303, '/');
   }
 
   const oauth2Client = getOAuthClient(req);
@@ -99,15 +103,14 @@ app.get('/export', (req, res) => {
     .then(tables => {
       res.render('export-select-tables', {tables, isSignedIn: Boolean(tokens)});
     })
-    .catch(error => handleError(error, req, res));
+    .catch(error => next(boom.badImplementation(error)));
 });
 
-app.post('/export', (req, res) => {
+app.post('/export', (req, res, next) => {
   const tokens = req.session && req.session.tokens;
 
   if (!tokens) {
-    res.redirect(303, '/');
-    return;
+    return res.redirect(303, '/');
   }
 
   const tableIds = req.body.tableIds || [];
@@ -120,16 +123,21 @@ app.post('/export', (req, res) => {
     .then(tables => tables.filter(table => tableIds.includes(table.id)))
     .then(tables => {
       res.render('export-in-progress', {tables, isSignedIn: Boolean(tokens)});
-      doExport(oauth2Client, emitter, tables, origin)
-        .then(() => console.log('DONE!'))
-        .catch(error => console.error(error));
+      doExport(oauth2Client, emitter, tables, origin);
     })
-    .catch(error => handleError(error, req, res));
+    .catch(error => next(boom.badImplementation(error)));
 });
 
 app.get('/logout', (req, res) => {
   req.session = undefined;
   res.redirect(303, '/');
+});
+
+app.use((error: boom, req: Request, res: Response, next: any) => {
+  // STACKDRIVER
+  return res
+    .status(error.output && error.output.statusCode)
+    .render('error', {error: error.message});
 });
 
 if (module === require.main) {
