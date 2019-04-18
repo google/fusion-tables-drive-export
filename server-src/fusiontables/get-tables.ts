@@ -2,7 +2,7 @@ import {google} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import pLimit from 'p-limit';
 import {ITable} from '../interfaces/table';
-import userIsFileOwner from '../drive/user-is-file-owner';
+import getFilePermissions from '../drive/get-file-permissions';
 
 const fusiontables = google.fusiontables('v2');
 
@@ -34,10 +34,18 @@ export default async function(
 
     const tables = await Promise.all(
       allTablesToCheck.map(table =>
-        limit(async () => ({
-          ...table,
-          ownedByUser: await userIsFileOwner(auth, table.tableId as string)
-        }))
+        limit(async () => {
+          const {ownedByMe, permissions} = await getFilePermissions(
+            auth,
+            table.tableId as string
+          );
+
+          return {
+            ...table,
+            ownedByUser: ownedByMe,
+            permissions
+          };
+        })
       )
     );
 
@@ -45,7 +53,8 @@ export default async function(
       .filter(table => table.ownedByUser)
       .map(table => ({
         id: table.tableId as string,
-        name: table.name || (table.tableId as string)
+        name: table.name || (table.tableId as string),
+        permissions: table.permissions || []
       }));
   } catch (error) {
     throw error;

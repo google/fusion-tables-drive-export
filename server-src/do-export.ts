@@ -2,7 +2,6 @@
 import {drive_v3} from 'googleapis';
 import getFusiontableCsv from './fusiontables/get-csv';
 import getDriveUploadFolder from './drive/get-upload-folder';
-import transferFilePermissions from './drive/transfer-file-permissions';
 import uploadToDrive from './drive/upload';
 import pLimit from 'p-limit';
 import Papa from 'papaparse';
@@ -17,6 +16,7 @@ import getArchiveFolder from './drive/get-archive-folder';
 import getArchiveIndexSheet from './drive/get-archive-index-sheet';
 import insertExportRowInIndexSheet from './drive/insert-export-row-in-index-sheet';
 import logFileExportInIndexSheet from './drive/log-file-export-in-index-sheet';
+import addFilePermissions from './drive/add-file-permissions';
 
 const DRIVE_CELL_LIMIT = 50000;
 
@@ -68,7 +68,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     const csv = await getFusiontableCsv(auth, table);
     const csvWithWkt = convertGeoToWkt(csv);
     driveFile = await uploadToDrive(auth, folderId, csvWithWkt);
-    await transferFilePermissions(auth, table.id, driveFile.id as string);
+    await addFilePermissions(auth, driveFile.id as string, table.permissions);
     await logFileExportInIndexSheet(
       auth,
       origin,
