@@ -9,7 +9,10 @@ const fusiontables = google.fusiontables('v2');
 /**
  * Get the tables for the authenticated user account
  */
-export default async function(auth: OAuth2Client, ids?: string[]): Promise<ITable[]> {
+export default async function(
+  auth: OAuth2Client,
+  ids?: string[]
+): Promise<ITable[]> {
   try {
     const {data} = await fusiontables.table.list({
       auth,

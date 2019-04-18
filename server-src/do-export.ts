@@ -13,6 +13,7 @@ import {OAuth2Client} from 'google-auth-library';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 import {ISheet} from './interfaces/sheet';
+import getArchiveFolder from './drive/get-archive-folder';
 import getArchiveIndexSheet from './drive/get-archive-index-sheet';
 import insertExportRowInIndexSheet from './drive/insert-export-row-in-index-sheet';
 import logFileExportInIndexSheet from './drive/log-file-export-in-index-sheet';
@@ -33,8 +34,9 @@ export default async function(
   let archiveSheet: ISheet;
 
   try {
-    folderId = await getDriveUploadFolder(auth);
-    archiveSheet = await getArchiveIndexSheet(auth);
+    const archiveFolderId = await getArchiveFolder(auth);
+    folderId = await getDriveUploadFolder(auth, archiveFolderId);
+    archiveSheet = await getArchiveIndexSheet(auth, archiveFolderId);
     await insertExportRowInIndexSheet(auth, archiveSheet, folderId);
   } catch (error) {
     throw error;

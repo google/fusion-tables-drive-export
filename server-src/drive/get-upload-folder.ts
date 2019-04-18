@@ -1,6 +1,5 @@
 import {google, drive_v3} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
-import getArchiveFolder from './get-archive-folder';
 import {getDriveSubfolderName, MIME_TYPES} from '../config';
 
 const drive = google.drive('v3');
@@ -8,10 +7,11 @@ const drive = google.drive('v3');
 /**
  * Create the Fusion Tables subfolder for an export
  */
-export default async function(auth: OAuth2Client): Promise<string> {
+export default async function(
+  auth: OAuth2Client,
+  archiveFolderId: string
+): Promise<string> {
   try {
-    const archiveFolderId = await getArchiveFolder(auth);
-
     const response = await drive.files.create({
       auth,
       resource: {
