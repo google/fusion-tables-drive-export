@@ -15,7 +15,11 @@ export default async function(
   csv: ICsv
 ): Promise<drive_v3.Schema$File> {
   if (csv.hasLargeCells) {
-    return doUpload({auth, csv, mimeType: MIME_TYPES.csv, folderId});
+    try {
+      return doUpload({auth, csv, mimeType: MIME_TYPES.csv, folderId});
+    } catch (error) {
+      throw error;
+    }
   }
 
   try {
@@ -26,8 +30,12 @@ export default async function(
       folderId
     });
     return file;
-  } catch (error) {
-    return doUpload({auth, csv, mimeType: MIME_TYPES.csv, folderId});
+  } catch (ignoredError) {
+    try {
+      return doUpload({auth, csv, mimeType: MIME_TYPES.csv, folderId});
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
@@ -52,18 +60,22 @@ async function doUpload({
   stream.push(csv.data);
   stream.push(null);
 
-  const file = await drive.files.create({
-    auth,
-    requestBody: {
-      mimeType,
-      name: `ft-${csv.name}`,
-      parents: [folderId]
-    },
-    media: {
-      mimeType: MIME_TYPES.csv,
-      body: stream
-    }
-  });
+  try {
+    const file = await drive.files.create({
+      auth,
+      requestBody: {
+        mimeType,
+        name: `ft-${csv.name}`,
+        parents: [folderId]
+      },
+      media: {
+        mimeType: MIME_TYPES.csv,
+        body: stream
+      }
+    });
 
-  return file.data;
+    return file.data;
+  } catch (error) {
+    throw error;
+  }
 }

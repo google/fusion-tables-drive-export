@@ -9,30 +9,38 @@ const drive = google.drive('v3');
  * Get the ID for the Fusion Tables Archive folder
  */
 export default async function(auth: OAuth2Client): Promise<string> {
-  const archiveFolderId = await findFile(auth, DRIVE_ARCHIVE_FOLDER, 'root');
+  try {
+    const archiveFolderId = await findFile(auth, DRIVE_ARCHIVE_FOLDER, 'root');
 
-  if (archiveFolderId) {
-    return archiveFolderId;
+    if (archiveFolderId) {
+      return archiveFolderId;
+    }
+
+    return createArchiveFolder(auth);
+  } catch (error) {
+    throw error;
   }
-
-  return createArchiveFolder(auth);
 }
 
 /**
  * Create the Fusion Tables Archive folder
  */
 async function createArchiveFolder(auth: OAuth2Client): Promise<string> {
-  const response = await drive.files.create({
-    auth,
-    resource: {
-      name: DRIVE_ARCHIVE_FOLDER,
-      mimeType: MIME_TYPES.folder
+  try {
+    const response = await drive.files.create({
+      auth,
+      resource: {
+        name: DRIVE_ARCHIVE_FOLDER,
+        mimeType: MIME_TYPES.folder
+      }
+    } as drive_v3.Params$Resource$Files$Create);
+
+    if (response.statusText !== 'OK') {
+      throw new Error(`Cannot create archive folder: ${response.statusText}`);
     }
-  } as drive_v3.Params$Resource$Files$Create);
 
-  if (response.statusText !== 'OK') {
-    console.error('ERROR!', response);
+    return response.data.id as string;
+  } catch (error) {
+    throw error;
   }
-
-  return response.data.id as string;
 }

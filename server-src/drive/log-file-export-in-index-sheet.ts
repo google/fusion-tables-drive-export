@@ -22,34 +22,38 @@ export default async function(
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
   const visualizerLink = `${origin}/visualizer/#file=${driveFile.id}`;
 
-  const response = await sheets.spreadsheets.batchUpdate({
-    auth,
-    spreadsheetId,
-    requestBody: {
-      requests: [
-        {
-          appendCells: {
-            sheetId,
-            rows: [
-              {
-                values: [
-                  {userEnteredValue: {stringValue: driveFile.name}},
-                  {userEnteredValue: {stringValue: tableLink}},
-                  {userEnteredValue: {stringValue: fileLink}},
-                  {userEnteredValue: {stringValue: visualizerLink}},
-                  {userEnteredValue: {stringValue: new Date().toISOString()}}
-                ]
-              }
-            ],
-            fields: 'userEnteredValue'
+  try {
+    const response = await sheets.spreadsheets.batchUpdate({
+      auth,
+      spreadsheetId,
+      requestBody: {
+        requests: [
+          {
+            appendCells: {
+              sheetId,
+              rows: [
+                {
+                  values: [
+                    {userEnteredValue: {stringValue: driveFile.name}},
+                    {userEnteredValue: {stringValue: tableLink}},
+                    {userEnteredValue: {stringValue: fileLink}},
+                    {userEnteredValue: {stringValue: visualizerLink}},
+                    {userEnteredValue: {stringValue: new Date().toISOString()}}
+                  ]
+                }
+              ],
+              fields: 'userEnteredValue'
+            }
           }
-        }
-      ]
-    }
-  } as sheets_v4.Params$Resource$Spreadsheets$Batchupdate);
+        ]
+      }
+    } as sheets_v4.Params$Resource$Spreadsheets$Batchupdate);
 
-  if (response.statusText !== 'OK') {
-    throw new Error('Couldn’t write file to sheet');
+    if (response.statusText !== 'OK') {
+      throw new Error(`Cannot log file export: ${response.statusText}`);
+    }
+  } catch (error) {
+    throw error;
   }
 
   return;

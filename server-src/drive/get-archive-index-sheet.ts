@@ -20,23 +20,27 @@ const headerRowContent = [
  * Get the Archive Index Sheet
  */
 export default async function(auth: OAuth2Client): Promise<ISheet> {
-  const archiveFolderId = await getArchiveFolder(auth);
-  const spreadsheetId = await findFile(
-    auth,
-    DRIVE_ARCHIVE_INDEX_SHEET,
-    archiveFolderId
-  );
+  try {
+    const archiveFolderId = await getArchiveFolder(auth);
+    const spreadsheetId = await findFile(
+      auth,
+      DRIVE_ARCHIVE_INDEX_SHEET,
+      archiveFolderId
+    );
 
-  if (!spreadsheetId) {
-    return createSheet(auth, archiveFolderId);
+    if (!spreadsheetId) {
+      return createSheet(auth, archiveFolderId);
+    }
+
+    const sheetId = await getFirstSheet(auth, spreadsheetId);
+
+    return {
+      spreadsheetId,
+      sheetId
+    };
+  } catch (error) {
+    throw error;
   }
-
-  const sheetId = await getFirstSheet(auth, spreadsheetId);
-
-  return {
-    spreadsheetId,
-    sheetId
-  };
 }
 
 /**
@@ -46,21 +50,26 @@ async function getFirstSheet(
   auth: OAuth2Client,
   spreadsheetId: string
 ): Promise<number> {
-  const sheetsResponse = await sheets.spreadsheets.get({
-    auth,
-    spreadsheetId,
-    fields: 'sheets'
-  });
+  try {
+    const response = await sheets.spreadsheets.get({
+      auth,
+      spreadsheetId,
+      fields: 'sheets'
+    });
 
-  const firstSheet = (sheetsResponse.data
-    .sheets as sheets_v4.Schema$Sheet[])[0];
-  const sheetId = firstSheet.properties && firstSheet.properties.sheetId;
+    const firstSheet = (response.data.sheets as sheets_v4.Schema$Sheet[])[0];
+    const sheetId = firstSheet.properties && firstSheet.properties.sheetId;
 
-  if (!sheetId) {
-    throw new Error('No sheet in Spreadsheet found not found');
+    if (!sheetId) {
+      throw new Error(
+        `Cannot find Sheet in Spreadsheet: ${response.statusText}`
+      );
+    }
+
+    return sheetId;
+  } catch (error) {
+    throw error;
   }
-
-  return sheetId;
 }
 
 /**
@@ -70,81 +79,85 @@ async function createSheet(
   auth: OAuth2Client,
   archiveFolderId: string
 ): Promise<ISheet> {
-  const createResponse = await drive.files.create({
-    auth,
-    resource: {
-      name: DRIVE_ARCHIVE_INDEX_SHEET,
-      parents: [archiveFolderId],
-      mimeType: MIME_TYPES.spreadsheet
-    },
-    media: {
-      mimeType: MIME_TYPES.csv,
-      body: headerRowContent
+  try {
+    const response = await drive.files.create({
+      auth,
+      resource: {
+        name: DRIVE_ARCHIVE_INDEX_SHEET,
+        parents: [archiveFolderId],
+        mimeType: MIME_TYPES.spreadsheet
+      },
+      media: {
+        mimeType: MIME_TYPES.csv,
+        body: headerRowContent
+      }
+    } as drive_v3.Params$Resource$Files$Create);
+
+    if (response.statusText !== 'OK') {
+      throw new Error(`Cannot create new Sheet: ${response.statusText}`);
     }
-  } as drive_v3.Params$Resource$Files$Create);
 
-  if (createResponse.statusText !== 'OK') {
-    console.error('ERROR!', createResponse);
-  }
+    const spreadsheetId = response.data.id as string;
+    const sheetId = await getFirstSheet(auth, spreadsheetId);
 
-  const spreadsheetId = createResponse.data.id as string;
-  const sheetId = await getFirstSheet(auth, spreadsheetId);
-
-  await sheets.spreadsheets.batchUpdate({
-    auth,
-    spreadsheetId,
-    requestBody: {
-      requests: [
-        {
-          repeatCell: {
-            range: {
-              sheetId,
-              startRowIndex: 0,
-              endRowIndex: 1
-            },
-            cell: {
-              userEnteredFormat: {
-                horizontalAlignment: 'CENTER',
-                textFormat: {
-                  fontSize: 12,
-                  bold: true
+    await sheets.spreadsheets.batchUpdate({
+      auth,
+      spreadsheetId,
+      requestBody: {
+        requests: [
+          {
+            repeatCell: {
+              range: {
+                sheetId,
+                startRowIndex: 0,
+                endRowIndex: 1
+              },
+              cell: {
+                userEnteredFormat: {
+                  horizontalAlignment: 'CENTER',
+                  textFormat: {
+                    fontSize: 12,
+                    bold: true
+                  }
                 }
-              }
-            },
-            fields: 'userEnteredFormat(textFormat,horizontalAlignment)'
+              },
+              fields: 'userEnteredFormat(textFormat,horizontalAlignment)'
+            }
+          },
+          {
+            updateDimensionProperties: {
+              range: {
+                sheetId,
+                dimension: 'COLUMNS',
+                startIndex: 0,
+                endIndex: 5
+              },
+              properties: {
+                pixelSize: 250
+              },
+              fields: 'pixelSize'
+            }
+          },
+          {
+            updateSheetProperties: {
+              properties: {
+                sheetId,
+                gridProperties: {
+                  frozenRowCount: 1
+                }
+              },
+              fields: 'gridProperties.frozenRowCount'
+            }
           }
-        },
-        {
-          updateDimensionProperties: {
-            range: {
-              sheetId,
-              dimension: 'COLUMNS',
-              startIndex: 0,
-              endIndex: 5
-            },
-            properties: {
-              pixelSize: 250
-            },
-            fields: 'pixelSize'
-          }
-        },
-        {
-          updateSheetProperties: {
-            properties: {
-              sheetId,
-              gridProperties: {
-                frozenRowCount: 1
-              }
-            },
-            fields: 'gridProperties.frozenRowCount'
-          }
-        }
-      ]
-    }
-  } as sheets_v4.Params$Resource$Spreadsheets$Batchupdate);
+        ]
+      }
+    } as sheets_v4.Params$Resource$Spreadsheets$Batchupdate);
 
-  return {
-    spreadsheetId,
-    sheetId
-  };
+    return {
+      spreadsheetId,
+      sheetId
+    };
+  } catch (error) {
+    throw error;
+  }
 }

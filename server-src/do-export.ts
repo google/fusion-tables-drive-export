@@ -1,4 +1,5 @@
 /// <reference path="./interfaces/togeojson.d.ts" />
+import {drive_v3} from 'googleapis';
 import getFusiontableCsv from './fusiontables/get-csv';
 import getDriveUploadFolder from './drive/get-upload-folder';
 import transferFilePermissions from './drive/transfer-file-permissions';
@@ -21,28 +22,29 @@ const DRIVE_CELL_LIMIT = 50000;
 /**
  * Export a table from FusionTables and save it to Drive
  */
-export default function(
+export default async function(
   auth: OAuth2Client,
   emitter: mitt.Emitter,
   tables: ITable[],
   origin: string
 ): Promise<void> {
-  return new Promise(async (resolve, reject) => {
-    const limit = pLimit(1);
-    const folderId = await getDriveUploadFolder(auth);
-    const archiveSheet = await getArchiveIndexSheet(auth);
-    await insertExportRowInIndexSheet(auth, archiveSheet, folderId);
+  const limit = pLimit(1);
+  let folderId: string;
+  let archiveSheet: ISheet;
 
-    Promise.all(
-      tables.map(table =>
-        limit(() =>
-          saveTable({table, emitter, auth, folderId, archiveSheet, origin})
-        )
-      )
+  try {
+    folderId = await getDriveUploadFolder(auth);
+    archiveSheet = await getArchiveIndexSheet(auth);
+    await insertExportRowInIndexSheet(auth, archiveSheet, folderId);
+  } catch (error) {
+    throw error;
+  }
+
+  tables.map(table =>
+    limit(() =>
+      saveTable({table, emitter, auth, folderId, archiveSheet, origin})
     )
-      .then(() => resolve())
-      .catch(reject);
-  });
+  );
 }
 
 /**
@@ -56,24 +58,38 @@ interface ISaveTableOptions {
   archiveSheet: ISheet;
   origin: string;
 }
-async function saveTable(options: ISaveTableOptions): Promise<ICsv> {
+async function saveTable(options: ISaveTableOptions): Promise<void> {
   const {table, auth, emitter, folderId, archiveSheet, origin} = options;
-  console.log(`###### Starting to save ${table.name}.`);
+  let driveFile: drive_v3.Schema$File | null = null;
 
-  const csv = await getFusiontableCsv(auth, table);
-  const csvWithWkt = convertGeoToWkt(csv);
-  const driveFile = await uploadToDrive(auth, folderId, csvWithWkt);
-  await logFileExportInIndexSheet(auth, origin, archiveSheet, table, driveFile);
-  await transferFilePermissions(auth, table.id, driveFile.id as string);
+  try {
+    const csv = await getFusiontableCsv(auth, table);
+    const csvWithWkt = convertGeoToWkt(csv);
+    driveFile = await uploadToDrive(auth, folderId, csvWithWkt);
+    await transferFilePermissions(auth, table.id, driveFile.id as string);
+    await logFileExportInIndexSheet(
+      auth,
+      origin,
+      archiveSheet,
+      table,
+      driveFile
+    );
 
-  emitter.emit('table-finished', {
-    table,
-    driveFile,
-    credentials: auth.credentials
-  });
-
-  console.log(`###### Saved! Drive ID for ${driveFile.name}: ${driveFile.id}`);
-  return csv;
+    emitter.emit('table-finished', {
+      error: null,
+      table,
+      driveFile,
+      credentials: auth.credentials
+    });
+  } catch (error) {
+    emitter.emit('table-finished', {
+      error,
+      table,
+      driveFile,
+      credentials: auth.credentials
+    });
+    // STACKDRIVER
+  }
 }
 
 /**

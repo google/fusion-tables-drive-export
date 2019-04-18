@@ -128,14 +128,21 @@ main {
   transform: rotate(45deg);
 }
 
-.fusiontable--loading::before {
-  content: '⏳';
+.fusiontable--loading::before,
+.fusiontable--success::before,
+.fusiontable--error::before {
   margin-right: .5em;
   vertical-align: middle;
 }
 
+.fusiontable--loading::before {
+  content: '⏳';
+}
+
 .fusiontable--success::before {
   content: '🎉';
-  margin-right: .5em;
-  vertical-align: middle;
+}
+
+.fusiontable--error::before {
+  content: '💥';
 }
