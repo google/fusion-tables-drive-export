@@ -10,11 +10,15 @@ export default async function(
   auth: OAuth2Client,
   fileId: string
 ): Promise<drive_v3.Schema$Permission[]> {
-  const response = await drive.files.get({
-    auth,
-    fileId,
-    fields: 'permissions'
-  });
+  try {
+    const response = await drive.files.get({
+      auth,
+      fileId,
+      fields: 'permissions'
+    });
 
-  return response.data.permissions as drive_v3.Schema$Permission[];
+    return response.data.permissions as drive_v3.Schema$Permission[];
+  } catch (error) {
+    throw error;
+  }
 }

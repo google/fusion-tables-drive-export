@@ -10,7 +10,12 @@ export default async function(
   sourceFileId: string,
   targetFileId: string
 ): Promise<void> {
-  const permissions = await getFilePermissions(auth, sourceFileId);
-  await addFilePermissions(auth, targetFileId, permissions);
+  try {
+    const permissions = await getFilePermissions(auth, sourceFileId);
+    await addFilePermissions(auth, targetFileId, permissions);
+  } catch (error) {
+    throw error;
+  }
+
   return;
 }

@@ -18,40 +18,44 @@ export default async function(
     `"https://drive.google.com/drive/folders/${folderId}",` +
     '"Open Export folder")';
 
-  const response = await sheets.spreadsheets.batchUpdate({
-    auth,
-    spreadsheetId,
-    requestBody: {
-      requests: [
-        {
-          appendCells: {
-            sheetId,
-            rows: [
-              {
-                values: [
-                  {
-                    userEnteredValue: {stringValue: ''}
-                  }
-                ]
-              },
-              {
-                values: [
-                  {
-                    userEnteredValue: {formulaValue: message},
-                    userEnteredFormat: {textFormat: {bold: true}}
-                  }
-                ]
-              }
-            ],
-            fields: '*'
+  try {
+    const response = await sheets.spreadsheets.batchUpdate({
+      auth,
+      spreadsheetId,
+      requestBody: {
+        requests: [
+          {
+            appendCells: {
+              sheetId,
+              rows: [
+                {
+                  values: [
+                    {
+                      userEnteredValue: {stringValue: ''}
+                    }
+                  ]
+                },
+                {
+                  values: [
+                    {
+                      userEnteredValue: {formulaValue: message},
+                      userEnteredFormat: {textFormat: {bold: true}}
+                    }
+                  ]
+                }
+              ],
+              fields: '*'
+            }
           }
-        }
-      ]
-    }
-  } as sheets_v4.Params$Resource$Spreadsheets$Batchupdate);
+        ]
+      }
+    } as sheets_v4.Params$Resource$Spreadsheets$Batchupdate);
 
-  if (response.statusText !== 'OK') {
-    throw new Error('Couldn’t write folder to sheet');
+    if (response.statusText !== 'OK') {
+      throw new Error(`Cannot log export folder: ${response.statusText}`);
+    }
+  } catch (error) {
+    throw error;
   }
 
   return;
