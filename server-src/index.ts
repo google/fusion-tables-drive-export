@@ -80,6 +80,7 @@ app.get('/export/updates', (req, res, next) => {
       JSON.stringify(data.credentials) === JSON.stringify(req.session.tokens)
     ) {
       res.json({
+        error: data.error,
         table: data.table,
         driveFile: data.driveFile
       });
@@ -121,9 +122,9 @@ app.post('/export', (req, res, next) => {
 
   getFusiontables(oauth2Client)
     .then(tables => tables.filter(table => tableIds.includes(table.id)))
-    .then(tables => {
+    .then(async tables => {
+      await doExport(oauth2Client, emitter, tables, origin);
       res.render('export-in-progress', {tables, isSignedIn: Boolean(tokens)});
-      doExport(oauth2Client, emitter, tables, origin);
     })
     .catch(error => next(boom.badImplementation(error)));
 });

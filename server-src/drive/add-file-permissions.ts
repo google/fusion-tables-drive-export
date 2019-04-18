@@ -7,7 +7,7 @@ const drive = google.drive('v3');
 /**
  * Add permissions to the passed fileId
  */
-export default async function(
+export default function(
   auth: OAuth2Client,
   fileId: string,
   permissions: drive_v3.Schema$Permission[]
@@ -64,7 +64,8 @@ async function addFilePermission(
   try {
     await drive.permissions.create(params);
   } catch (error) {
-    console.error(error);
+    throw error;
   }
+
   return;
 }

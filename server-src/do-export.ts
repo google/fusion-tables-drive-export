@@ -37,7 +37,7 @@ export default async function(
     archiveSheet = await getArchiveIndexSheet(auth);
     await insertExportRowInIndexSheet(auth, archiveSheet, folderId);
   } catch (error) {
-    return Promise.reject(error);
+    throw error;
   }
 
   tables.map(table =>

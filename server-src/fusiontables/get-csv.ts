@@ -10,25 +10,29 @@ export default async function(
   auth: OAuth2Client,
   table: ITable
 ): Promise<ICsv> {
-  const {token} = await auth.getAccessToken();
-  const query = `SELECT * FROM ${table.id}`;
-  const url =
-    'https://www.googleapis.com/fusiontables/v2/query' +
-    `?sql=${encodeURIComponent(query)}&alt=media`;
-  const options = {
-    headers: {
-      'Accept-Encoding': 'gzip',
-      Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
-  };
+  try {
+    const {token} = await auth.getAccessToken();
+    const query = `SELECT * FROM ${table.id}`;
+    const url =
+      'https://www.googleapis.com/fusiontables/v2/query' +
+      `?sql=${encodeURIComponent(query)}&alt=media`;
+    const options = {
+      headers: {
+        'Accept-Encoding': 'gzip',
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    };
 
-  const response = await fetch(url, options);
-  const csv = await response.text();
+    const response = await fetch(url, options);
+    const csv = await response.text();
 
-  return {
-    name: table.name,
-    filename: `${table.name}.csv`,
-    data: csv
-  };
+    return {
+      name: table.name,
+      filename: `${table.name}.csv`,
+      data: csv
+    };
+  } catch (error) {
+    throw error;
+  }
 }

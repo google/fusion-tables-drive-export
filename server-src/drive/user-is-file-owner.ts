@@ -7,11 +7,15 @@ export default async function(
   auth: OAuth2Client,
   tableId: string
 ): Promise<boolean> {
-  const response = await drive.files.get({
-    auth,
-    fileId: tableId,
-    fields: 'ownedByMe'
-  });
+  try {
+    const response = await drive.files.get({
+      auth,
+      fileId: tableId,
+      fields: 'ownedByMe'
+    });
 
-  return Boolean(response.data.ownedByMe);
+    return Boolean(response.data.ownedByMe);
+  } catch (error) {
+    throw error;
+  }
 }
