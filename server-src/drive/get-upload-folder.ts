@@ -22,7 +22,7 @@ export default async function(auth: OAuth2Client): Promise<string> {
     } as drive_v3.Params$Resource$Files$Create);
 
     if (response.statusText !== 'OK') {
-      console.error('ERROR!', response);
+      throw new Error(`Cannot create a new subfolder: ${response.statusText}`);
     }
 
     return response.data.id as string;
