@@ -11,7 +11,6 @@ export default async function(
   fileId: string
 ): Promise<drive_v3.Schema$File> {
   try {
-    console.log('GET FILE PERMISSIONS');
     const response = await drive.files.get({
       auth,
       fileId,
