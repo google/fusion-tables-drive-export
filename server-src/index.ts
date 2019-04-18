@@ -120,8 +120,7 @@ app.post('/export', (req, res, next) => {
   const oauth2Client = getOAuthClient(req);
   oauth2Client.setCredentials(tokens);
 
-  getFusiontables(oauth2Client)
-    .then(tables => tables.filter(table => tableIds.includes(table.id)))
+  getFusiontables(oauth2Client, tableIds)
     .then(async tables => {
       await doExport(oauth2Client, emitter, tables, origin);
       res.render('export-in-progress', {tables, isSignedIn: Boolean(tokens)});

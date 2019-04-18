@@ -9,7 +9,7 @@ const fusiontables = google.fusiontables('v2');
 /**
  * Get the tables for the authenticated user account
  */
-export default async function(auth: OAuth2Client): Promise<ITable[]> {
+export default async function(auth: OAuth2Client, ids?: string[]): Promise<ITable[]> {
   try {
     const {data} = await fusiontables.table.list({
       auth,
@@ -21,16 +21,21 @@ export default async function(auth: OAuth2Client): Promise<ITable[]> {
     }
 
     const limit = pLimit(10);
+    let allTablesToCheck = data.items.filter(table => table.tableId);
+
+    if (ids) {
+      allTablesToCheck = allTablesToCheck.filter(table =>
+        ids.includes(table.tableId as string)
+      );
+    }
 
     const tables = await Promise.all(
-      data.items
-        .filter(table => table.tableId)
-        .map(table =>
-          limit(async () => ({
-            ...table,
-            ownedByUser: await userIsFileOwner(auth, table.tableId as string)
-          }))
-        )
+      allTablesToCheck.map(table =>
+        limit(async () => ({
+          ...table,
+          ownedByUser: await userIsFileOwner(auth, table.tableId as string)
+        }))
+      )
     );
 
     return tables
