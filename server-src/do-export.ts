@@ -134,9 +134,7 @@ function convertKmlToGeoJson(csv: ICsv): ICsv {
 /**
  * Convert a value to GeoJSON or return null if not possible
  */
-function convertToGeoJson(
-  value: any
-): string | null {
+function convertToGeoJson(value: any): string | null {
   if (value.startsWith && !value.startsWith('<')) {
     return null;
   }

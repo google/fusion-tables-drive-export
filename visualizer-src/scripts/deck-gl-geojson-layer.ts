@@ -42,7 +42,11 @@ function createGeojsonFromData(
       return;
     }
 
-    const geoJsonFeature = getGeoJsonWithProperties(row[geometryIndex], columns, row);
+    const geoJsonFeature = getGeoJsonWithProperties(
+      row[geometryIndex],
+      columns,
+      row
+    );
 
     if (geoJsonFeature) {
       featureCollection.features.push(geoJsonFeature);
