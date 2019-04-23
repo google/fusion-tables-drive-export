@@ -5,6 +5,7 @@ import Papa from 'papaparse';
 import {DOMParser} from 'xmldom';
 import {kml as kml2GeoJson} from '@tmcw/togeojson';
 import {OAuth2Client} from 'google-auth-library';
+import {ErrorReporting} from '@google-cloud/error-reporting';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 import {ISheet} from './interfaces/sheet';
@@ -16,8 +17,15 @@ import getArchiveIndexSheet from './drive/get-archive-index-sheet';
 import insertExportRowInIndexSheet from './drive/insert-export-row-in-index-sheet';
 import logFileExportInIndexSheet from './drive/log-file-export-in-index-sheet';
 import addFilePermissions from './drive/add-file-permissions';
+import {web as serverCredentials} from './credentials.json';
+import credentials from './credentials-error-reporting.json';
 
 const DRIVE_CELL_LIMIT = 50000;
+const errors = new ErrorReporting({
+  reportUnhandledRejections: true,
+  projectId: serverCredentials.project_id,
+  credentials
+});
 
 /**
  * Export a table from FusionTables and save it to Drive
@@ -83,13 +91,13 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       credentials: auth.credentials
     });
   } catch (error) {
+    errors.report(error);
     emitter.emit('table-finished', {
       error,
       table,
       driveFile,
       credentials: auth.credentials
     });
-    // STACKDRIVER
   }
 }
 
@@ -126,9 +134,7 @@ function convertKmlToGeoJson(csv: ICsv): ICsv {
 /**
  * Convert a value to GeoJSON or return null if not possible
  */
-function convertToGeoJson(
-  value: any
-): string | null {
+function convertToGeoJson(value: any): string | null {
   if (value.startsWith && !value.startsWith('<')) {
     return null;
   }
