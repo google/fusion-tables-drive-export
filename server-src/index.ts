@@ -144,6 +144,10 @@ app.get('/logout', (req, res) => {
 app.use((error: boom, req: Request, res: Response, next: any) => {
   errors.report(error, req);
 
+  if (error && error.message === 'invalid_request') {
+    return res.redirect(303, '/logout');
+  }
+
   return res
     .status(error.output && error.output.statusCode)
     .render('error', {error: error.message});
