@@ -3,15 +3,23 @@ import helmet from 'helmet';
 import boom from 'boom';
 import cookieSession from 'cookie-session';
 import mitt from 'mitt';
+import {ErrorReporting} from '@google-cloud/error-reporting';
 import {getOAuthClient, getAuthUrl} from './auth';
 import getFusiontables from './fusiontables/get-tables';
 import doExport from './do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
 import {ITableFinishedEmitterData} from './interfaces/table-finished-emitter-data';
+import {web as serverCredentials} from './credentials.json';
+import credentials from './credentials-error-reporting.json';
 
 const app = express();
 const emitter = new mitt();
+const errors = new ErrorReporting({
+  reportUnhandledRejections: true,
+  projectId: serverCredentials.project_id,
+  credentials
+});
 
 app.set('view engine', 'pug');
 app.set('views', './server-views');
@@ -134,7 +142,8 @@ app.get('/logout', (req, res) => {
 });
 
 app.use((error: boom, req: Request, res: Response, next: any) => {
-  // STACKDRIVER
+  errors.report(error, req);
+
   return res
     .status(error.output && error.output.statusCode)
     .render('error', {error: error.message});

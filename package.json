@@ -29,6 +29,7 @@
     "bracketSpacing": false
   },
   "dependencies": {
+    "@google-cloud/error-reporting": "^0.6.3",
     "@tmcw/togeojson": "^3.0.0",
     "boom": "^7.3.0",
     "cookie-session": "^2.0.0-beta.3",
