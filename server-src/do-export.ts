@@ -1,18 +1,17 @@
 /// <reference path="./interfaces/togeojson.d.ts" />
 import {drive_v3} from 'googleapis';
-import getFusiontableCsv from './fusiontables/get-csv';
-import getDriveUploadFolder from './drive/get-upload-folder';
-import transferFilePermissions from './drive/transfer-file-permissions';
-import uploadToDrive from './drive/upload';
 import pLimit from 'p-limit';
 import Papa from 'papaparse';
 import {DOMParser} from 'xmldom';
-import toGeoJson from '@tmcw/togeojson';
-import wkx from 'wkx';
+import {kml as kml2GeoJson} from '@tmcw/togeojson';
 import {OAuth2Client} from 'google-auth-library';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 import {ISheet} from './interfaces/sheet';
+import getFusiontableCsv from './fusiontables/get-csv';
+import getDriveUploadFolder from './drive/get-upload-folder';
+import transferFilePermissions from './drive/transfer-file-permissions';
+import uploadToDrive from './drive/upload';
 import getArchiveIndexSheet from './drive/get-archive-index-sheet';
 import insertExportRowInIndexSheet from './drive/insert-export-row-in-index-sheet';
 import logFileExportInIndexSheet from './drive/log-file-export-in-index-sheet';
@@ -64,8 +63,8 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
 
   try {
     const csv = await getFusiontableCsv(auth, table);
-    const csvWithWkt = convertGeoToWkt(csv);
-    driveFile = await uploadToDrive(auth, folderId, csvWithWkt);
+    const csvWithGeoJson = convertKmlToGeoJson(csv);
+    driveFile = await uploadToDrive(auth, folderId, csvWithGeoJson);
     await transferFilePermissions(auth, table.id, driveFile.id as string);
     await logFileExportInIndexSheet(
       auth,
@@ -95,11 +94,11 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
 /**
  * Convert all Geo things to WKT
  */
-function convertGeoToWkt(csv: ICsv): ICsv {
+function convertKmlToGeoJson(csv: ICsv): ICsv {
   const json = Papa.parse(csv.data).data;
   let hasLargeCells = false;
 
-  const jsonWithWkt = json
+  const jsonWithGeoJson = json
     .filter(row => row)
     .map(row => {
       return row.map((cell: any) => {
@@ -109,12 +108,7 @@ function convertGeoToWkt(csv: ICsv): ICsv {
 
         try {
           const geoJson = convertToGeoJson(cell);
-
-          if (!geoJson) {
-            return cell;
-          }
-
-          return wkx.Geometry.parseGeoJSON(geoJson).toWkt();
+          return geoJson || cell;
         } catch (error) {
           return cell;
         }
@@ -122,7 +116,7 @@ function convertGeoToWkt(csv: ICsv): ICsv {
     });
 
   return Object.assign({}, csv, {
-    data: Papa.unparse(jsonWithWkt),
+    data: Papa.unparse(jsonWithGeoJson),
     hasLargeCells
   });
 }
@@ -132,25 +126,24 @@ function convertGeoToWkt(csv: ICsv): ICsv {
  */
 function convertToGeoJson(
   value: any
-):
-  | GeoJSON.GeometryCollection
-  | GeoJSON.Polygon
-  | GeoJSON.Point
-  | GeoJSON.LineString
-  | null {
-  const kml = `<?xml version="1.0" encoding="UTF-8"?>
-  <kml xmlns="http://www.opengis.net/kml/2.2">
-    <Placemark>
-      ${value}
-    </Placemark>
-  </kml>`;
+): string | null {
+  if (value.startsWith && !value.startsWith('<')) {
+    return null;
+  }
 
-  const kmlDom = new DOMParser().parseFromString(kml, 'text/xml');
-  const geoJson = toGeoJson.kml(kmlDom);
+  const kmlString = `<?xml version="1.0" encoding="UTF-8"?>
+    <kml xmlns="http://www.opengis.net/kml/2.2">
+      <Placemark>
+        ${value}
+      </Placemark>
+    </kml>`;
+
+  const kmlDom = new DOMParser().parseFromString(kmlString, 'text/xml');
+  const geoJson = kml2GeoJson(kmlDom);
 
   if (!geoJson.features || geoJson.features.length === 0) {
     return null;
   }
 
-  return geoJson.features[0].geometry;
+  return JSON.stringify(geoJson.features[0]);
 }
