@@ -8,13 +8,14 @@ import {OAuth2Client} from 'google-auth-library';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 import {ISheet} from './interfaces/sheet';
+import getArchiveFolder from './drive/get-archive-folder';
 import getFusiontableCsv from './fusiontables/get-csv';
 import getDriveUploadFolder from './drive/get-upload-folder';
-import transferFilePermissions from './drive/transfer-file-permissions';
 import uploadToDrive from './drive/upload';
 import getArchiveIndexSheet from './drive/get-archive-index-sheet';
 import insertExportRowInIndexSheet from './drive/insert-export-row-in-index-sheet';
 import logFileExportInIndexSheet from './drive/log-file-export-in-index-sheet';
+import addFilePermissions from './drive/add-file-permissions';
 
 const DRIVE_CELL_LIMIT = 50000;
 
@@ -32,8 +33,9 @@ export default async function(
   let archiveSheet: ISheet;
 
   try {
-    folderId = await getDriveUploadFolder(auth);
-    archiveSheet = await getArchiveIndexSheet(auth);
+    const archiveFolderId = await getArchiveFolder(auth);
+    folderId = await getDriveUploadFolder(auth, archiveFolderId);
+    archiveSheet = await getArchiveIndexSheet(auth, archiveFolderId);
     await insertExportRowInIndexSheet(auth, archiveSheet, folderId);
   } catch (error) {
     throw error;
@@ -65,7 +67,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     const csv = await getFusiontableCsv(auth, table);
     const csvWithGeoJson = convertKmlToGeoJson(csv);
     driveFile = await uploadToDrive(auth, folderId, csvWithGeoJson);
-    await transferFilePermissions(auth, table.id, driveFile.id as string);
+    await addFilePermissions(auth, driveFile.id as string, table.permissions);
     await logFileExportInIndexSheet(
       auth,
       origin,

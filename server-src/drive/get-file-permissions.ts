@@ -9,15 +9,15 @@ const drive = google.drive('v3');
 export default async function(
   auth: OAuth2Client,
   fileId: string
-): Promise<drive_v3.Schema$Permission[]> {
+): Promise<drive_v3.Schema$File> {
   try {
     const response = await drive.files.get({
       auth,
       fileId,
-      fields: 'permissions'
+      fields: 'permissions,ownedByMe'
     });
 
-    return response.data.permissions as drive_v3.Schema$Permission[];
+    return response.data;
   } catch (error) {
     throw error;
   }

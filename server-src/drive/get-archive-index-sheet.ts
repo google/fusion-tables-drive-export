@@ -1,6 +1,5 @@
 import {google, drive_v3, sheets_v4} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
-import getArchiveFolder from './get-archive-folder';
 import findFile from './find-file';
 import {DRIVE_ARCHIVE_INDEX_SHEET, MIME_TYPES} from '../config';
 import {ISheet} from '../interfaces/sheet';
@@ -19,9 +18,11 @@ const headerRowContent = [
 /**
  * Get the Archive Index Sheet
  */
-export default async function(auth: OAuth2Client): Promise<ISheet> {
+export default async function(
+  auth: OAuth2Client,
+  archiveFolderId: string
+): Promise<ISheet> {
   try {
-    const archiveFolderId = await getArchiveFolder(auth);
     const spreadsheetId = await findFile(
       auth,
       DRIVE_ARCHIVE_INDEX_SHEET,
