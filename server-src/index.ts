@@ -40,6 +40,11 @@ app.use(
 
 app.get('/', (req, res) => {
   const isSignedIn = Boolean(req.session && req.session.tokens);
+
+  if (isSignedIn) {
+    return res.redirect(303, '/export');
+  }
+
   res.render('index', {isSignedIn});
 });
 

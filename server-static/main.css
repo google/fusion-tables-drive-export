@@ -1,18 +1,41 @@
+/**
+ *          BASICS
+ */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
+html {
+  font-size: 100%;
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.43;
+}
+
 body {
-  font-size: 125%;
-  font-family: 'Courier New', Courier, monospace;
-  background-color: #f9ebcc;
+  background-color: #f4f4f4;
   padding: 0;
   margin: 0;
 }
 
+h1 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  display: inline-block;
+  color: #212121;
+  margin: 0;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.15px;
+  margin: 0 0 1rem 0;
+}
+
 a, a:hover, a:focus, a:active {
-  color: #4285f4;
-  font-weight: bold;
+  color: #1A73E8;
+  font-weight: 500;
 }
 
 a {
@@ -23,62 +46,205 @@ a:hover, a:focus, a:active {
   text-decoration: underline;
 }
 
-button, .button {
-  font-size: inherit;
-  font-weight: bold;
-  color: #fff;
-  background: #4285f4;
-  border: none;
-  border-radius: 2px;
-  padding: .9em;
-  cursor: pointer;
+svg {
+  vertical-align: middle;
+}
+
+.svg-reference {
+  display: none;
+}
+
+/**
+ *          BUTTONS
+ */
+.button, .text-button {
   text-decoration: none;
-  display: inline-block;
+  padding: 0 0.57em;
   position: relative;
-  box-shadow: .5em .5em 0 0 rgba(66,133,244,0.17);
-  transition: box-shadow .25s ease-in-out;
+  height: 2.57em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+  border: none;
+  outline: none;
+  line-height: inherit;
+  user-select: none;
+  -webkit-appearance: none;
+  overflow: hidden;
+  vertical-align: middle;
+  border-radius: 4px;
 }
 
-button:hover, .button:hover, button:focus, .button:focus {
+.text-button {
+  font-size: .875rem;
+  letter-spacing: .0892857143em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #1A73E8;
+}
+
+.button {
+  font-weight: 500;
+  letter-spacing: 0.1px;
   color: #fff;
-  text-decoration: underline;
-  box-shadow: .35em .35em 0 0 rgba(66,133,244,0.17);
+  background: #1A73E8;
+  transition: background 75ms linear;
 }
 
-.site-header {
+.button::after, .text-button::after, .text-button::before {
+  content: "";
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: #1A73E8;
+}
+
+.text-button::before {
+  transition: opacity 15ms linear, background-color 15ms linear;
+  z-index: 1;
+}
+
+.button::after {
   background: #fff;
-  padding: 0.5rem 2rem;
-  margin: 2rem;
+}
+
+.button::after, .text-button::after {
+  top: 50%;
+  left: 50%;
+  width: 3.5em;
+  height: 3.5em;
+  transform: translate(-50%, -50%) scale(0);
+  transform-origin: center center;
+  transition: opacity 75ms linear, transform 225ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button:hover, .text-button:hover {
+  cursor: pointer;
+}
+
+.button:hover, .button:focus {
+  color: #fff;
+  background: #135BB9;
+}
+
+.button:hover, .button:focus, .text-button:hover, .text-button:focus {
+  text-decoration: none;
+}
+
+.text-button:hover::before {
+  opacity: .04;
+}
+
+.button:active, .text-button:active {
+  outline: none;
+}
+
+.button:active::after, .text-button:active::after {
+  opacity: 0.12;
+  transform: translate(-50%, -50%) scale(2);
+}
+
+/**
+ *          HEADER
+ */
+.site-header {
+  font-size: 1rem;
+  height: 4em;
+  background: #fff;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.site-header__content {
+  width: 95%;
+  max-width: 50rem;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 1em;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
-  border: 1px solid #4285f4;
-  border-radius: 2px;
-  box-shadow: 1em 1em 0 0 rgba(66,133,244,0.17);
 }
 
-.site-header h1 {
-  display: inline-block;
-  color: #000;
-  font-size: 2.4rem;
-  margin: 0;
-}
-
+/**
+ *          MAIN CONTENT
+ */
 main {
-  max-width: 42rem;
-  padding: 0 2rem;
-  margin: 7rem auto;
+  font-size: 1rem;
+  width: 95%;
+  max-width: 50rem;
+  padding: 1em 0 1.25em 0;
+  margin: 2em auto;
+  border-radius: 4px;
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.2);
 }
 
+main h2, main p, main > .button, main > form > .button {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+main p {
+  color: #666;
+  max-width: 35rem;
+  letter-spacing: 0.25px;
+}
+
+main form {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main form > button {
+  align-self: flex-end;
+}
+
+/**
+ *          CHECKBOX LIST
+ */
 .checkbox-list {
   list-style: none;
-  margin: 0;
+  margin: 0 0 1rem 0;
   padding: 0;
 }
 
 .checkbox-list li {
-    position: relative;
+  font-size: 1rem;
+  position: relative;
+  height: 3em;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 1em;
+}
+
+.checkbox-list li:first-of-type {
+  border-top: 1px solid #e0e0e0;
+}
+
+.active-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  transition: background .25s ease-in-out;
+}
+
+.checkbox-list input:checked ~ .active-background {
+  background-color: #e3eefb;
+}
+
+.checkbox-list li:hover .active-background,
+.checkbox-list li:focus .active-background {
+  background-color: #f4f4f4;
 }
 
 .checkbox-list input {
@@ -91,41 +257,35 @@ main {
 
 .checkbox-list label {
   font-size: 1rem;
+  line-height: 3em;
+  letter-spacing: 0.25px;
   margin: 0;
   cursor: pointer;
-}
-
-.checkbox-list label::before {
-  font-size: 1em;
-  content: '';
-  display: inline-block;
   position: relative;
-  height: 1em;
-  width: 1em;
-  margin: 0 1em;
-  border: 1px solid #000;
-  border-radius: 2px;
-  cursor: pointer;
-  vertical-align: middle;
+  user-select: none;
 }
 
-.checkbox-list input:checked + label::before {
-  background-color: #4285f4;
-  border-color: #4285f4;
+.checkbox-list__checkbox {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.75rem;
 }
 
-.checkbox-list input:checked + label::after {
-  content: '';
-  font-size: 1.25em;
-  display: block;
-  position: absolute;
-  top: .25em;
-  left: 1.05em;
-  width: .3em;
-  height: .6em;
-  border: solid #fff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+.checkbox-list input:checked ~ label .checkbox-list__checkbox {
+  color: #1A73E8;
+}
+
+.checkbox-list input:checked ~ label .checkbox-list__checkbox--outline {
+  display: none;
+}
+
+.checkbox-list input:not(:checked) ~ label .checkbox-list__checkbox--checked {
+  display: none;
+}
+
+.checkbox-list__open {
+  width: 1rem;
+  height: 1rem;
 }
 
 .fusiontable--loading::before,

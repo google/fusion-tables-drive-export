@@ -1,16 +1,11 @@
 extends layout.pug
 
 block content
+  h2 Export your data to Google Drive.
+
   p
     | Google Fusion Tables and the Fusion Tables API will be turned down December 3, 2019. Embedded Fusion Tables visualizations — maps, charts, tables and cards — will also stop working that day. Maps using the Fusion Tables Layer in the Maps JavaScript API v3.37 will start to see errors in August 2019.&ensp;
     a(href="https://support.google.com/fusiontables/answer/9185417", title="Notice: Google Fusion Tables Turndown") Read more
     | .
 
-  p
-    b Export your data to Google Drive.
-
-  p
-    if isSignedIn
-      a.button(href="/export") Start now.
-    else
-      a.button(href="/auth") Sign in with Google to start.
+  a.button(href="/auth") Sign in with Google to start.
