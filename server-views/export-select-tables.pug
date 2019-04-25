@@ -7,26 +7,26 @@ block content
     .checkbox-row.checkbox-row--header
       input#export-all(type="checkbox", name="exportAll")
       label(for="export-all")
-        svg.checkbox-row__checkbox.checkbox-row__checkbox--outline
+        svg.checkbox-row__checkbox.checkbox-row__checkbox--outline(large)
           use(xlink:href="#checkbox-outline")
-        svg.checkbox-row__checkbox.checkbox-row__checkbox--checked
+        svg.checkbox-row__checkbox.checkbox-row__checkbox--checked(large)
           use(xlink:href="#checkbox-checked")
         span Tables
 
-    ul.checkbox-list
+    ul.list
       each table in tables
         li.checkbox-row
           input.checkbox-row__input(type="checkbox", name="tableIds[]", id=table.id value=table.id)
           .active-background
           label(for=table.id)
-            svg.checkbox-row__checkbox.checkbox-row__checkbox--outline
+            svg.checkbox-row__checkbox.checkbox-row__checkbox--outline(large)
               use(xlink:href="#checkbox-outline")
-            svg.checkbox-row__checkbox.checkbox-row__checkbox--checked
+            svg.checkbox-row__checkbox.checkbox-row__checkbox--checked(large)
               use(xlink:href="#checkbox-checked")
             = table.name
             | &emsp;
-            a(href="https://fusiontables.google.com/DataSource?docid=" + table.id, title=table.name, target="_blank")
-              svg.checkbox-row__open
+            a.unflashy(href="https://fusiontables.google.com/DataSource?docid=" + table.id, title=table.name, target="_blank")
+              svg
                 use(xlink:href="#open-in-new")
 
     button.button(type="submit") Export

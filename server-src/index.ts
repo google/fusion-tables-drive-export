@@ -135,8 +135,17 @@ app.post('/export', (req, res, next) => {
 
   getFusiontables(oauth2Client, tableIds)
     .then(async tables => {
-      await doExport(oauth2Client, emitter, tables, origin);
-      res.render('export-in-progress', {tables, isSignedIn: Boolean(tokens)});
+      const exportFolderId = await doExport(
+        oauth2Client,
+        emitter,
+        tables,
+        origin
+      );
+      res.render('export-in-progress', {
+        tables,
+        isSignedIn: Boolean(tokens),
+        exportFolderId
+      });
     })
     .catch(error => next(boom.badImplementation(error)));
 });

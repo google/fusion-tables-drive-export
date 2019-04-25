@@ -3,14 +3,14 @@ import {ITableFinishedEmitterData} from '../server-src/interfaces/table-finished
 /**
  * Add loading symbol to the list
  */
-document.querySelectorAll('.fusiontable').forEach($table => {
-  $table.classList.add('fusiontable--loading');
+document.querySelectorAll('.fusiontable--export').forEach($table => {
+  $table.setAttribute('loading', 'true');
 });
 
 /**
  * Request updates from the server export progress
  */
-if (document.querySelectorAll('.fusiontable--loading').length > 0) {
+if (document.querySelectorAll('.fusiontable[loading]').length > 0) {
   requestUpdates();
 }
 
@@ -19,7 +19,7 @@ function requestUpdates() {
   request.open('GET', '/export/updates', true);
   request.onload = function() {
     if (this.status >= 200 && this.status < 400) {
-      const data = JSON.parse(this.response);
+      const data: ITableFinishedEmitterData = JSON.parse(this.response);
       updateTable(data);
     }
 
@@ -41,31 +41,34 @@ function updateTable(data: ITableFinishedEmitterData) {
     '.fusiontable[data-id="' + data.table.id + '"]'
   );
 
-  $listEntry.classList.remove('fusiontable--loading');
-  if (data.error) {
-    $listEntry.classList.add('fusiontable--error');
-  } else {
-    $listEntry.classList.add('fusiontable--success');
+  if (!$listEntry) {
+    return;
   }
+
+  $listEntry.removeAttribute('loading');
+  // if (data.error) {
+  //   $listEntry.classList.add('fusiontable--error');
+  // }
 
   if (data.driveFile) {
     const {id, name, mimeType} = data.driveFile;
-    const type = mimeType === 'application/vnd.google-apps.spreadsheet'
+    const type =
+      mimeType === 'application/vnd.google-apps.spreadsheet'
         ? 'Spreadsheet'
         : 'CSV';
-    const driveLink =
-      `&emsp;
-      <a href="https://drive.google.com/open?id=${id}"
-        title="Open ${name} ${type}" target="_blank">
-        <small>Open ${type}</small>
-      </a>`;
-    const visualizerLink =
-      `&emsp;
-      <a href="/visualizer/#file=${id}" title="Open ${name} visualization"
-        target="_blank">
-        <small>Open Visualization</small>
-      </a>`;
+    const driveUrl = `https://drive.google.com/open?id=${id}`;
+    const driveTitle = `Open ${name} ${type}`;
+    const visualizationUrl = `/visualizer/#file=${id}`;
+    const visualizationTitle = `Open ${name} visualization`;
+    const $driveLink = $listEntry.querySelector('.fusiontable__icon--file');
+    const $visualizationLink = $listEntry.querySelector(
+      '.fusiontable__icon--visualization'
+    );
 
-    $listEntry.innerHTML += driveLink + ', ' + visualizerLink;
+    $listEntry.classList.add(`fusiontable--${type.toLowerCase()}`);
+    $driveLink.setAttribute('href', driveUrl);
+    $driveLink.setAttribute('title', driveTitle);
+    $visualizationLink.setAttribute('href', visualizationUrl);
+    $visualizationLink.setAttribute('title', visualizationTitle);
   }
 }

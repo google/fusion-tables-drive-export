@@ -13,6 +13,7 @@ html
 
 body
   background-color: #f4f4f4
+  color: #212121
   padding: 0
   margin: 0
 
@@ -20,7 +21,6 @@ h1
   font-size: 1.5rem
   font-weight: 500
   display: inline-block
-  color: #212121
   margin: 0
 
 h2
@@ -33,6 +33,13 @@ h2
 a, a:hover, a:focus, a:active
   color: $primary
   font-weight: 500
+  transition: color .25s ease-in-out
+
+a.unflashy
+  color: #212121
+
+  &:hover, &:focus, &:active
+    color: $primary
 
 a
   text-decoration: none
@@ -42,9 +49,25 @@ a
 
 svg
   vertical-align: middle
+  display: inline-block
+  width: 1rem
+  height: 1rem
+
+  &[large]
+    width: 1.5rem
+    height: 1.5rem
 
 .svg-reference
   display: none
+
+.list
+  list-style: none
+  margin: 0 0 1rem 0
+  padding: 0
+
+.back-link-icon
+  margin-right: .75rem
+  vertical-align: text-bottom
 
 /**
  *          BUTTONS
@@ -130,6 +153,38 @@ svg
     background: #135BB9
 
 /**
+ *          LOADING
+ */
+.loading
+  width: 1.125rem
+  height: 1.125rem
+  color: #757575
+  animation: loadingrotate 2s linear infinite
+  circle
+    stroke-dasharray: 1,200
+    stroke-dashoffset: 0
+    animation: loadingdash 1.5s ease-in-out infinite
+    stroke-linecap: round
+    stroke: #3f88f8
+
+@keyframes loadingrotate
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)
+
+@keyframes loadingdash
+  0%
+    stroke-dasharray: 1,200
+    stroke-dashoffset: 0
+  50%
+    stroke-dasharray: 89,200
+    stroke-dashoffset: -35
+  100%
+    stroke-dasharray: 89,200
+    stroke-dashoffset: -124
+
+/**
  *          HEADER
  */
 .site-header
@@ -182,11 +237,6 @@ main
 /**
  *          CHECKBOX LIST
  */
-.checkbox-list
-  list-style: none
-  margin: 0 0 1rem 0
-  padding: 0
-
 .checkbox-row
   font-size: 1rem
   position: relative
@@ -231,8 +281,6 @@ main
     letter-spacing: 0.4px
 
   &__checkbox
-    width: 1.5rem
-    height: 1.5rem
     margin-right: 0.75rem
 
   & input:checked ~ label &__checkbox
@@ -244,21 +292,43 @@ main
   & input:not(:checked) ~ label &__checkbox--checked
     display: none
 
-  &__open
-    width: 1rem
-    height: 1rem
+/**
+ *          FUSIONTABLES EXPORT PROGRESS
+ */
+.fusiontable
+  font-size: 1rem
+  position: relative
+  height: 3em
+  border-bottom: 1px solid #e0e0e0
+  padding: 0 1em
+  line-height: 3em
+  letter-spacing: 0.25px
+  display: flex
 
-.fusiontable--loading::before,
-.fusiontable--success::before,
-.fusiontable--error::before
-  margin-right: .5em
-  vertical-align: middle
+  &--export
+    &:hover, &:focus
+      background-color: #f4f4f4
 
-.fusiontable--loading::before
-  content: '⏳'
+  &--header
+    font-size: 0.875rem
+    color: #757575
+    letter-spacing: 0.4px
 
-.fusiontable--success::before
-  content: '🎉'
+  &__name
+    width: 90%
 
-.fusiontable--error::before
-  content: '💥'
+  &__file, &__visualization
+    width: 6.25rem
+    flex-grow: 0
+    flex-shrink: 0
+    margin-left: 1rem
+    text-align: right
+    display: flex
+    justify-content: flex-end
+    align-items: center
+
+  &[loading] &__icon,
+  &:not([loading]) .loading,
+  &--csv &__icon__spreadsheet,
+  &--spreadsheet &__icon__csv
+    display: none
