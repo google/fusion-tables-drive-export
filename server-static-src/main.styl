@@ -284,10 +284,14 @@ main
     position: relative
     user-select: none
 
-  &--header label span
-    font-size: 0.875rem
-    color: #757575
-    letter-spacing: 0.4px
+  &--header
+    .no-js &
+      display: none
+
+    & label span
+      font-size: 0.875rem
+      color: #757575
+      letter-spacing: 0.4px
 
   &__checkbox
     margin-right: 0.75rem
@@ -335,6 +339,9 @@ main
     display: flex
     justify-content: flex-end
     align-items: center
+
+    .no-js &
+      display: none
 
   &__icon
     color: #757575
