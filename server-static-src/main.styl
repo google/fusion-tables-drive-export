@@ -35,8 +35,8 @@ a, a:hover, a:focus, a:active
   font-weight: 500
   transition: color .25s ease-in-out
 
-a.unflashy
-  color: #212121
+.unflashy
+  color: inherit
 
   &:hover, &:focus, &:active
     color: $primary
@@ -151,6 +151,15 @@ svg
   &:hover, &:focus
     color: #fff
     background: #135BB9
+
+  &--login
+    padding-left: 0
+    padding-right: 1rem
+
+    &__logo
+      width: 2.7rem
+      height: 2.7rem
+      margin-right: 1rem
 
 /**
  *          LOADING
@@ -326,6 +335,9 @@ main
     display: flex
     justify-content: flex-end
     align-items: center
+
+  &__icon
+    color: #757575
 
   &[loading] &__icon,
   &:not([loading]) .loading,
