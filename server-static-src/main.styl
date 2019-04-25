@@ -1,0 +1,264 @@
+$primary = #1A73E8
+
+/**
+ *          BASICS
+ */
+*, *::before, *::after
+  box-sizing: border-box
+
+html
+  font-size: 100%
+  font-family: 'Roboto', sans-serif
+  line-height: 1.43
+
+body
+  background-color: #f4f4f4
+  padding: 0
+  margin: 0
+
+h1
+  font-size: 1.5rem
+  font-weight: 500
+  display: inline-block
+  color: #212121
+  margin: 0
+
+h2
+  font-size: 1.25rem
+  font-weight: 400
+  line-height: 1.5
+  letter-spacing: 0.15px
+  margin: 0 0 1rem 0
+
+a, a:hover, a:focus, a:active
+  color: $primary
+  font-weight: 500
+
+a
+  text-decoration: none
+
+  &:hover, &:focus, &:active
+    text-decoration: underline
+
+svg
+  vertical-align: middle
+
+.svg-reference
+  display: none
+
+/**
+ *          BUTTONS
+ */
+.button, .text-button
+  text-decoration: none
+  padding: 0 0.57em
+  position: relative
+  height: 2.57em
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  will-change: transform, opacity
+  border: none
+  outline: none
+  line-height: inherit
+  user-select: none
+  -webkit-appearance: none
+  overflow: hidden
+  vertical-align: middle
+  border-radius: 4px
+
+  &::after, &::before
+    content: ""
+    border-radius: 50%
+    opacity: 0
+    pointer-events: none
+    position: absolute
+    top: -50%
+    left: -50%
+    width: 200%
+    height: 200%
+    background: #1A73E8
+
+  &::after
+    top: 50%
+    left: 50%
+    width: 3.5em
+    height: 3.5em
+    transform: translate(-50%, -50%) scale(0)
+    transform-origin: center center
+    transition: opacity 75ms linear, transform 225ms cubic-bezier(0.4, 0, 0.2, 1)
+
+  &:hover
+    cursor: pointer
+
+  &:hover, &:focus
+    text-decoration: none
+
+  &:active
+    outline: none
+
+    &::after
+      opacity: 0.12
+      transform: translate(-50%, -50%) scale(2)
+
+.text-button
+  font-size: .875rem
+  letter-spacing: .0892857143em
+  font-weight: 500
+  text-transform: uppercase
+  color: #1A73E8
+
+  &::before
+    transition: opacity 15ms linear, background-color 15ms linear
+    z-index: 1
+
+  &:hover::before
+    opacity: .04
+
+.button
+  font-weight: 500
+  letter-spacing: 0.1px
+  color: #fff
+  background: #1A73E8
+  transition: background 75ms linear
+
+  &::after
+    background: #fff
+
+  &:hover, &:focus
+    color: #fff
+    background: #135BB9
+
+/**
+ *          HEADER
+ */
+.site-header
+  font-size: 1rem
+  height: 4em
+  background: #fff
+  border-bottom: 1px solid #d9d9d9
+
+  &__content
+    width: 95%
+    max-width: 50rem
+    height: 100%
+    margin: 0 auto
+    padding: 0 1em
+    display: flex
+    justify-content: space-between
+    align-items: center
+    position: relative
+
+/**
+ *          MAIN CONTENT
+ */
+main
+  font-size: 1rem
+  width: 95%
+  max-width: 50rem
+  padding: 1em 0 1.25em 0
+  margin: 2em auto
+  border-radius: 4px
+  background-color: #FFFFFF
+  box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.2)
+
+  & h2, & p, & > .button, & > form > .button
+    margin-left: 1rem
+    margin-right: 1rem
+
+  & p
+    color: #666
+    max-width: 35rem
+    letter-spacing: 0.25px
+
+  & form
+    margin-bottom: 0
+    display: flex
+    flex-direction: column
+
+  & form > button
+    align-self: flex-end
+
+/**
+ *          CHECKBOX LIST
+ */
+.checkbox-list
+  list-style: none
+  margin: 0 0 1rem 0
+  padding: 0
+
+.checkbox-row
+  font-size: 1rem
+  position: relative
+  height: 3em
+  border-bottom: 1px solid #e0e0e0
+  padding: 0 1em
+
+  .active-background
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    background: #fff
+    transition: background .25s ease-in-out
+
+  & input
+    position: absolute
+    top: -9999px
+    left: -9999px
+    appearance: none
+    opacity: 0
+
+    &:checked ~ .active-background
+      background-color: #e3eefb
+
+  &:hover .active-background, &:focus .active-background
+    background-color: #f4f4f4
+
+  label
+    font-size: 1rem
+    line-height: 3em
+    letter-spacing: 0.25px
+    margin: 0
+    cursor: pointer
+    position: relative
+    user-select: none
+
+  &--header label span
+    font-size: 0.875rem
+    color: #757575
+    letter-spacing: 0.4px
+
+  &__checkbox
+    width: 1.5rem
+    height: 1.5rem
+    margin-right: 0.75rem
+
+  & input:checked ~ label &__checkbox
+    color: #1A73E8
+
+  & input:checked ~ label &__checkbox--outline
+    display: none
+
+  & input:not(:checked) ~ label &__checkbox--checked
+    display: none
+
+  &__open
+    width: 1rem
+    height: 1rem
+
+.fusiontable--loading::before,
+.fusiontable--success::before,
+.fusiontable--error::before
+  margin-right: .5em
+  vertical-align: middle
+
+.fusiontable--loading::before
+  content: '⏳'
+
+.fusiontable--success::before
+  content: '🎉'
+
+.fusiontable--error::before
+  content: '💥'
