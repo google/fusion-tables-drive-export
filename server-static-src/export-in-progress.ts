@@ -46,9 +46,15 @@ function updateTable(data: ITableFinishedEmitterData) {
   }
 
   $listEntry.removeAttribute('loading');
-  // if (data.error) {
-  //   $listEntry.classList.add('fusiontable--error');
-  // }
+
+  if (data.error) {
+    $listEntry.innerHTML += `
+      <div class="fusiontable__error">
+        <div class="fusiontable__error__message">
+          ${data.error}
+        </div>
+      </div>`;
+  }
 
   if (data.driveFile) {
     const {id, name, mimeType} = data.driveFile;
@@ -70,5 +76,7 @@ function updateTable(data: ITableFinishedEmitterData) {
     $driveLink.setAttribute('title', driveTitle);
     $visualizationLink.setAttribute('href', visualizationUrl);
     $visualizationLink.setAttribute('title', visualizationTitle);
+  } else {
+    $listEntry.classList.add(`fusiontable--failed`);
   }
 }

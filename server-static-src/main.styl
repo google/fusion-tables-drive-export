@@ -226,12 +226,18 @@ main
   background-color: #FFFFFF
   box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.2)
 
+  &.error
+    background: #fce3e3
+    color: #BF1515
+
   & h2, & p, & > .button, & > form > .button
     margin-left: 1rem
     margin-right: 1rem
 
-  & p
+  &:not(.error) p
     color: #666
+
+  & p
     max-width: 35rem
     letter-spacing: 0.25px
 
@@ -311,12 +317,13 @@ main
 .fusiontable
   font-size: 1rem
   position: relative
-  height: 3em
+  min-height: 3em
   border-bottom: 1px solid #e0e0e0
   padding: 0 1em
   line-height: 3em
   letter-spacing: 0.25px
   display: flex
+  flex-wrap: wrap
 
   &--export
     &:hover, &:focus
@@ -328,7 +335,7 @@ main
     letter-spacing: 0.4px
 
   &__name
-    width: 90%
+    width: calc(100% - 14.5rem)
 
   &__file, &__visualization
     width: 6.25rem
@@ -343,6 +350,18 @@ main
     .no-js &
       display: none
 
+  &__error
+    width: 100%
+
+    &__message
+      font-size: .875rem
+      margin-bottom: 1rem
+      border: 1px solid #f9c8c8
+      background: #fce3e3
+      color: #BF1515
+      border-radius: 4px
+      padding: 0 1rem
+
   &__link
     color: #757575
 
@@ -351,6 +370,7 @@ main
     display: inline-block
     position: relative
     cursor: pointer
+    margin-right: .25rem
 
     &__icon--hovered
       display: none
@@ -386,6 +406,7 @@ main
       transform: translateX(-50%) scale(1)
 
   &[loading] &__link,
+  &--failed &__link,
   &:not([loading]) .loading,
   &--csv &__link__icon--spreadsheet,
   &--spreadsheet &__link__icon--csv,

@@ -95,7 +95,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
   } catch (error) {
     errors.report(error);
     emitter.emit('table-finished', {
-      error,
+      error: error.message,
       table,
       driveFile,
       credentials: auth.credentials

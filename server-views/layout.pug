@@ -14,5 +14,5 @@ html
         if isSignedIn
           a.text-button(href="/logout") Log out
 
-    main
+    main(class=error && 'error')
       block content
