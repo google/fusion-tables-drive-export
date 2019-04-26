@@ -60,9 +60,9 @@ function updateTable(data: ITableFinishedEmitterData) {
     const driveTitle = `Open ${name} ${type}`;
     const visualizationUrl = `/visualizer/#file=${id}`;
     const visualizationTitle = `Open ${name} visualization`;
-    const $driveLink = $listEntry.querySelector('.fusiontable__icon--file');
+    const $driveLink = $listEntry.querySelector('.fusiontable__link--file');
     const $visualizationLink = $listEntry.querySelector(
-      '.fusiontable__icon--visualization'
+      '.fusiontable__link--visualization'
     );
 
     $listEntry.classList.add(`fusiontable--${type.toLowerCase()}`);

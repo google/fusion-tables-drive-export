@@ -343,11 +343,51 @@ main
     .no-js &
       display: none
 
-  &__icon
+  &__link
     color: #757575
 
-  &[loading] &__icon,
+  &__csv-info
+    color: $primary
+    display: inline-block
+    position: relative
+    cursor: pointer
+
+    &__icon--hovered
+      display: none
+
+    &__tooltip
+      font-size: 0.75rem
+      color: #fff
+      letter-spacing: 0.4px
+      line-height: 1rem
+      z-index: 5
+      background-color: rgba(0,0,0,0.54)
+      border-radius: 2px
+      width: 10rem
+      max-width: 20rem
+      position: absolute
+      top: 1.5rem
+      left: 50%
+      opacity: 0
+      transform: translateX(-50%) scale(0)
+      transform-origin: top center
+      padding: .25rem .5rem
+      text-align: center
+
+    &:hover &__icon--hovered, &:focus &__icon--hovered
+      display: inline-block
+
+    &:hover &__icon--unhovered, &:focus &__icon--unhovered
+      display: none
+
+    &:hover &__tooltip, &:focus &__tooltip
+      transition: opacity .2s cubic-bezier(0,0,.2,1), transform .1s cubic-bezier(0,0,.2,1)
+      opacity: 1
+      transform: translateX(-50%) scale(1)
+
+  &[loading] &__link,
   &:not([loading]) .loading,
-  &--csv &__icon__spreadsheet,
-  &--spreadsheet &__icon__csv
+  &--csv &__link__icon--spreadsheet,
+  &--spreadsheet &__link__icon--csv,
+  &:not(&--csv) &__csv-info
     display: none

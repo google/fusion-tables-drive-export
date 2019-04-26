@@ -19,15 +19,22 @@ block content
         .fusiontable__file
           svg.loading
             use(xlink:href="#icon-spinner")
-          a.unflashy.fusiontable__icon.fusiontable__icon--file(href="", title="", target="_blank")
-            svg.fusiontable__icon__spreadsheet
+          .fusiontable__csv-info
+            svg.fusiontable__csv-info__icon.fusiontable__csv-info__icon--unhovered
+              use(xlink:href="#icon-info-outline")
+            svg.fusiontable__csv-info__icon.fusiontable__csv-info__icon--hovered
+              use(xlink:href="#icon-info")
+            .fusiontable__csv-info__tooltip
+              | Couldn’t export as a Spreadsheet but saved as a CSV instead.
+          a.unflashy.fusiontable__link.fusiontable__link--file(href="", title="", target="_blank")
+            svg.fusiontable__link__icon.fusiontable__link__icon--spreadsheet
               use(xlink:href="#icon-spreadsheet")
-            svg.fusiontable__icon__csv
+            svg.fusiontable__link__icon.fusiontable__link__icon--csv
               use(xlink:href="#icon-csv")
         .fusiontable__visualization
           svg.loading
             use(xlink:href="#icon-spinner")
-          a.unflashy.fusiontable__icon.fusiontable__icon--visualization(href="", title="", target="_blank")
+          a.unflashy.fusiontable__link.fusiontable__link--visualization(href="", title="", target="_blank")
             svg
               use(xlink:href="#icon-map")
 
@@ -64,6 +71,11 @@ block content
       path(d="M19,3 L5,3 C3.9,3 3.01,3.9 3.01,5 L3,8 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,5 C21,3.9 20.1,3 19,3 Z M19,11 L11,11 L11,19 L9,19 L9,11 L5,11 L5,9 L9,9 L9,5 L11,5 L11,9 L19,9 L19,11 Z" fill="currentColor")
 
     symbol#icon-info(viewBox="0 0 24 24")
+      title Information
+      path(d="M0 0h24v24H0z", fill="none")
+      path(d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor")
+
+    symbol#icon-info-outline(viewBox="0 0 24 24")
       title Information
       path(d="M0 0h24v24H0z", fill="none")
       path(d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor")
