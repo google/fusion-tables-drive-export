@@ -1,21 +1,23 @@
 const $exportAll: HTMLInputElement = document.querySelector('#export-all');
 let $exportChecks: NodeListOf<HTMLInputElement>;
 
+/* tslint:disable prefer-for-of */
+
 if ($exportAll) {
   $exportChecks = document.querySelectorAll('.checkbox-row__input');
   $exportAll.addEventListener('change', handleExportAllChange);
-  [...$exportChecks].forEach($exportCheck =>
-    $exportCheck.addEventListener('change', handlexportCheckChange)
-  );
+  for (let i = 0; i < $exportChecks.length; ++i) {
+    $exportChecks[i].addEventListener('change', handlexportCheckChange);
+  }
 }
 
 /**
  * Handle change of the exportAll input
  */
 function handleExportAllChange() {
-  [...$exportChecks].forEach(
-    $exportCheck => ($exportCheck.checked = $exportAll.checked)
-  );
+  for (let i = 0; i < $exportChecks.length; ++i) {
+    $exportChecks[i].checked = $exportAll.checked;
+  }
 }
 
 /**
@@ -24,11 +26,12 @@ function handleExportAllChange() {
 function handlexportCheckChange() {
   let allChecked = true;
 
-  [...$exportChecks].forEach($exportCheck => {
-    if (!$exportCheck.checked) {
+  for (let i = 0; i < $exportChecks.length; ++i) {
+    if (!$exportChecks[i].checked) {
       allChecked = false;
     }
-  });
+    $exportChecks[i].checked = $exportAll.checked;
+  }
 
   $exportAll.checked = allChecked;
 }

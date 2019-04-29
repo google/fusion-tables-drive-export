@@ -9,6 +9,7 @@ import {ErrorReporting} from '@google-cloud/error-reporting';
 import {ITable} from './interfaces/table';
 import {ICsv} from './interfaces/csv';
 import {ISheet} from './interfaces/sheet';
+import ExportLog from './export-log';
 import getArchiveFolder from './drive/get-archive-folder';
 import getFusiontableCsv from './fusiontables/get-csv';
 import getDriveUploadFolder from './drive/get-upload-folder';
@@ -30,12 +31,15 @@ const errors = new ErrorReporting({
 /**
  * Export a table from FusionTables and save it to Drive
  */
-export default async function(
-  auth: OAuth2Client,
-  emitter: mitt.Emitter,
-  tables: ITable[],
-  origin: string
-): Promise<string> {
+interface IDoExportOptions {
+  auth: OAuth2Client;
+  exportLog: ExportLog;
+  exportId: string;
+  tables: ITable[];
+  origin: string;
+}
+export default async function(options: IDoExportOptions): Promise<string> {
+  const {auth, exportLog, exportId, tables, origin} = options;
   const limit = pLimit(1);
   let folderId: string;
   let archiveSheet: ISheet;
@@ -51,7 +55,15 @@ export default async function(
 
   tables.map(table =>
     limit(() =>
-      saveTable({table, emitter, auth, folderId, archiveSheet, origin})
+      saveTable({
+        table,
+        auth,
+        folderId,
+        archiveSheet,
+        origin,
+        exportLog,
+        exportId
+      })
     )
   );
 
@@ -63,15 +75,24 @@ export default async function(
  */
 interface ISaveTableOptions {
   table: ITable;
-  emitter: mitt.Emitter;
   auth: OAuth2Client;
   folderId: string;
   archiveSheet: ISheet;
   origin: string;
+  exportLog: ExportLog;
+  exportId: string;
 }
 async function saveTable(options: ISaveTableOptions): Promise<void> {
-  const {table, auth, emitter, folderId, archiveSheet, origin} = options;
-  let driveFile: drive_v3.Schema$File | null = null;
+  const {
+    table,
+    auth,
+    folderId,
+    archiveSheet,
+    origin,
+    exportLog,
+    exportId
+  } = options;
+  let driveFile: drive_v3.Schema$File | undefined;
 
   try {
     const csv = await getFusiontableCsv(auth, table);
@@ -86,20 +107,10 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       driveFile
     );
 
-    emitter.emit('table-finished', {
-      error: null,
-      table,
-      driveFile,
-      credentials: auth.credentials
-    });
+    exportLog.logSuccess(exportId, table.id, driveFile);
   } catch (error) {
     errors.report(error);
-    emitter.emit('table-finished', {
-      error: error.message,
-      table,
-      driveFile,
-      credentials: auth.credentials
-    });
+    exportLog.logError(exportId, table.id, error.message, driveFile);
   }
 }
 

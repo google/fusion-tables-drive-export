@@ -12,7 +12,7 @@ block content
     .fusiontable__file Data File
     .fusiontable__visualization Visualization
 
-  ul.list
+  ul.list.fusiontable-export(data-export-id=exportId)
     each table in tables
       li.fusiontable.fusiontable--export(data-id=table.id)
         .fusiontable__name= table.name

@@ -2,19 +2,18 @@ import express, {Response, Request} from 'express';
 import helmet from 'helmet';
 import boom from 'boom';
 import cookieSession from 'cookie-session';
-import mitt from 'mitt';
 import {ErrorReporting} from '@google-cloud/error-reporting';
 import {getOAuthClient, getAuthUrl} from './auth';
 import findFusiontables from './drive/find-fusiontables';
+import ExportLog from './export-log';
 import doExport from './do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
-import {ITableFinishedEmitterData} from './interfaces/table-finished-emitter-data';
 import {web as serverCredentials} from './credentials.json';
 import credentials from './credentials-error-reporting.json';
 
 const app = express();
-const emitter = new mitt();
+const exportLog = new ExportLog();
 const errors = new ErrorReporting({
   reportUnhandledRejections: true,
   projectId: serverCredentials.project_id,
@@ -64,8 +63,8 @@ app.get('/auth/callback', (req, res, next) => {
     return next(boom.badRequest());
   }
 
-  const oauth2Client = getOAuthClient(req);
-  oauth2Client
+  const auth = getOAuthClient(req);
+  auth
     .getToken(req.query.code)
     .then(({tokens}) => {
       if (!req.session) {
@@ -78,29 +77,16 @@ app.get('/auth/callback', (req, res, next) => {
     .catch(error => next(boom.badImplementation(error)));
 });
 
-app.get('/export/updates', (req, res, next) => {
-  const isSignedIn = Boolean(req.session && req.session.tokens);
+app.get('/export/updates/:exportId', (req, res, next) => {
+  const tokens = req.session && req.session.tokens;
+  const isSignedIn = Boolean(tokens);
+  const exportId = req.params.exportId;
 
-  if (!isSignedIn) {
+  if (!isSignedIn || !exportLog.isAuthorized(exportId, tokens)) {
     return next(boom.unauthorized());
   }
 
-  emitter.on('table-finished', tableFinishedHandler);
-
-  function tableFinishedHandler(data: ITableFinishedEmitterData) {
-    if (
-      req.session &&
-      JSON.stringify(data.credentials) === JSON.stringify(req.session.tokens)
-    ) {
-      res.json({
-        error: data.error,
-        table: data.table,
-        driveFile: data.driveFile
-      });
-
-      emitter.off('table-finished', tableFinishedHandler);
-    }
-  }
+  res.json(exportLog.getExport(exportId));
 });
 
 app.get('/export', (req, res, next) => {
@@ -110,10 +96,10 @@ app.get('/export', (req, res, next) => {
     return res.redirect(303, '/');
   }
 
-  const oauth2Client = getOAuthClient(req);
-  oauth2Client.setCredentials(tokens);
+  const auth = getOAuthClient(req);
+  auth.setCredentials(tokens);
 
-  findFusiontables(oauth2Client)
+  findFusiontables(auth)
     .then(tables => {
       res.render('export-select-tables', {tables, isSignedIn: Boolean(tokens)});
     })
@@ -130,21 +116,25 @@ app.post('/export', (req, res, next) => {
   const tableIds = req.body.tableIds || [];
 
   const origin = `${req.protocol}://${req.headers.host}`;
-  const oauth2Client = getOAuthClient(req);
-  oauth2Client.setCredentials(tokens);
 
-  findFusiontables(oauth2Client, tableIds)
+  const auth = getOAuthClient(req);
+  auth.setCredentials(tokens);
+
+  findFusiontables(auth, tableIds)
     .then(async tables => {
-      const exportFolderId = await doExport(
-        oauth2Client,
-        emitter,
+      const exportId = exportLog.startExport(tokens, tables);
+      const exportFolderId = await doExport({
+        auth,
         tables,
-        origin
-      );
+        origin,
+        exportLog,
+        exportId
+      });
       res.render('export-in-progress', {
         tables,
         isSignedIn: Boolean(tokens),
-        exportFolderId
+        exportFolderId,
+        exportId
       });
     })
     .catch(error => next(boom.badImplementation(error)));
