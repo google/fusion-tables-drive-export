@@ -1,11 +1,19 @@
-import {ITableFinishedEmitterData} from '../server-src/interfaces/table-finished-emitter-data';
+import {ITableExport} from '../server-src/interfaces/table-export';
+
+const exportId: string = document
+  .querySelector('.fusiontable-export')
+  .getAttribute('data-export-id');
+const renderedTableExports: string[] = [];
+
+/* tslint:disable prefer-for-of */
 
 /**
  * Add loading symbol to the list
  */
-[...document.querySelectorAll('.fusiontable--export')].forEach($table => {
-  $table.setAttribute('loading', 'true');
-});
+const $fusiontables = document.querySelectorAll('.fusiontable--export');
+for (let i = 0; i < $fusiontables.length; ++i) {
+  $fusiontables[i].setAttribute('loading', 'true');
+}
 
 /**
  * Request updates from the server export progress
@@ -16,14 +24,30 @@ if (document.querySelectorAll('.fusiontable[loading]').length > 0) {
 
 function requestUpdates() {
   const request = new XMLHttpRequest();
-  request.open('GET', '/export/updates', true);
+  request.open('GET', '/export/updates/' + exportId, true);
   request.onload = function() {
+    let recheck = false;
+
     if (this.status >= 200 && this.status < 400) {
-      const data: ITableFinishedEmitterData = JSON.parse(this.response);
-      updateTable(data);
+      const tableExports: ITableExport[] = JSON.parse(this.response);
+      recheck = tableExports.some(
+        tableExport => tableExport.status === 'loading'
+      );
+
+      tableExports
+        .filter(
+          tableExport =>
+            tableExport.status !== 'loading' &&
+            !renderedTableExports.includes(tableExport.table.id)
+        )
+        .forEach(updateTable);
+    } else {
+      recheck = true;
     }
 
-    requestUpdates();
+    if (recheck) {
+      setTimeout(requestUpdates, 4000);
+    }
   };
   request.onerror = requestUpdates;
   request.send();
@@ -32,7 +56,9 @@ function requestUpdates() {
 /**
  * Update the Fusion Table in the list
  */
-function updateTable(data: ITableFinishedEmitterData) {
+function updateTable(data: ITableExport) {
+  console.log('RENDER!', data);
+
   if (!data) {
     return;
   }
@@ -46,6 +72,7 @@ function updateTable(data: ITableFinishedEmitterData) {
   }
 
   $listEntry.removeAttribute('loading');
+  renderedTableExports.push(data.table.id);
 
   if (data.error) {
     $listEntry.innerHTML += `

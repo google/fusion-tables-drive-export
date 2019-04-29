@@ -7,6 +7,9 @@ import {drive_v3} from 'googleapis';
 export type ITableExport = {
   status: 'loading' | 'success' | 'error';
   error?: Error;
-  readonly table: ITable;
+  readonly table: {
+    id: string;
+    name: string;
+  };
   driveFile?: drive_v3.Schema$File | null;
 };

@@ -34,7 +34,10 @@ export default class {
       table =>
         (this.fusiontableExports[exportId].tables[table.id] = {
           status: 'loading',
-          table
+          table: {
+            id: table.id,
+            name: table.name
+          }
         })
     );
 
