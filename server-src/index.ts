@@ -39,6 +39,11 @@ app.use(
 
 app.get('/', (req, res) => {
   const isSignedIn = Boolean(req.session && req.session.tokens);
+
+  if (isSignedIn) {
+    return res.redirect(303, '/export');
+  }
+
   res.render('index', {isSignedIn});
 });
 
@@ -118,10 +123,17 @@ app.post('/export', (req, res, next) => {
   findFusiontables(auth, tableIds)
     .then(async tables => {
       const exportId = exportLog.startExport(tokens, tables);
-      await doExport({auth, tables, origin, exportLog, exportId});
+      const exportFolderId = await doExport({
+        auth,
+        tables,
+        origin,
+        exportLog,
+        exportId
+      });
       res.render('export-in-progress', {
         tables,
         isSignedIn: Boolean(tokens),
+        exportFolderId,
         exportId
       });
     })

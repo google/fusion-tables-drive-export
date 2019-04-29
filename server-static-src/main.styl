@@ -1,0 +1,415 @@
+$primary = #1A73E8
+$grey = #757575
+
+/**
+ *          BASICS
+ */
+*, *::before, *::after
+  box-sizing: border-box
+
+html
+  font-size: 100%
+  font-family: 'Roboto', sans-serif
+  line-height: 1.43
+
+body
+  background-color: #f4f4f4
+  color: #212121
+  padding: 0
+  margin: 0
+
+h1
+  font-size: 1.5rem
+  font-weight: 500
+  display: inline-block
+  margin: 0
+
+h2
+  font-size: 1.25rem
+  font-weight: 400
+  line-height: 1.5
+  letter-spacing: 0.15px
+  margin: 0 0 1rem 0
+
+a, a:hover, a:focus, a:active
+  color: $primary
+  font-weight: 500
+  transition: color .25s ease-in-out
+
+.unflashy
+  color: inherit
+
+  &:hover, &:focus, &:active
+    color: $primary
+
+a
+  text-decoration: none
+
+  &:hover, &:focus, &:active
+    text-decoration: underline
+
+svg
+  vertical-align: middle
+  display: inline-block
+  width: 1rem
+  height: 1rem
+
+  &[large]
+    width: 1.5rem
+    height: 1.5rem
+
+.svg-reference
+  display: none
+
+.list
+  list-style: none
+  margin: 0 0 1rem 0
+  padding: 0
+
+.back-link-icon
+  margin-right: .75rem
+  vertical-align: text-bottom
+
+/**
+ *          BUTTONS
+ */
+.button, .text-button
+  text-decoration: none
+  padding: 0 0.57em
+  position: relative
+  height: 2.57em
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  will-change: transform, opacity
+  border: none
+  outline: none
+  line-height: inherit
+  user-select: none
+  -webkit-appearance: none
+  overflow: hidden
+  vertical-align: middle
+  border-radius: 4px
+
+  &::after, &::before
+    content: ""
+    border-radius: 50%
+    opacity: 0
+    pointer-events: none
+    position: absolute
+    top: -50%
+    left: -50%
+    width: 200%
+    height: 200%
+    background: $primary
+
+  &::after
+    top: 50%
+    left: 50%
+    width: 3.5em
+    height: 3.5em
+    transform: translate(-50%, -50%) scale(0)
+    transform-origin: center center
+    transition: opacity 75ms linear, transform 225ms cubic-bezier(0.4, 0, 0.2, 1)
+
+  &:hover
+    cursor: pointer
+
+  &:hover, &:focus
+    text-decoration: none
+
+  &:active
+    outline: none
+
+    &::after
+      opacity: 0.12
+      transform: translate(-50%, -50%) scale(2)
+
+.text-button
+  font-size: .875rem
+  letter-spacing: .0892857143em
+  font-weight: 500
+  text-transform: uppercase
+  color: $primary
+
+  &::before
+    transition: opacity 15ms linear, background-color 15ms linear
+    z-index: 1
+
+  &:hover::before
+    opacity: .04
+
+.button
+  font-weight: 500
+  letter-spacing: 0.1px
+  color: #fff
+  background: $primary
+  transition: background 75ms linear
+
+  &::after
+    background: #fff
+
+  &:hover, &:focus
+    color: #fff
+    background: #135BB9
+
+  &--login
+    padding-left: 0
+    padding-right: 1rem
+
+    &__logo
+      width: 2.7rem
+      height: 2.7rem
+      margin-right: 1rem
+
+/**
+ *          LOADING
+ */
+.loading
+  width: 1.125rem
+  height: 1.125rem
+  color: $grey
+  animation: loadingrotate 2s linear infinite
+  circle
+    stroke-dasharray: 1,200
+    stroke-dashoffset: 0
+    animation: loadingdash 1.5s ease-in-out infinite
+    stroke-linecap: round
+
+@keyframes loadingrotate
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)
+
+@keyframes loadingdash
+  0%
+    stroke-dasharray: 1,200
+    stroke-dashoffset: 0
+  50%
+    stroke-dasharray: 89,200
+    stroke-dashoffset: -35
+  100%
+    stroke-dasharray: 89,200
+    stroke-dashoffset: -124
+
+/**
+ *          HEADER
+ */
+.site-header
+  font-size: 1rem
+  height: 4em
+  background: #fff
+  border-bottom: 1px solid #d9d9d9
+
+  &__content
+    width: 95%
+    max-width: 50rem
+    height: 100%
+    margin: 0 auto
+    padding: 0 1em
+    display: flex
+    justify-content: space-between
+    align-items: center
+    position: relative
+
+/**
+ *          MAIN CONTENT
+ */
+main
+  font-size: 1rem
+  width: 95%
+  max-width: 50rem
+  padding: 1em 0 1.25em 0
+  margin: 2em auto
+  border-radius: 4px
+  background-color: #FFFFFF
+  box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.2)
+
+  &.error
+    background: #fce3e3
+    color: #BF1515
+
+  & h2, & p, & > .button, & > form > .button
+    margin-left: 1rem
+    margin-right: 1rem
+
+  &:not(.error) p
+    color: #666
+
+  & p
+    max-width: 35rem
+    letter-spacing: 0.25px
+
+  & form
+    margin-bottom: 0
+    display: flex
+    flex-direction: column
+
+  & form > button
+    align-self: flex-end
+
+/**
+ *          CHECKBOX LIST
+ */
+.checkbox-row
+  font-size: 1rem
+  position: relative
+  height: 3em
+  border-bottom: 1px solid #e0e0e0
+  padding: 0 1em
+
+  .active-background
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    background: #fff
+    transition: background .25s ease-in-out
+
+  & input
+    position: absolute
+    top: -9999px
+    left: -9999px
+    appearance: none
+    opacity: 0
+
+    &:checked ~ .active-background
+      background-color: #e3eefb
+
+  &:hover .active-background, &:focus .active-background
+    background-color: #f4f4f4
+
+  label
+    font-size: 1rem
+    line-height: 3em
+    letter-spacing: 0.25px
+    margin: 0
+    cursor: pointer
+    position: relative
+    user-select: none
+
+  &--header
+    .no-js &
+      display: none
+
+    & label span
+      font-size: 0.875rem
+      color: $grey
+      letter-spacing: 0.4px
+
+  &__checkbox
+    margin-right: 0.75rem
+
+  & input:checked ~ label &__checkbox
+    color: $primary
+
+  & input:checked ~ label &__checkbox--outline
+    display: none
+
+  & input:not(:checked) ~ label &__checkbox--checked
+    display: none
+
+/**
+ *          FUSIONTABLES EXPORT PROGRESS
+ */
+.fusiontable
+  font-size: 1rem
+  position: relative
+  min-height: 3em
+  border-bottom: 1px solid #e0e0e0
+  padding: 0 1em
+  line-height: 3em
+  letter-spacing: 0.25px
+  display: flex
+  flex-wrap: wrap
+
+  &--export
+    &:hover, &:focus
+      background-color: #f4f4f4
+
+  &--header
+    font-size: 0.875rem
+    color: $grey
+    letter-spacing: 0.4px
+
+  &__name
+    width: calc(100% - 14.5rem)
+
+  &__file, &__visualization
+    width: 6.25rem
+    flex-grow: 0
+    flex-shrink: 0
+    margin-left: 1rem
+    text-align: right
+    display: flex
+    justify-content: flex-end
+    align-items: center
+
+    .no-js &
+      display: none
+
+  &__error
+    width: 100%
+
+    &__message
+      font-size: .875rem
+      margin-bottom: 1rem
+      border: 1px solid #f9c8c8
+      background: #fce3e3
+      color: #BF1515
+      border-radius: 4px
+      padding: 0.5rem 1rem
+      line-height: 2
+
+  &__link
+    color: $grey
+
+  &__csv-info
+    color: $primary
+    display: inline-block
+    position: relative
+    cursor: pointer
+    margin-right: .25rem
+
+    &__icon--hovered
+      display: none
+
+    &__tooltip
+      font-size: 0.75rem
+      color: #fff
+      letter-spacing: 0.4px
+      line-height: 1rem
+      z-index: 5
+      background-color: rgba(0,0,0,0.54)
+      border-radius: 2px
+      width: 10rem
+      max-width: 20rem
+      position: absolute
+      top: 1.5rem
+      left: 50%
+      opacity: 0
+      transform: translateX(-50%) scale(0)
+      transform-origin: top center
+      padding: .25rem .5rem
+      text-align: center
+
+    &:hover &__icon--hovered, &:focus &__icon--hovered
+      display: inline-block
+
+    &:hover &__icon--unhovered, &:focus &__icon--unhovered
+      display: none
+
+    &:hover &__tooltip, &:focus &__tooltip
+      transition: opacity .2s cubic-bezier(0,0,.2,1), transform .1s cubic-bezier(0,0,.2,1)
+      opacity: 1
+      transform: translateX(-50%) scale(1)
+
+  &[loading] &__link,
+  &--failed &__link,
+  &:not([loading]) .loading,
+  &--csv &__link__icon--spreadsheet,
+  &--spreadsheet &__link__icon--csv,
+  &:not(&--csv) &__csv-info
+    display: none

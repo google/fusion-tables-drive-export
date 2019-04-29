@@ -12,11 +12,13 @@
   "private": true,
   "scripts": {
     "start": "node server/index.js",
-    "start:dev": "run-p 'start:dev:server' 'start:dev:visualizer'",
+    "start:dev": "run-p 'start:dev:server' 'start:dev:server-static' 'start:dev:visualizer'",
     "start:dev:server": "nodemon --watch 'server-src/**/*.ts' --exec 'ts-node' server-src/index.ts",
+    "start:dev:server-static": "parcel watch --no-hmr ./server-static-src/main.ts -d ./server-static",
     "start:dev:visualizer": "parcel --no-hmr ./visualizer-src/index.html -d ./server-static/visualizer  --public-url /visualizer/",
-    "build": "run-p 'build:server' 'build:visualizer'",
+    "build": "run-p 'build:server' 'build:server-static' 'build:visualizer'",
     "build:server": "tsc -p .",
+    "build:server-static": "parcel build ./server-static-src/main.ts -d ./server-static --experimental-scope-hoisting",
     "prebuild:visualizer": "rm -rf ./server-static/visualizer",
     "build:visualizer": "parcel build ./visualizer-src/index.html -d ./server-static/visualizer  --public-url /visualizer/",
     "prettier:ci": "prettier --list-different '{visualizer-src/**/*.ts,server-static/*.js,server-src/**/*.ts}'",
@@ -68,6 +70,7 @@
     "npm-run-all": "^4.1.5",
     "parcel": "^1.12.3",
     "prettier": "^1.16.4",
+    "stylus": "^0.54.5",
     "ts-node": "^8.0.3",
     "tslint": "^5.15.0",
     "typescript": "^3.4.2"

@@ -38,7 +38,7 @@ interface IDoExportOptions {
   tables: ITable[];
   origin: string;
 }
-export default async function(options: IDoExportOptions): Promise<void> {
+export default async function(options: IDoExportOptions): Promise<string> {
   const {auth, exportLog, exportId, tables, origin} = options;
   const limit = pLimit(1);
   let folderId: string;
@@ -66,6 +66,8 @@ export default async function(options: IDoExportOptions): Promise<void> {
       })
     )
   );
+
+  return folderId;
 }
 
 /**
@@ -108,7 +110,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     exportLog.logSuccess(exportId, table.id, driveFile);
   } catch (error) {
     errors.report(error);
-    exportLog.logError(exportId, table.id, error, driveFile);
+    exportLog.logError(exportId, table.id, error.message, driveFile);
   }
 }
 
