@@ -1,4 +1,5 @@
 $primary = #1A73E8
+$grey = #757575
 
 /**
  *          BASICS
@@ -100,7 +101,7 @@ svg
     left: -50%
     width: 200%
     height: 200%
-    background: #1A73E8
+    background: $primary
 
   &::after
     top: 50%
@@ -129,7 +130,7 @@ svg
   letter-spacing: .0892857143em
   font-weight: 500
   text-transform: uppercase
-  color: #1A73E8
+  color: $primary
 
   &::before
     transition: opacity 15ms linear, background-color 15ms linear
@@ -142,7 +143,7 @@ svg
   font-weight: 500
   letter-spacing: 0.1px
   color: #fff
-  background: #1A73E8
+  background: $primary
   transition: background 75ms linear
 
   &::after
@@ -167,14 +168,13 @@ svg
 .loading
   width: 1.125rem
   height: 1.125rem
-  color: #757575
+  color: $grey
   animation: loadingrotate 2s linear infinite
   circle
     stroke-dasharray: 1,200
     stroke-dashoffset: 0
     animation: loadingdash 1.5s ease-in-out infinite
     stroke-linecap: round
-    stroke: #3f88f8
 
 @keyframes loadingrotate
   from
@@ -296,14 +296,14 @@ main
 
     & label span
       font-size: 0.875rem
-      color: #757575
+      color: $grey
       letter-spacing: 0.4px
 
   &__checkbox
     margin-right: 0.75rem
 
   & input:checked ~ label &__checkbox
-    color: #1A73E8
+    color: $primary
 
   & input:checked ~ label &__checkbox--outline
     display: none
@@ -331,7 +331,7 @@ main
 
   &--header
     font-size: 0.875rem
-    color: #757575
+    color: $grey
     letter-spacing: 0.4px
 
   &__name
@@ -364,7 +364,7 @@ main
       line-height: 2
 
   &__link
-    color: #757575
+    color: $grey
 
   &__csv-info
     color: $primary
