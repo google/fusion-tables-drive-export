@@ -3,7 +3,7 @@ import {ITableFinishedEmitterData} from '../server-src/interfaces/table-finished
 /**
  * Add loading symbol to the list
  */
-document.querySelectorAll('.fusiontable--export').forEach($table => {
+[...document.querySelectorAll('.fusiontable--export')].forEach($table => {
   $table.setAttribute('loading', 'true');
 });
 

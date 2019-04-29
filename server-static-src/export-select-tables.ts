@@ -4,7 +4,7 @@ let $exportChecks: NodeListOf<HTMLInputElement>;
 if ($exportAll) {
   $exportChecks = document.querySelectorAll('.checkbox-row__input');
   $exportAll.addEventListener('change', handleExportAllChange);
-  $exportChecks.forEach($exportCheck =>
+  [...$exportChecks].forEach($exportCheck =>
     $exportCheck.addEventListener('change', handlexportCheckChange)
   );
 }
@@ -13,7 +13,7 @@ if ($exportAll) {
  * Handle change of the exportAll input
  */
 function handleExportAllChange() {
-  $exportChecks.forEach(
+  [...$exportChecks].forEach(
     $exportCheck => ($exportCheck.checked = $exportAll.checked)
   );
 }
@@ -24,7 +24,7 @@ function handleExportAllChange() {
 function handlexportCheckChange() {
   let allChecked = true;
 
-  $exportChecks.forEach($exportCheck => {
+  [...$exportChecks].forEach($exportCheck => {
     if (!$exportCheck.checked) {
       allChecked = false;
     }
