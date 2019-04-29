@@ -1,8 +1,6 @@
 import {ITableExport} from '../server-src/interfaces/table-export';
 
-const exportId: string = document
-  .querySelector('.fusiontable-export')
-  .getAttribute('data-export-id');
+let exportId: string;
 const renderedTableExports: string[] = [];
 
 /* tslint:disable prefer-for-of */
@@ -19,6 +17,9 @@ for (let i = 0; i < $fusiontables.length; ++i) {
  * Request updates from the server export progress
  */
 if (document.querySelectorAll('.fusiontable[loading]').length > 0) {
+  exportId = document
+    .querySelector('.fusiontable-export')
+    .getAttribute('data-export-id');
   requestUpdates();
 }
 
