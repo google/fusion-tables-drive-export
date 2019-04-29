@@ -3,5 +3,5 @@ node_modules
 .DS_Store
 server
 .cache
-server-static/visualizer
+server-static
 yarn-error.log

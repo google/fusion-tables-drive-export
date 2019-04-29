@@ -35,7 +35,7 @@ export default async function(
   emitter: mitt.Emitter,
   tables: ITable[],
   origin: string
-): Promise<void> {
+): Promise<string> {
   const limit = pLimit(1);
   let folderId: string;
   let archiveSheet: ISheet;
@@ -54,6 +54,8 @@ export default async function(
       saveTable({table, emitter, auth, folderId, archiveSheet, origin})
     )
   );
+
+  return folderId;
 }
 
 /**
@@ -93,7 +95,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
   } catch (error) {
     errors.report(error);
     emitter.emit('table-finished', {
-      error,
+      error: error.message,
       table,
       driveFile,
       credentials: auth.credentials

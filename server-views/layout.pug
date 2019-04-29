@@ -2,18 +2,17 @@ html
   head
     title Export Fusion Tables to Drive
     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css")
-    link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Roboto")
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Roboto:400,500")
     link(rel="stylesheet", href="main.css")
 
-  body
+  body.no-js
     header.site-header
-      a(href="/", title="Go to the start page")
-        h1 Export Fusion Tables
+      .site-header__content
+        a.unflashy(href=isSignedIn ? "/export" : "/", title="Go to the start page")
+          h1 Export Fusion Tables
 
-      if isSignedIn
-        a(href="/logout") Log out
-      else
-        a(href="/auth") Log in with Google
+        if isSignedIn
+          a.text-button(href="/logout") Log out
 
-    main
+    main(class=error && 'error')
       block content
