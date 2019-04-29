@@ -55,7 +55,7 @@ async function getTableFiles(
         "'me' in owners and " +
         "mimeType = 'application/vnd.google-apps.fusiontable' and " +
         'trashed = false'
-        // tslint:enable quotemark
+      // tslint:enable quotemark
     });
 
     return {
