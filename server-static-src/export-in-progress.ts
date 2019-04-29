@@ -57,8 +57,6 @@ function requestUpdates() {
  * Update the Fusion Table in the list
  */
 function updateTable(data: ITableExport) {
-  console.log('RENDER!', data);
-
   if (!data) {
     return;
   }
