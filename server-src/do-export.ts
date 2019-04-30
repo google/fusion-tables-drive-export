@@ -98,7 +98,6 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     const csv = await getFusiontableCsv(auth, table);
     const csvWithGeoJson = convertKmlToGeoJson(csv);
     driveFile = await uploadToDrive(auth, folderId, csvWithGeoJson);
-    await addFilePermissions(auth, driveFile.id as string, table.permissions);
     await logFileExportInIndexSheet(
       auth,
       origin,
@@ -106,6 +105,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       table,
       driveFile
     );
+    await addFilePermissions(auth, driveFile.id as string, table.permissions);
 
     exportLog.logSuccess(exportId, table.id, driveFile);
   } catch (error) {

@@ -15,9 +15,11 @@ export default function(
   const limit = pLimit(1);
 
   return Promise.all(
-    permissions.map(permission =>
-      limit(() => addFilePermission(auth, fileId, permission))
-    )
+    permissions
+      .filter(permission => permission.role !== 'owner')
+      .map(permission =>
+        limit(() => addFilePermission(auth, fileId, permission))
+      )
   );
 }
 
@@ -64,7 +66,12 @@ async function addFilePermission(
   try {
     await drive.permissions.create(params);
   } catch (error) {
-    throw error;
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await drive.permissions.create(params);
+    } catch (error) {
+      throw error;
+    }
   }
 
   return;
