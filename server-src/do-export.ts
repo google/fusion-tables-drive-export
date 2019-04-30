@@ -104,7 +104,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       archiveSheet,
       table,
       driveFile
-      );
+    );
     await addFilePermissions(auth, driveFile.id as string, table.permissions);
 
     exportLog.logSuccess(exportId, table.id, driveFile);
