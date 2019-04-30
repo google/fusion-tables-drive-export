@@ -66,7 +66,12 @@ async function addFilePermission(
   try {
     await drive.permissions.create(params);
   } catch (error) {
-    throw error;
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await drive.permissions.create(params);
+    } catch (error) {
+      throw error;
+    }
   }
 
   return;
