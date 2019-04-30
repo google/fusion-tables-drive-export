@@ -15,9 +15,11 @@ export default function(
   const limit = pLimit(1);
 
   return Promise.all(
-    permissions.map(permission =>
-      limit(() => addFilePermission(auth, fileId, permission))
-    )
+    permissions
+      .filter(permission => permission.role !== 'owner')
+      .map(permission =>
+        limit(() => addFilePermission(auth, fileId, permission))
+      )
   );
 }
 
