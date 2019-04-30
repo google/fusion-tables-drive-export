@@ -96,7 +96,6 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     const csvWithGeoJson = convertKmlToGeoJson(csv);
     hasGeometryData = csvWithGeoJson.hasGeometryData || false;
     driveFile = await uploadToDrive(auth, folderId, csvWithGeoJson);
-    await addFilePermissions(auth, driveFile.id as string, table.permissions);
     await logFileExportInIndexSheet({
       auth,
       origin,
@@ -105,6 +104,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       driveFile,
       hasGeometryData
     });
+    await addFilePermissions(auth, driveFile.id as string, table.permissions);
 
     exportLog.logTable({
       exportId,
