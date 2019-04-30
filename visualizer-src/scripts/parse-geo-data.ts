@@ -31,11 +31,28 @@ export default function(data: string[][]): string[][] {
       if (index === 0) {
         row.push('geometry');
       } else {
-        row.push(`POINT(${row[lngIndex]} ${row[latIndex]})`);
+        const point = getGeoJsonPoint(row[lngIndex], row[latIndex]);
+        row.push(point);
       }
       return row;
     });
   }
 
   return data;
+}
+
+/**
+ * Get a point as a GeoJSON point
+ */
+function getGeoJsonPoint(lng: string, lat: string): string {
+  return `
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [${lng}, ${lat}]
+      }
+    }
+  `;
 }

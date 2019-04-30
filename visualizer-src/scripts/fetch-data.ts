@@ -1,5 +1,5 @@
 import Papa from 'papaparse';
-import parseGeoPoints from './parse-geo-points';
+import parseGeoData from './parse-geo-data';
 
 /**
  * Fetch a CSV and return it as JSON
@@ -16,7 +16,7 @@ export default async function(): Promise<string[][]> {
   try {
     const rawData = await fetchData(fileId);
     const parsed = Papa.parse(rawData.body);
-    const analyzedData = parseGeoPoints(parsed.data);
+    const analyzedData = parseGeoData(parsed.data);
     return analyzedData;
   } catch (error) {
     console.error('ERROR fetching data!', error);
