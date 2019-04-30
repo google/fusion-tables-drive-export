@@ -2,6 +2,7 @@ import {google, drive_v3, sheets_v4} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import {ISheet} from '../interfaces/sheet';
 import {ITable} from '../interfaces/table';
+import {MIME_TYPES} from '../config';
 
 const sheets = google.sheets('v4');
 
@@ -20,6 +21,8 @@ export default async function(
     table.id
   }`;
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
+  const fileType =
+    driveFile.mimeType === MIME_TYPES.csv ? 'CSV' : 'Spreadsheet';
   const visualizerLink = `${origin}/visualizer/#file=${driveFile.id}`;
 
   try {
@@ -37,6 +40,7 @@ export default async function(
                     {userEnteredValue: {stringValue: driveFile.name}},
                     {userEnteredValue: {stringValue: tableLink}},
                     {userEnteredValue: {stringValue: fileLink}},
+                    {userEnteredValue: {stringValue: fileType}},
                     {userEnteredValue: {stringValue: visualizerLink}},
                     {userEnteredValue: {stringValue: new Date().toISOString()}}
                   ]

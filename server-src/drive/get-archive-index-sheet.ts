@@ -11,6 +11,7 @@ const headerRowContent = [
   'Exported file name',
   'Source Fusiontable',
   'Exported Spreadsheet/CSV',
+  'Type',
   'Visualization',
   'Exported at'
 ].join(',');
@@ -131,7 +132,7 @@ async function createSheet(
                 sheetId,
                 dimension: 'COLUMNS',
                 startIndex: 0,
-                endIndex: 5
+                endIndex: 6
               },
               properties: {
                 pixelSize: 250
