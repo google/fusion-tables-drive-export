@@ -21,8 +21,8 @@
     "build:server-static": "parcel build ./server-static-src/main.ts -d ./server-static --experimental-scope-hoisting",
     "prebuild:visualizer": "rm -rf ./server-static/visualizer",
     "build:visualizer": "parcel build ./visualizer-src/index.html -d ./server-static/visualizer  --public-url /visualizer/",
-    "prettier:ci": "prettier --list-different '{visualizer-src/**/*.ts,server-static/*.js,server-src/**/*.ts}'",
-    "prettier:fix": "prettier --write '{visualizer-src/**/*.ts,server-static/*.js,server-src/**/*.ts}'",
+    "prettier:ci": "prettier --list-different '{visualizer-src/**/*.ts,server-static-src/*.ts,server-src/**/*.ts}'",
+    "prettier:fix": "prettier --write '{visualizer-src/**/*.ts,server-static-src/*.ts,server-src/**/*.ts}'",
     "deploy": "yarn run test && yarn run build && gcloud app deploy --project fusion-tables-export",
     "test": "yarn run prettier:ci && tslint -p . -e '**/*.json'"
   },

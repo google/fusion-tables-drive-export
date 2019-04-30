@@ -30,7 +30,6 @@ function handlexportCheckChange() {
     if (!$exportChecks[i].checked) {
       allChecked = false;
     }
-    $exportChecks[i].checked = $exportAll.checked;
   }
 
   $exportAll.checked = allChecked;
