@@ -14,7 +14,8 @@ export default function(data: string[][]): GeoJsonLayer {
     filled: true,
     lineWidthMinPixels: 1,
     pointRadiusMinPixels: 3,
-    getFillColor: [217, 236, 236, 125],
+    getFillColor: [239, 83, 80, 97],
+    getLineColor: [239, 83, 80, 214],
     getRadius: 100
   });
 }
