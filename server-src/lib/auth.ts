@@ -1,5 +1,5 @@
 import {google} from 'googleapis';
-import credentials from './credentials.json';
+import credentials from '../config/credentials.json';
 import {OAuth2Client} from 'google-auth-library';
 import {Request} from 'express';
 

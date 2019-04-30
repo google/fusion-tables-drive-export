@@ -2,20 +2,22 @@ import {google, drive_v3, sheets_v4} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import {ISheet} from '../interfaces/sheet';
 import {ITable} from '../interfaces/table';
-import {MIME_TYPES} from '../config';
+import {MIME_TYPES} from '../config/config';
 
 const sheets = google.sheets('v4');
 
 /**
  * Log an exported file in the index sheet
  */
-export default async function(
-  auth: OAuth2Client,
-  origin: string,
-  sheet: ISheet,
-  table: ITable,
-  driveFile: drive_v3.Schema$File
-): Promise<void> {
+interface ILogFileOptions {
+  auth: OAuth2Client;
+  origin: string;
+  sheet: ISheet;
+  table: ITable;
+  driveFile: drive_v3.Schema$File;
+}
+export default async function(options: ILogFileOptions): Promise<void> {
+  const {auth, origin, sheet, table, driveFile, hasGeometryData} = options;
   const {spreadsheetId, sheetId} = sheet;
   const tableLink = `https://fusiontables.google.com/DataSource?docid=${
     table.id

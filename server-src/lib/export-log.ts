@@ -1,6 +1,6 @@
 import uuid from 'uuid/v4';
-import {ITable} from './interfaces/table';
-import {ITableExport} from './interfaces/table-export';
+import {ITable} from '../interfaces/table';
+import {ITableExport} from '../interfaces/table-export';
 import {Credentials} from 'google-auth-library';
 import {drive_v3} from 'googleapis';
 

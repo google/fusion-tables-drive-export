@@ -1,7 +1,7 @@
 import {google, drive_v3, sheets_v4} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import findFile from './find-file';
-import {DRIVE_ARCHIVE_INDEX_SHEET, MIME_TYPES} from '../config';
+import {DRIVE_ARCHIVE_INDEX_SHEET, MIME_TYPES} from '../config/config';
 import {ISheet} from '../interfaces/sheet';
 
 const drive = google.drive('v3');
