@@ -350,6 +350,18 @@ main
     .no-js &
       display: none
 
+  &__visualization--not-available &__link
+    display: none
+
+  &__visualization
+    small
+      font-size: .875em
+      line-height: 1.2
+      text-align: center
+
+    &:not(&--not-available) small
+      display: none
+
   &__error
     width: 100%
 

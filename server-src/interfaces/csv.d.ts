@@ -6,4 +6,5 @@ export type ICsv = {
   readonly filename: string;
   readonly data: string;
   readonly hasLargeCells?: boolean;
+  readonly hasGeometryData?: boolean;
 };
