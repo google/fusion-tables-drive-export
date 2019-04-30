@@ -15,6 +15,7 @@ interface ILogFileOptions {
   sheet: ISheet;
   table: ITable;
   driveFile: drive_v3.Schema$File;
+  hasGeometryData: boolean;
 }
 export default async function(options: ILogFileOptions): Promise<void> {
   const {auth, origin, sheet, table, driveFile, hasGeometryData} = options;
@@ -25,7 +26,9 @@ export default async function(options: ILogFileOptions): Promise<void> {
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
   const fileType =
     driveFile.mimeType === MIME_TYPES.csv ? 'CSV' : 'Spreadsheet';
-  const visualizerLink = `${origin}/visualizer/#file=${driveFile.id}`;
+  const visualizerLink = hasGeometryData
+    ? `${origin}/visualizer/#file=${driveFile.id}`
+    : 'Cannot visualize — no geometry found.';
 
   try {
     const response = await sheets.spreadsheets.batchUpdate({

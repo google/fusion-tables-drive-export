@@ -88,11 +88,13 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     exportLog,
     exportId
   } = options;
+  let hasGeometryData: boolean = false;
   let driveFile: drive_v3.Schema$File | undefined;
 
   try {
     const csv = await getFusiontableCsv(auth, table);
     const csvWithGeoJson = convertKmlToGeoJson(csv);
+    hasGeometryData = csvWithGeoJson.hasGeometryData || false;
     driveFile = await uploadToDrive(auth, folderId, csvWithGeoJson);
     await addFilePermissions(auth, driveFile.id as string, table.permissions);
     await logFileExportInIndexSheet({
@@ -100,12 +102,26 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       origin,
       sheet: archiveSheet,
       table,
-      driveFile
+      driveFile,
+      hasGeometryData
     });
 
-    exportLog.logSuccess(exportId, table.id, driveFile);
+    exportLog.logTable({
+      exportId,
+      tableId: table.id,
+      status: 'success',
+      driveFile,
+      hasGeometryData
+    });
   } catch (error) {
     errors.report(error);
-    exportLog.logError(exportId, table.id, error.message, driveFile);
+    exportLog.logTable({
+      exportId,
+      tableId: table.id,
+      status: 'error',
+      error: error.message,
+      driveFile,
+      hasGeometryData
+    });
   }
 }

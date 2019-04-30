@@ -2,6 +2,7 @@ import Papa from 'papaparse';
 import {DOMParser} from 'xmldom';
 import {kml as kml2GeoJson} from '@tmcw/togeojson';
 import {ICsv} from '../interfaces/csv';
+import getHasGeometryData from './get-has-geometry-data';
 
 const DRIVE_CELL_LIMIT = 50000;
 
@@ -29,9 +30,12 @@ export default function convertKmlToGeoJson(csv: ICsv): ICsv {
       });
     });
 
+  const hasGeometryData = getHasGeometryData(jsonWithGeoJson);
+
   return Object.assign({}, csv, {
     data: Papa.unparse(jsonWithGeoJson),
-    hasLargeCells
+    hasLargeCells,
+    hasGeometryData
   });
 }
 

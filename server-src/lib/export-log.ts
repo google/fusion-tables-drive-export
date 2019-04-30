@@ -13,6 +13,15 @@ interface IFusiontableExports {
   };
 }
 
+interface ILogTable {
+  exportId: string;
+  tableId: string;
+  status: 'success' | 'error';
+  error?: Error;
+  driveFile?: drive_v3.Schema$File;
+  hasGeometryData: boolean;
+}
+
 /**
  * A log containing the exported tables
  */
@@ -37,7 +46,8 @@ export default class {
           table: {
             id: table.id,
             name: table.name
-          }
+          },
+          hasGeometryData: false
         })
     );
 
@@ -58,31 +68,16 @@ export default class {
   }
 
   /**
-   * Log a success
+   * Log an table export
    */
-  public logSuccess(
-    exportId: string,
-    tableId: string,
-    driveFile: drive_v3.Schema$File
-  ) {
+  public logTable(params: ILogTable) {
+    const {exportId, tableId} = params;
     const table = this.fusiontableExports[exportId].tables[tableId];
-    table.status = 'success';
-    table.driveFile = driveFile;
-  }
 
-  /**
-   * Log an error
-   */
-  public logError(
-    exportId: string,
-    tableId: string,
-    error: Error,
-    driveFile?: drive_v3.Schema$File
-  ) {
-    const table = this.fusiontableExports[exportId].tables[tableId];
-    table.status = 'error';
-    table.error = error;
-    table.driveFile = driveFile;
+    table.status = params.status;
+    table.error = params.error;
+    table.driveFile = params.driveFile;
+    table.hasGeometryData = params.hasGeometryData;
   }
 
   /**

@@ -12,4 +12,5 @@ export type ITableExport = {
     name: string;
   };
   driveFile?: drive_v3.Schema$File | null;
+  hasGeometryData: boolean;
 };

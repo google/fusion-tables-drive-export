@@ -93,6 +93,9 @@ function updateTable(data: ITableExport) {
     const visualizationUrl = `/visualizer/#file=${id}`;
     const visualizationTitle = `Open ${name} visualization`;
     const $driveLink = $listEntry.querySelector('.fusiontable__link--file');
+    const $visualization = $listEntry.querySelector(
+      '.fusiontable__visualization'
+    );
     const $visualizationLink = $listEntry.querySelector(
       '.fusiontable__link--visualization'
     );
@@ -102,6 +105,9 @@ function updateTable(data: ITableExport) {
     $driveLink.setAttribute('title', driveTitle);
     $visualizationLink.setAttribute('href', visualizationUrl);
     $visualizationLink.setAttribute('title', visualizationTitle);
+    if (!data.hasGeometryData) {
+      $visualization.classList.add('fusiontable__visualization--not-available');
+    }
   } else {
     $listEntry.classList.add(`fusiontable--failed`);
   }
