@@ -1,4 +1,5 @@
 import {ITable} from './table';
+import {IStyle} from './style';
 import {drive_v3} from 'googleapis';
 
 /**
@@ -12,5 +13,6 @@ export type ITableExport = {
     name: string;
   };
   driveFile?: drive_v3.Schema$File | null;
+  styles: IStyle[];
   hasGeometryData: boolean;
 };
