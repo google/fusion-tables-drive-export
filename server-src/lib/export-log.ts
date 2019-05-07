@@ -5,6 +5,8 @@ import {IStyle} from '../interfaces/style';
 import {Credentials} from 'google-auth-library';
 import {drive_v3} from 'googleapis';
 
+const btoa = (data: string) => Buffer.from(data).toString('base64');
+
 interface IFusiontableExports {
   [exportId: string]: {
     credentials: Credentials;
@@ -49,7 +51,7 @@ export default class {
             id: table.id,
             name: table.name
           },
-          styles: [],
+          visualizations: [],
           hasGeometryData: false
         })
     );
@@ -80,7 +82,9 @@ export default class {
     table.status = params.status;
     table.error = params.error;
     table.driveFile = params.driveFile;
-    table.styles = params.styles;
+    table.visualizations = params.styles.map(style =>
+      btoa(JSON.stringify(style))
+    );
     table.hasGeometryData = params.hasGeometryData;
   }
 

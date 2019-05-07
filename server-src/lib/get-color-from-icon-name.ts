@@ -3,24 +3,24 @@
  */
 export default function(iconName: string): string {
   if (iconName.endsWith('yellow')) {
-    return '#ff9';
+    return '#ffff99ff';
   }
 
   if (iconName.endsWith('green')) {
-    return '#9f9';
+    return '#99ff99ff';
   }
 
   if (iconName.endsWith('blue')) {
-    return '#99f';
+    return '#9999ffff';
   }
 
   if (iconName.endsWith('purple')) {
-    return '#f9f';
+    return '#ff99ffff';
   }
 
   if (iconName.endsWith('red')) {
-    return '#f66';
+    return '#ff6666ff';
   }
 
-  return '#f66';
+  return '#ff6666ff';
 }
