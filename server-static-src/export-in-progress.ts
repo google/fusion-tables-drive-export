@@ -94,27 +94,53 @@ function updateTable(data: ITableExport) {
       : 'CSV';
   const driveUrl = `https://drive.google.com/open?id=${id}`;
   const driveTitle = `Open ${name} ${type}`;
-  let visualizationUrl = `/visualizer/#file=${id}`;
-  const visualizationTitle = `Open ${name} visualization`;
   const $driveLink = $listEntry.querySelector('.fusiontable__link--file');
   const $visualization = $listEntry.querySelector(
     '.fusiontable__visualization'
   );
-  const $visualizationLink = $listEntry.querySelector(
-    '.fusiontable__link--visualization'
-  );
-
-  if (data.visualizations.length > 0) {
-    visualizationUrl += `&style=${data.visualizations[0]}`;
-  }
 
   $listEntry.classList.add(`fusiontable--${type.toLowerCase()}`);
   $driveLink.setAttribute('href', driveUrl);
   $driveLink.setAttribute('title', driveTitle);
-  $visualizationLink.setAttribute('href', visualizationUrl);
-  $visualizationLink.setAttribute('title', visualizationTitle);
 
-  if (!data.hasGeometryData) {
+  if (data.hasGeometryData) {
+    if (data.visualizations.length > 0) {
+      data.visualizations.forEach(style =>
+        renderVisualizationLink($visualization, id, name, style)
+      );
+    } else {
+      renderVisualizationLink($visualization, id, name);
+    }
+  } else {
     $visualization.classList.add('fusiontable__visualization--not-available');
   }
+}
+
+/**
+ * Get the link to a visualization
+ */
+function renderVisualizationLink(
+  $visualization: Element,
+  id: string,
+  name: string,
+  style?: string
+): void {
+  let url = `/visualizer/#file=${id}`;
+
+  if (style) {
+    url += `&style=${style}`;
+  }
+
+  const markup = `
+    <a class="unflashy fusiontable__link fusiontable__link--visualization"
+      href="${url}"
+      title="Open ${name} visualization"
+      target="_blank" rel="noopener">
+      <svg>
+        <use xlink:href="#icon-map"></use>
+      </svg>
+    </a>
+  `;
+
+  $visualization.innerHTML += markup;
 }
