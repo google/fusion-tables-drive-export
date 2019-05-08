@@ -17,3 +17,5 @@ export const MIME_TYPES = {
   spreadsheet: 'application/vnd.google-apps.spreadsheet',
   folder: 'application/vnd.google-apps.folder'
 };
+
+export const IS_LARGE_TRESHOLD = 50000000; // byte

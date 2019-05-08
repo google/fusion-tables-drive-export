@@ -114,6 +114,10 @@ function updateTable(data: ITableExport) {
   } else {
     $visualization.classList.add('fusiontable__visualization--not-available');
   }
+
+  if (data.isLarge) {
+    $visualization.classList.add('fusiontable__visualization--is-large');
+  }
 }
 
 /**
