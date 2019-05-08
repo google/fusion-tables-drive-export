@@ -26,7 +26,7 @@ block content
               use(xlink:href="#icon-info")
             .fusiontable__csv-info__tooltip
               | Couldn’t export as a Spreadsheet but saved as a CSV instead.
-          a.unflashy.fusiontable__link.fusiontable__link--file(href="", title="", target="_blank")
+          a.unflashy.fusiontable__link.fusiontable__link--file(href="", title="", target="_blank", rel="noopener")
             svg.fusiontable__link__icon.fusiontable__link__icon--spreadsheet
               use(xlink:href="#icon-spreadsheet")
             svg.fusiontable__link__icon.fusiontable__link__icon--csv
@@ -34,14 +34,14 @@ block content
         .fusiontable__visualization
           svg.loading
             use(xlink:href="#icon-spinner")
-          a.unflashy.fusiontable__link.fusiontable__link--visualization(href="", title="", target="_blank")
+          a.unflashy.fusiontable__link.fusiontable__link--visualization(href="", title="", target="_blank", rel="noopener")
             svg
               use(xlink:href="#icon-map")
           small No geometry found.
 
   p
     | Check your Google Drive for the exported files.&nbsp;
-    a(href="https://drive.google.com/drive/folders/" + exportFolderId, target="_blank", title="Open Export Folder in Google Drive")
+    a(href="https://drive.google.com/drive/folders/" + exportFolderId, target="_blank", rel="noopener", title="Open Export Folder in Google Drive")
       svg
         use(xlink:href="#icon-open-in-new")
 
