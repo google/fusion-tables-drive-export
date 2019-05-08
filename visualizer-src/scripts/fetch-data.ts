@@ -4,15 +4,7 @@ import parseGeoData from './parse-geo-data';
 /**
  * Fetch a CSV and return it as JSON
  */
-export default async function(): Promise<string[][]> {
-  const {hash} = document.location;
-
-  if (!hash || !hash.startsWith('#file=')) {
-    return null;
-  }
-
-  const fileId = hash.replace('#file=', '');
-
+export default async function(fileId: string): Promise<string[][]> {
   try {
     const rawData = await fetchData(fileId);
     const parsed = Papa.parse(rawData.body);

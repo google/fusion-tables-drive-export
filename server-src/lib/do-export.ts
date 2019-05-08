@@ -9,6 +9,7 @@ import ExportLog from './export-log';
 import convertKmlToGeoJson from './convert-kml-to-geojson';
 import getArchiveFolder from '../drive/get-archive-folder';
 import getFusiontableCsv from '../fusiontables/get-csv';
+import getFusiontableStyles from '../fusiontables/get-styles';
 import getDriveUploadFolder from '../drive/get-upload-folder';
 import uploadToDrive from '../drive/upload';
 import getArchiveIndexSheet from '../drive/get-archive-index-sheet';
@@ -17,6 +18,7 @@ import logFileExportInIndexSheet from '../drive/log-file-export-in-index-sheet';
 import addFilePermissions from '../drive/add-file-permissions';
 import {web as serverCredentials} from '../config/credentials.json';
 import credentials from '../config/credentials-error-reporting.json';
+import {IStyle} from '../interfaces/style';
 
 const errors = new ErrorReporting({
   reportUnhandledRejections: true,
@@ -90,12 +92,14 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
   } = options;
   let hasGeometryData: boolean = false;
   let driveFile: drive_v3.Schema$File | undefined;
+  let styles: IStyle[] = [];
 
   try {
     const csv = await getFusiontableCsv(auth, table);
     const csvWithGeoJson = convertKmlToGeoJson(csv);
     hasGeometryData = csvWithGeoJson.hasGeometryData || false;
     driveFile = await uploadToDrive(auth, folderId, csvWithGeoJson);
+    styles = await getFusiontableStyles(auth, table.id);
     await logFileExportInIndexSheet({
       auth,
       origin,
@@ -111,6 +115,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       tableId: table.id,
       status: 'success',
       driveFile,
+      styles,
       hasGeometryData
     });
   } catch (error) {
@@ -121,6 +126,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       status: 'error',
       error: error.message,
       driveFile,
+      styles,
       hasGeometryData
     });
   }

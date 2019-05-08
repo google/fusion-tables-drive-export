@@ -1,9 +1,11 @@
 import initMap from './init-google-maps';
 import initDeckGl from './init-deck-gl';
 import initAuth from './init-google-auth';
+import getParamsFromHash from './get-params-from-hash';
 import fetchData from './fetch-data';
 import deckGlGeojsonLayer from './deck-gl-geojson-layer';
 import initInfowindow from './init-infowindow';
+import {IStyle} from '../../server-src/interfaces/style';
 
 (async () => {
   const map = await initMap();
@@ -13,12 +15,18 @@ import initInfowindow from './init-infowindow';
   await initAuth();
   document.getElementById('signin').style.display = 'none';
 
-  const data = await fetchData();
+  const params = getParamsFromHash();
+
+  if (!params.file) {
+    return;
+  }
+
+  const data = await fetchData(params.file);
 
   if (!data) {
     return;
   }
 
-  const geojsonLayer = deckGlGeojsonLayer(data);
+  const geojsonLayer = deckGlGeojsonLayer(data, params.style as IStyle);
   deck.setProps({layers: [geojsonLayer as any]});
 })();

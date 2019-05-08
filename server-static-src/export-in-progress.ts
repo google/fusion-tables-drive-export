@@ -82,33 +82,39 @@ function updateTable(data: ITableExport) {
       </div>`;
   }
 
-  if (data.driveFile) {
-    const {id, name, mimeType} = data.driveFile;
-    const type =
-      mimeType === 'application/vnd.google-apps.spreadsheet'
-        ? 'Spreadsheet'
-        : 'CSV';
-    const driveUrl = `https://drive.google.com/open?id=${id}`;
-    const driveTitle = `Open ${name} ${type}`;
-    const visualizationUrl = `/visualizer/#file=${id}`;
-    const visualizationTitle = `Open ${name} visualization`;
-    const $driveLink = $listEntry.querySelector('.fusiontable__link--file');
-    const $visualization = $listEntry.querySelector(
-      '.fusiontable__visualization'
-    );
-    const $visualizationLink = $listEntry.querySelector(
-      '.fusiontable__link--visualization'
-    );
-
-    $listEntry.classList.add(`fusiontable--${type.toLowerCase()}`);
-    $driveLink.setAttribute('href', driveUrl);
-    $driveLink.setAttribute('title', driveTitle);
-    $visualizationLink.setAttribute('href', visualizationUrl);
-    $visualizationLink.setAttribute('title', visualizationTitle);
-    if (!data.hasGeometryData) {
-      $visualization.classList.add('fusiontable__visualization--not-available');
-    }
-  } else {
+  if (!data.driveFile) {
     $listEntry.classList.add(`fusiontable--failed`);
+    return;
+  }
+
+  const {id, name, mimeType} = data.driveFile;
+  const type =
+    mimeType === 'application/vnd.google-apps.spreadsheet'
+      ? 'Spreadsheet'
+      : 'CSV';
+  const driveUrl = `https://drive.google.com/open?id=${id}`;
+  const driveTitle = `Open ${name} ${type}`;
+  let visualizationUrl = `/visualizer/#file=${id}`;
+  const visualizationTitle = `Open ${name} visualization`;
+  const $driveLink = $listEntry.querySelector('.fusiontable__link--file');
+  const $visualization = $listEntry.querySelector(
+    '.fusiontable__visualization'
+  );
+  const $visualizationLink = $listEntry.querySelector(
+    '.fusiontable__link--visualization'
+  );
+
+  if (data.visualizations.length > 0) {
+    visualizationUrl += `&style=${data.visualizations[0]}`;
+  }
+
+  $listEntry.classList.add(`fusiontable--${type.toLowerCase()}`);
+  $driveLink.setAttribute('href', driveUrl);
+  $driveLink.setAttribute('title', driveTitle);
+  $visualizationLink.setAttribute('href', visualizationUrl);
+  $visualizationLink.setAttribute('title', visualizationTitle);
+
+  if (!data.hasGeometryData) {
+    $visualization.classList.add('fusiontable__visualization--not-available');
   }
 }

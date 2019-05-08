@@ -1,8 +1,11 @@
 import uuid from 'uuid/v4';
 import {ITable} from '../interfaces/table';
 import {ITableExport} from '../interfaces/table-export';
+import {IStyle} from '../interfaces/style';
 import {Credentials} from 'google-auth-library';
 import {drive_v3} from 'googleapis';
+
+const btoa = (data: string) => Buffer.from(data).toString('base64');
 
 interface IFusiontableExports {
   [exportId: string]: {
@@ -19,6 +22,7 @@ interface ILogTable {
   status: 'success' | 'error';
   error?: Error;
   driveFile?: drive_v3.Schema$File;
+  styles: IStyle[];
   hasGeometryData: boolean;
 }
 
@@ -47,6 +51,7 @@ export default class {
             id: table.id,
             name: table.name
           },
+          visualizations: [],
           hasGeometryData: false
         })
     );
@@ -77,6 +82,9 @@ export default class {
     table.status = params.status;
     table.error = params.error;
     table.driveFile = params.driveFile;
+    table.visualizations = params.styles.map(style =>
+      btoa(JSON.stringify(style))
+    );
     table.hasGeometryData = params.hasGeometryData;
   }
 
