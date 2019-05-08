@@ -1,24 +1,37 @@
-import {Deck} from 'deck.gl';
+import {GoogleMapsOverlay} from '@deck.gl/google-maps';
 import {LAYER_ID} from './config';
 
 /**
  * Initialize an infowindow that shows the clicked data
  */
-export default function(map: google.maps.Map, deck: Deck): void {
+export default function(
+  map: google.maps.Map,
+  overlay: GoogleMapsOverlay
+): void {
   map.addListener('mousemove', event => {
-    if (!(deck as any).layerManager) {
+    if (!overlay._deck || !overlay._deck.layerManager) {
       return;
     }
 
     const {x, y} = event.pixel;
-    const picked = deck.pickObject({x, y, radius: 0, layerIds: [LAYER_ID]});
+    const picked = overlay._deck.pickObject({
+      x,
+      y,
+      radius: 0,
+      layerIds: [LAYER_ID]
+    });
     document.body.classList.toggle('cursor-pointer', picked);
   });
 
   map.addListener('click', event => {
     const {latLng, pixel} = event;
     const {x, y} = pixel;
-    const picked = deck.pickObject({x, y, radius: 4, layerIds: [LAYER_ID]});
+    const picked = overlay._deck.pickObject({
+      x,
+      y,
+      radius: 4,
+      layerIds: [LAYER_ID]
+    });
 
     if (picked) {
       openInfowindow(infowindow, map, picked.object, latLng);
