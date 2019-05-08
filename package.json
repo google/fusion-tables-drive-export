@@ -49,6 +49,7 @@
   "devDependencies": {
     "@danmarshall/deckgl-typings": "^2.2.1",
     "@deck.gl/core": "^7.0.5",
+    "@deck.gl/google-maps": "^7.0.5",
     "@deck.gl/layers": "^7.0.5",
     "@types/boom": "^7.2.1",
     "@types/cookie-session": "^2.0.36",

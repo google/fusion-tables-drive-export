@@ -1,5 +1,6 @@
+import {GeoJsonLayer} from '@deck.gl/layers';
+import {GoogleMapsOverlay} from '@deck.gl/google-maps';
 import initMap from './init-google-maps';
-import initDeckGl from './init-deck-gl';
 import initAuth from './init-google-auth';
 import getParamsFromHash from './get-params-from-hash';
 import fetchData from './fetch-data';
@@ -9,8 +10,6 @@ import {IStyle} from '../../server-src/interfaces/style';
 
 (async () => {
   const map = await initMap();
-  const deck = initDeckGl(map);
-  initInfowindow(map, deck);
 
   await initAuth();
   document.getElementById('signin').style.display = 'none';
@@ -27,6 +26,14 @@ import {IStyle} from '../../server-src/interfaces/style';
     return;
   }
 
-  const geojsonLayer = deckGlGeojsonLayer(data, params.style as IStyle);
-  deck.setProps({layers: [geojsonLayer as any]});
+  const geojsonLayer: GeoJsonLayer = deckGlGeojsonLayer(
+    data,
+    params.style as IStyle
+  );
+  const overlay = new GoogleMapsOverlay({
+    layers: [geojsonLayer]
+  });
+
+  overlay.setMap(map);
+  initInfowindow(map, overlay);
 })();
