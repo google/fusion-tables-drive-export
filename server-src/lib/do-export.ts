@@ -16,6 +16,7 @@ import getArchiveIndexSheet from '../drive/get-archive-index-sheet';
 import insertExportRowInIndexSheet from '../drive/insert-export-row-in-index-sheet';
 import logFileExportInIndexSheet from '../drive/log-file-export-in-index-sheet';
 import addFilePermissions from '../drive/add-file-permissions';
+import {IS_LARGE_TRESHOLD} from '../config/config';
 import {web as serverCredentials} from '../config/credentials.json';
 import credentials from '../config/credentials-error-reporting.json';
 import {IStyle} from '../interfaces/style';
@@ -90,6 +91,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     exportLog,
     exportId
   } = options;
+  let isLarge: boolean = false;
   let hasGeometryData: boolean = false;
   let driveFile: drive_v3.Schema$File | undefined;
   let styles: IStyle[] = [];
@@ -97,6 +99,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
   try {
     const csv = await getFusiontableCsv(auth, table);
     const csvWithGeoJson = convertKmlToGeoJson(csv);
+    isLarge = csvWithGeoJson.data.length > IS_LARGE_TRESHOLD;
     hasGeometryData = csvWithGeoJson.hasGeometryData || false;
     driveFile = await uploadToDrive(auth, folderId, csvWithGeoJson);
     styles = await getFusiontableStyles(auth, table.id);
@@ -116,6 +119,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       status: 'success',
       driveFile,
       styles,
+      isLarge,
       hasGeometryData
     });
   } catch (error) {
@@ -127,6 +131,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       error: error.message,
       driveFile,
       styles,
+      isLarge,
       hasGeometryData
     });
   }

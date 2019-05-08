@@ -23,6 +23,7 @@ interface ILogTable {
   error?: Error;
   driveFile?: drive_v3.Schema$File;
   styles: IStyle[];
+  isLarge: boolean;
   hasGeometryData: boolean;
 }
 
@@ -52,6 +53,7 @@ export default class {
             name: table.name
           },
           visualizations: [],
+          isLarge: false,
           hasGeometryData: false
         })
     );
@@ -85,6 +87,7 @@ export default class {
     table.visualizations = params.styles.map(style =>
       btoa(JSON.stringify(style))
     );
+    table.isLarge = params.isLarge;
     table.hasGeometryData = params.hasGeometryData;
   }
 

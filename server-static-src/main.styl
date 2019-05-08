@@ -381,7 +381,7 @@ main
     &--visualization
       margin-left: .5em
 
-  &__csv-info
+  &__info, &__warning
     color: $primary
     display: inline-block
     position: relative
@@ -426,5 +426,6 @@ main
   &:not([loading]) .loading,
   &--csv &__link__icon--spreadsheet,
   &--spreadsheet &__link__icon--csv,
-  &:not(&--csv) &__csv-info
+  &:not(&--csv) &__info--csv,
+  &__visualization:not(&__visualization--is-large) &__warning--is-large
     display: none
