@@ -34,7 +34,7 @@ yarn # install dependencies
 Run the following command to start the server on localhost:
 
 ```sh
-yarn run start:dev # start the server and the visualizer
+yarn run start:dev # start the server
 ```
 
 ### Deploy

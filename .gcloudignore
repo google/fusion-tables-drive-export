@@ -23,5 +23,4 @@ tslint.json
 yarn-error.log
 
 server-src/
-visualizer-src/
 .cache/
