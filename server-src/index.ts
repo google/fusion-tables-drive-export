@@ -86,6 +86,7 @@ app.get('/export/updates/:exportId', (req, res, next) => {
     return next(boom.unauthorized());
   }
 
+  res.set('Cache-Control', 'no-store');
   res.json(exportLog.getExport(exportId));
 });
 
@@ -101,6 +102,7 @@ app.get('/export', (req, res, next) => {
 
   findFusiontables(auth)
     .then(tables => {
+      res.set('Cache-Control', 'no-store');
       res.render('export-select-tables', {tables, isSignedIn: Boolean(tokens)});
     })
     .catch(error => next(boom.badImplementation(error)));
@@ -130,6 +132,7 @@ app.post('/export', (req, res, next) => {
         exportLog,
         exportId
       });
+      res.set('Cache-Control', 'no-store');
       res.render('export-in-progress', {
         tables,
         isSignedIn: Boolean(tokens),

@@ -39,7 +39,7 @@ function requestUpdates() {
         .filter(
           tableExport =>
             tableExport.status !== 'loading' &&
-            !renderedTableExports.includes(tableExport.table.id)
+            renderedTableExports.indexOf(tableExport.table.id) === -1
         )
         .forEach(updateTable);
     } else {
