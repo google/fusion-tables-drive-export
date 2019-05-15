@@ -1,5 +1,5 @@
 export const DRIVE_ARCHIVE_FOLDER = 'ft-archive';
-export const DRIVE_ARCHIVE_INDEX_SHEET = 'ft-exports-index';
+export const DRIVE_ARCHIVE_INDEX_SHEET = 'ft-archive-index';
 
 export const getDriveSubfolderName = () => {
   const now = new Date();
