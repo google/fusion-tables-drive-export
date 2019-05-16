@@ -5,10 +5,9 @@ import {OAuth2Client} from 'google-auth-library';
 import {ErrorReporting} from '@google-cloud/error-reporting';
 import {ITable} from '../interfaces/table';
 import {ISheet} from '../interfaces/sheet';
+import getCsv from './get-csv';
 import ExportLog from './export-log';
-import convertKmlToGeoJson from './convert-kml-to-geojson';
 import getArchiveFolder from '../drive/get-archive-folder';
-import getFusiontableCsv from '../fusiontables/get-csv';
 import getFusiontableStyles from '../fusiontables/get-styles';
 import getDriveUploadFolder from '../drive/get-upload-folder';
 import uploadToDrive from '../drive/upload';
@@ -97,11 +96,10 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
   let styles: IStyle[] = [];
 
   try {
-    const csv = await getFusiontableCsv(auth, table);
-    const csvWithGeoJson = convertKmlToGeoJson(csv);
-    isLarge = csvWithGeoJson.data.length > IS_LARGE_TRESHOLD;
-    hasGeometryData = csvWithGeoJson.hasGeometryData || false;
-    driveFile = await uploadToDrive(auth, folderId, csvWithGeoJson);
+    const csv = await getCsv(auth, table);
+    isLarge = csv.data.length > IS_LARGE_TRESHOLD;
+    hasGeometryData = csv.hasGeometryData || false;
+    driveFile = await uploadToDrive(auth, folderId, csv);
     styles = await getFusiontableStyles(auth, table.id);
     await logFileExportInIndexSheet({
       auth,
