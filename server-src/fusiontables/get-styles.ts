@@ -1,8 +1,9 @@
 import {google, fusiontables_v2} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import {IStyle} from '../interfaces/style';
-import getColorFromIconName from '../lib/get-color-from-icon-name';
-import getColorWithAlpha from '../lib/get-color-with-alpha';
+import convertMarkerStyles from './convert-marker-styles';
+import convertColorStyles from './convert-color-styles';
+import convertWeightStyles from './convert-weight-styles';
 
 const fusiontables = google.fusiontables('v2');
 
@@ -49,44 +50,41 @@ function getStyle(
   const {markerOptions, polylineOptions, polygonOptions} = fusiontableStyle;
   const style: IStyle = {};
 
-  if (markerOptions && markerOptions.iconName) {
-    style.marker = {
-      fillColor: getColorFromIconName(markerOptions.iconName),
-      size: markerOptions.iconName.startsWith('large') ? 'large' : 'small'
-    };
+  if (markerOptions) {
+    style.marker = convertMarkerStyles(markerOptions);
   }
 
   if (polylineOptions) {
-    const {strokeWeight, strokeColor, strokeOpacity} = polylineOptions;
-
-    style.polyline = {strokeWeight};
-
-    if (strokeColor) {
-      style.polyline.strokeColor = getColorWithAlpha(
-        strokeColor,
-        strokeOpacity
-      );
-    }
+    style.polyline = {
+      strokeColor: convertColorStyles(
+        polylineOptions.strokeColor,
+        polylineOptions.strokeOpacity,
+        polylineOptions.strokeColorStyler
+      ),
+      strokeWeight: convertWeightStyles(
+        polylineOptions.strokeWeight,
+        polylineOptions.strokeWeightStyler
+      )
+    };
   }
 
   if (polygonOptions) {
-    const {
-      strokeWeight,
-      strokeColor,
-      strokeOpacity,
-      fillColor,
-      fillOpacity
-    } = polygonOptions;
-
-    style.polygon = {strokeWeight};
-
-    if (strokeColor) {
-      style.polygon.strokeColor = getColorWithAlpha(strokeColor, strokeOpacity);
-    }
-
-    if (fillColor) {
-      style.polygon.fillColor = getColorWithAlpha(fillColor, fillOpacity);
-    }
+    style.polygon = {
+      fill: convertColorStyles(
+        polygonOptions.fillColor,
+        polygonOptions.fillOpacity,
+        polygonOptions.fillColorStyler
+      ),
+      strokeColor: convertColorStyles(
+        polygonOptions.strokeColor,
+        polygonOptions.strokeOpacity,
+        polygonOptions.strokeColorStyler
+      ),
+      strokeWeight: convertWeightStyles(
+        polygonOptions.strokeWeight,
+        polygonOptions.strokeWeightStyler
+      )
+    };
   }
 
   return style;
