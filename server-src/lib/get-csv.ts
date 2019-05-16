@@ -17,7 +17,9 @@ export default async function(
 ): Promise<ICsv> {
   const csv = await getFusiontableCsv(auth, table);
   const json = Papa.parse(csv.data).data;
-  const jsonWithGeoJson = convertKmlToGeoJson(json);
+  const columns = await getFusiontableColumns(auth, table.id);
+  const jsonWithColumnTypes = addColumnTypes(json, columns);
+  const jsonWithGeoJson = convertKmlToGeoJson(jsonWithColumnTypes);
   const hasLargeCells = checkForLargeCells(jsonWithGeoJson);
   const hasGeometryData = getHasGeometryData(jsonWithGeoJson);
 
@@ -26,4 +28,29 @@ export default async function(
     hasLargeCells,
     hasGeometryData
   });
+}
+
+/**
+ * Add the type for some columns
+ */
+function addColumnTypes(
+  json: any[],
+  columns: Array<{
+    name: string;
+    isImage: boolean;
+  }>
+): any[] {
+  const titleRow = json[0].map((columnName: string) => {
+    const matchingColumn = columns.find(column => column.name === columnName);
+
+    if (matchingColumn && matchingColumn.isImage) {
+      return columnName + ' ::image';
+    }
+
+    return columnName;
+  });
+
+  json[0] = titleRow;
+
+  return json;
 }
