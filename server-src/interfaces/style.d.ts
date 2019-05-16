@@ -1,5 +1,3 @@
-import {fusiontables_v2} from 'googleapis';
-
 /**
  * A style of a visualization and it’s parts
  */
