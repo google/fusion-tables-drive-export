@@ -52,7 +52,7 @@ export default class {
             id: table.id,
             name: table.name
           },
-          visualizations: [],
+          styles: [],
           isLarge: false,
           hasGeometryData: false
         })
@@ -84,7 +84,7 @@ export default class {
     table.status = params.status;
     table.error = params.error;
     table.driveFile = params.driveFile;
-    table.visualizations = params.styles.map(style =>
+    table.styles = params.styles.map(style =>
       btoa(JSON.stringify(style))
     );
     table.isLarge = params.isLarge;

@@ -104,8 +104,8 @@ function updateTable(data: ITableExport) {
   $driveLink.setAttribute('title', driveTitle);
 
   if (data.hasGeometryData) {
-    if (data.visualizations.length > 0) {
-      data.visualizations.forEach(style =>
+    if (data.styles.length > 0) {
+      data.styles.forEach(style =>
         renderVisualizationLink($visualization, id, name, style)
       );
     } else {
