@@ -3,7 +3,7 @@
  */
 type IMarkerIcon = {
   fillColor: string;
-  size: string;
+  size: 'large' | 'small';
 };
 
 export type IMarkerStyle = {
@@ -16,6 +16,12 @@ export type IMarkerStyle = {
   }[];
 };
 
+export type IColorGradient = {
+  min: number;
+  max: number;
+  colors: string[];
+};
+
 export type IColorStyle = {
   color?: string;
   columnName?: string;
@@ -24,11 +30,7 @@ export type IColorStyle = {
     max: number;
     color: string;
   }[];
-  gradient?: {
-    min: number;
-    max: number;
-    colors: string[];
-  };
+  gradient?: IColorGradient;
 };
 
 export type IWeightStyle = {
