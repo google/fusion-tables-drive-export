@@ -1,6 +1,5 @@
 import {fusiontables_v2} from 'googleapis';
-import {IMarkerStyle, IMarkerIcon} from '../interfaces/style';
-import getColorFromIconName from '../lib/get-color-from-icon-name';
+import {IMarkerStyle} from '../interfaces/style';
 
 /**
  * Convert the marker style for the visualization
@@ -12,7 +11,7 @@ export default function convertMarkerStyles(
   const markerStyle: IMarkerStyle = {};
 
   if (iconName) {
-    markerStyle.icon = getIconFromName(iconName);
+    markerStyle.icon = iconName;
   } else if (
     iconStyler &&
     iconStyler.kind === 'fusiontables#buckets' &&
@@ -22,19 +21,9 @@ export default function convertMarkerStyles(
     markerStyle.buckets = iconStyler.buckets.map(bucket => ({
       min: bucket.min || 0,
       max: bucket.max || 0,
-      icon: getIconFromName(bucket.icon || '')
+      icon: bucket.icon || ''
     }));
   }
 
   return markerStyle;
-}
-
-/**
- * Get the icon definition from an icon name
- */
-function getIconFromName(iconName: string): IMarkerIcon {
-  return {
-    fillColor: getColorFromIconName(iconName),
-    size: iconName.startsWith('large') ? 'large' : 'small'
-  };
 }
