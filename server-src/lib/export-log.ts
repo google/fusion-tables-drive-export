@@ -84,9 +84,7 @@ export default class {
     table.status = params.status;
     table.error = params.error;
     table.driveFile = params.driveFile;
-    table.styles = params.styles.map(style =>
-      btoa(JSON.stringify(style))
-    );
+    table.styles = params.styles.map(style => btoa(JSON.stringify(style)));
     table.isLarge = params.isLarge;
     table.hasGeometryData = params.hasGeometryData;
   }
