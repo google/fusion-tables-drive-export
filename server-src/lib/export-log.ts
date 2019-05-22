@@ -4,8 +4,7 @@ import {ITableExport} from '../interfaces/table-export';
 import {IStyle} from '../interfaces/style';
 import {Credentials} from 'google-auth-library';
 import {drive_v3} from 'googleapis';
-
-const btoa = (data: string) => Buffer.from(data).toString('base64');
+import getStyleHash from './get-style-hash';
 
 interface IFusiontableExports {
   [exportId: string]: {
@@ -84,7 +83,7 @@ export default class {
     table.status = params.status;
     table.error = params.error;
     table.driveFile = params.driveFile;
-    table.styles = params.styles.map(style => btoa(JSON.stringify(style)));
+    table.styles = params.styles.map(getStyleHash);
     table.isLarge = params.isLarge;
     table.hasGeometryData = params.hasGeometryData;
   }
