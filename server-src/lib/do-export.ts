@@ -107,6 +107,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       sheet: archiveSheet,
       table,
       driveFile,
+      styles,
       hasGeometryData
     });
     await addFilePermissions(auth, driveFile.id as string, table.permissions);
