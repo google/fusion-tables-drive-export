@@ -43,12 +43,12 @@ export default async function(options: ILogFileOptions): Promise<void> {
 
   const createRow = (visualizerLink?: string, index?: number) => {
     const isFirstRow = index === 0 || index === undefined;
-    const VisualizationId = index !== undefined ? index + 1 : '';
+    const visualizationId = index !== undefined ? index + 1 : '';
     const visualizationValue = visualizerLink
       ? {
           formulaValue:
             `=HYPERLINK("${visualizerLink}",` +
-            ` "Visualization ${VisualizationId}")`
+            ` "Visualization ${visualizationId}")`
         }
       : {
           stringValue: 'Cannot visualize — no geometry found.'
