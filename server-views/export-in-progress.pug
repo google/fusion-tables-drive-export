@@ -17,7 +17,7 @@ block content
       li.fusiontable.fusiontable--export(data-id=table.id)
         .fusiontable__name= table.name
         .fusiontable__file
-          svg.loading
+          svg.spinner
             use(xlink:href="#icon-spinner")
           .fusiontable__info.fusiontable__info--csv
             svg.fusiontable__info__icon.fusiontable__info__icon--unhovered
@@ -32,7 +32,7 @@ block content
             svg.fusiontable__link__icon.fusiontable__link__icon--csv
               use(xlink:href="#icon-csv")
         .fusiontable__visualization
-          svg.loading
+          svg.spinner
             use(xlink:href="#icon-spinner")
           .fusiontable__warning.fusiontable__warning--is-large
             svg.fusiontable__warning__icon
@@ -87,10 +87,3 @@ block content
       title Warning
       path(d="M0 0h24v24H0z", fill="none")
       path(d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" fill="currentColor")
-
-    symbol#icon-spinner(viewBox="0 0 50 50")
-      title Loading
-      circle(fill="none", stroke="currentColor", stroke-linecap="round", stroke-width="6", stroke-miterlimit="10", cx="25", cy="25.2", r="19.9")
-
-
-  script(src="main.js")

@@ -71,6 +71,36 @@ svg
   vertical-align: text-bottom
 
 /**
+ *          LOADING SPINNER
+ */
+.spinner
+  width: 1.125rem
+  height: 1.125rem
+  color: $grey
+  animation: spinnerrotate 2s linear infinite
+  use
+    stroke-dasharray: 1,200
+    stroke-dashoffset: 0
+    animation: spinnerdash 1.5s ease-in-out infinite
+
+@keyframes spinnerrotate
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)
+
+@keyframes spinnerdash
+  0%
+    stroke-dasharray: 1,200
+    stroke-dashoffset: 0
+  50%
+    stroke-dasharray: 89,200
+    stroke-dashoffset: -35
+  100%
+    stroke-dasharray: 89,200
+    stroke-dashoffset: -124
+
+/**
  *          BUTTONS
  */
 .button, .text-button
@@ -153,6 +183,19 @@ svg
     color: #fff
     background: #135BB9
 
+  &__spinner
+    color: #fff
+    position: absolute
+    left: 50%
+    display: none
+    margin-left: -.5625em
+
+  &--loading &__text
+    visibility: hidden
+
+  &--loading &__spinner
+    display: inline-block
+
   &--login
     padding-left: 0
     padding-right: 1rem
@@ -161,36 +204,6 @@ svg
       width: 2.7rem
       height: 2.7rem
       margin-right: 1rem
-
-/**
- *          LOADING
- */
-.loading
-  width: 1.125rem
-  height: 1.125rem
-  color: $grey
-  animation: loadingrotate 2s linear infinite
-  use
-    stroke-dasharray: 1,200
-    stroke-dashoffset: 0
-    animation: loadingdash 1.5s ease-in-out infinite
-
-@keyframes loadingrotate
-  from
-    transform: rotate(0deg)
-  to
-    transform: rotate(360deg)
-
-@keyframes loadingdash
-  0%
-    stroke-dasharray: 1,200
-    stroke-dashoffset: 0
-  50%
-    stroke-dasharray: 89,200
-    stroke-dashoffset: -35
-  100%
-    stroke-dasharray: 89,200
-    stroke-dashoffset: -124
 
 /**
  *          HEADER
@@ -422,7 +435,7 @@ main
 
   &[loading] &__link,
   &--failed &__link,
-  &:not([loading]) .loading,
+  &:not([loading]) .spinner,
   &--csv &__link__icon--spreadsheet,
   &--spreadsheet &__link__icon--csv,
   &:not(&--csv) &__info--csv,

@@ -14,5 +14,12 @@ html
         if isSignedIn
           a.text-button(href="/logout") Log out
 
+    svg.svg-reference(xmlns="http://www.w3.org/2000/svg")
+      symbol#icon-spinner(viewBox="0 0 50 50")
+        title Loading
+        circle(fill="none", stroke="currentColor", stroke-linecap="round", stroke-width="6", stroke-miterlimit="10", cx="25", cy="25.2", r="19.9")
+
     main(class=error && 'error')
       block content
+
+    script(src="main.js")
