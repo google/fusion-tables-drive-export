@@ -24,6 +24,17 @@ app.set('view engine', 'pug');
 app.set('views', './server-views');
 app.use(express.urlencoded({extended: true}));
 app.use(helmet());
+app.use(helmet.referrerPolicy({policy: 'same-origin'}));
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      // tslint:disable quotemark
+      defaultSrc: ["'self'", 'fonts.gstatic.com'],
+      styleSrc: ["'self'", 'fonts.googleapis.com']
+      // tslint:enable quotemark
+    }
+  })
+);
 app.use(express.static('server-static'));
 
 app.use(
