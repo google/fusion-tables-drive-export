@@ -25,7 +25,7 @@ if (document.querySelectorAll('.fusiontable[loading]').length > 0) {
 
 function requestUpdates() {
   const request = new XMLHttpRequest();
-  request.open('GET', '/export/updates/' + exportId, true);
+  request.open('GET', '/export/' + exportId + '/updates', true);
   request.onload = function() {
     let recheck = false;
 
