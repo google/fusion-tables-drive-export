@@ -27,8 +27,9 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       // tslint:disable quotemark
-      defaultSrc: ["'self'", 'fonts.gstatic.com'],
-      styleSrc: ["'self'", 'fonts.googleapis.com']
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", 'fonts.googleapis.com'],
+      fontSrc: ["'self'", 'fonts.gstatic.com']
       // tslint:enable quotemark
     }
   })
@@ -153,9 +154,6 @@ app.post('/export', (req, res, next) => {
   }
 
   const tableIds = req.body.tableIds || [];
-
-  const origin = `${req.protocol}://${req.headers.host}`;
-
   const auth = getOAuthClient(req);
   auth.setCredentials(tokens);
 
@@ -165,7 +163,6 @@ app.post('/export', (req, res, next) => {
       const exportFolderId = await doExport({
         auth,
         tables,
-        origin,
         exportLog,
         exportId
       });

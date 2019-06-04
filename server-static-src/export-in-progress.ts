@@ -129,7 +129,9 @@ function renderVisualizationLink(
   name: string,
   style?: string
 ): void {
-  let url = `/visualizer/#file=${id}`;
+  let url =
+    'https://storage.googleapis.com/fusion-tables-export.appspot.com/' +
+    `index.html#file=${id}`;
 
   if (style) {
     url += `&style=${style}`;
