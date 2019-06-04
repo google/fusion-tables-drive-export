@@ -10,14 +10,12 @@ import doExport from './lib/do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
 import {web as serverCredentials} from './config/credentials.json';
-import credentials from './config/credentials-error-reporting.json';
 
 const app = express();
 const exportLog = new ExportLog();
 const errors = new ErrorReporting({
   reportUnhandledRejections: true,
-  projectId: serverCredentials.project_id,
-  credentials
+  projectId: serverCredentials.project_id
 });
 
 app.set('view engine', 'pug');

@@ -17,13 +17,11 @@ import logFileExportInIndexSheet from '../drive/log-file-export-in-index-sheet';
 import addFilePermissions from '../drive/add-file-permissions';
 import {IS_LARGE_TRESHOLD} from '../config/config';
 import {web as serverCredentials} from '../config/credentials.json';
-import credentials from '../config/credentials-error-reporting.json';
 import {IStyle} from '../interfaces/style';
 
 const errors = new ErrorReporting({
   reportUnhandledRejections: true,
-  projectId: serverCredentials.project_id,
-  credentials
+  projectId: serverCredentials.project_id
 });
 
 /**
