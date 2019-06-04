@@ -97,8 +97,15 @@ app.get('/export/:exportId/updates', (req, res, next) => {
     return next(boom.unauthorized());
   }
 
+  const tables = exportLog.getExportTables(exportId);
+  const allFinished = tables.every(table => table.status !== 'loading');
+
+  if (allFinished) {
+    req.session = undefined;
+  }
+
   res.set('Cache-Control', 'no-store');
-  res.json(exportLog.getExportTables(exportId));
+  res.json(tables);
 });
 
 app.get('/export/:exportId', (req, res, next) => {
