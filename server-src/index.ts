@@ -88,7 +88,7 @@ app.get('/auth/callback', (req, res, next) => {
     .catch(error => next(boom.badImplementation(error)));
 });
 
-app.get('/export/updates/:exportId', (req, res, next) => {
+app.get('/export/:exportId/updates', (req, res, next) => {
   const tokens = req.session && req.session.tokens;
   const isSignedIn = Boolean(tokens);
   const exportId = req.params.exportId;
@@ -98,7 +98,28 @@ app.get('/export/updates/:exportId', (req, res, next) => {
   }
 
   res.set('Cache-Control', 'no-store');
-  res.json(exportLog.getExport(exportId));
+  res.json(exportLog.getExportTables(exportId));
+});
+
+app.get('/export/:exportId', (req, res, next) => {
+  const tokens = req.session && req.session.tokens;
+  const exportId = req.params.exportId;
+
+  if (!tokens || !exportLog.isAuthorized(exportId, tokens)) {
+    return res.redirect(303, '/');
+  }
+
+  const tables = exportLog
+    .getExportTables(exportId)
+    .map(exportTable => exportTable.table);
+
+  res.set('Cache-Control', 'no-store');
+  res.render('export-in-progress', {
+    tables,
+    isSignedIn: Boolean(tokens),
+    exportFolderId: exportLog.getExportFolderId(exportId),
+    exportId
+  });
 });
 
 app.get('/export', (req, res, next) => {
@@ -143,13 +164,8 @@ app.post('/export', (req, res, next) => {
         exportLog,
         exportId
       });
-      res.set('Cache-Control', 'no-store');
-      res.render('export-in-progress', {
-        tables,
-        isSignedIn: Boolean(tokens),
-        exportFolderId,
-        exportId
-      });
+      exportLog.logExportFolder(exportId, exportFolderId);
+      return res.redirect(302, `/export/${exportId}`);
     })
     .catch(error => next(boom.badImplementation(error)));
 });

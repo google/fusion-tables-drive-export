@@ -9,6 +9,7 @@ import getStyleHash from './get-style-hash';
 interface IFusiontableExports {
   [exportId: string]: {
     credentials: Credentials;
+    exportFolderId?: string;
     tables: {
       [tablesId: string]: ITableExport;
     };
@@ -74,6 +75,13 @@ export default class {
   }
 
   /**
+   * Log the ID of an export folder
+   */
+  public logExportFolder(exportId: string, folderId: string) {
+    this.fusiontableExports[exportId].exportFolderId = folderId;
+  }
+
+  /**
    * Log an table export
    */
   public logTable(params: ILogTable) {
@@ -91,7 +99,22 @@ export default class {
   /**
    * Get the tables of an export
    */
-  public getExport(exportId: string): ITableExport[] {
+  public getExportFolderId(exportId: string): string | undefined {
+    if (!this.fusiontableExports[exportId]) {
+      return undefined;
+    }
+
+    return this.fusiontableExports[exportId].exportFolderId;
+  }
+
+  /**
+   * Get the tables of an export
+   */
+  public getExportTables(exportId: string): ITableExport[] {
+    if (!this.fusiontableExports[exportId]) {
+      return [];
+    }
+
     return Object.values(this.fusiontableExports[exportId].tables);
   }
 }
