@@ -32,10 +32,9 @@ interface IDoExportOptions {
   exportLog: ExportLog;
   exportId: string;
   tables: ITable[];
-  origin: string;
 }
 export default async function(options: IDoExportOptions): Promise<string> {
-  const {auth, exportLog, exportId, tables, origin} = options;
+  const {auth, exportLog, exportId, tables} = options;
   const limit = pLimit(1);
   let folderId: string;
   let archiveSheet: ISheet;
@@ -56,7 +55,6 @@ export default async function(options: IDoExportOptions): Promise<string> {
         auth,
         folderId,
         archiveSheet,
-        origin,
         exportLog,
         exportId
       })
@@ -74,20 +72,11 @@ interface ISaveTableOptions {
   auth: OAuth2Client;
   folderId: string;
   archiveSheet: ISheet;
-  origin: string;
   exportLog: ExportLog;
   exportId: string;
 }
 async function saveTable(options: ISaveTableOptions): Promise<void> {
-  const {
-    table,
-    auth,
-    folderId,
-    archiveSheet,
-    origin,
-    exportLog,
-    exportId
-  } = options;
+  const {table, auth, folderId, archiveSheet, exportLog, exportId} = options;
   let isLarge: boolean = false;
   let hasGeometryData: boolean = false;
   let driveFile: drive_v3.Schema$File | undefined;
@@ -101,7 +90,6 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     styles = await getFusiontableStyles(auth, table.id);
     await logFileExportInIndexSheet({
       auth,
-      origin,
       sheet: archiveSheet,
       table,
       driveFile,

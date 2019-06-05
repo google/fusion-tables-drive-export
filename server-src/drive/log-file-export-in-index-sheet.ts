@@ -13,7 +13,6 @@ const sheets = google.sheets('v4');
  */
 interface ILogFileOptions {
   auth: OAuth2Client;
-  origin: string;
   sheet: ISheet;
   table: ITable;
   driveFile: drive_v3.Schema$File;
@@ -21,15 +20,7 @@ interface ILogFileOptions {
   hasGeometryData: boolean;
 }
 export default async function(options: ILogFileOptions): Promise<void> {
-  const {
-    auth,
-    origin,
-    sheet,
-    table,
-    driveFile,
-    styles,
-    hasGeometryData
-  } = options;
+  const {auth, sheet, table, driveFile, styles, hasGeometryData} = options;
   const {spreadsheetId, sheetId} = sheet;
   const tableLink = `https://fusiontables.google.com/DataSource?docid=${
     table.id
@@ -37,7 +28,9 @@ export default async function(options: ILogFileOptions): Promise<void> {
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
   const fileType =
     driveFile.mimeType === MIME_TYPES.csv ? 'CSV' : 'Spreadsheet';
-  const visualizerBaseLink = `${origin}/visualizer/#file=${driveFile.id}`;
+  const visualizerBaseLink =
+    'https://storage.googleapis.com/' +
+    `fusion-tables-export.appspot.com/index.html#file=${driveFile.id}`;
   const exportDate = new Date().toISOString();
   let rows = [];
 
