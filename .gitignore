@@ -5,3 +5,4 @@ server
 .cache
 server-static
 yarn-error.log
+server-src/config/credentials.json
