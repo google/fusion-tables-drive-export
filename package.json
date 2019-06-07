@@ -2,7 +2,7 @@
   "name": "fusion-tables-drive-export",
   "description": "Export Google Fusion Tables to Google Drive",
   "version": "1.0.0",
-  "license": "",
+  "license": "Apache License",
   "author": "Ubilabs",
   "engines": {
     "node": ">=10"
@@ -17,7 +17,10 @@
     "start:dev:server-static": "parcel watch --no-hmr ./server-static-src/main.ts -d ./server-static",
     "build": "run-p 'build:server' 'build:server-static'",
     "build:server": "tsc -p .",
-    "build:server-static": "parcel build ./server-static-src/main.ts -d ./server-static --experimental-scope-hoisting",
+    "build:server-static": "parcel build ./server-static-src/main.ts -d ./server-static --experimental-scope-hoisting && yarn run prepend:header",
+    "prepend:header": "run-s 'prepend:header:js' 'prepend:header:css'",
+    "prepend:header:js": "for file in server-static/*.js; do cat server-static-src/license-header.txt $file > /tmp/out && mv /tmp/out $file; done",
+    "prepend:header:css": "for file in server-static/*.css; do cat server-static-src/license-header.txt $file > /tmp/out && mv /tmp/out $file; done",
     "prettier:ci": "prettier --list-different '{server-static-src/*.ts,server-src/**/*.ts}'",
     "prettier:fix": "prettier --write '{server-static-src/*.ts,server-src/**/*.ts}'",
     "deploy": "yarn run test && yarn run build && gcloud app deploy --project fusion-tables-export",
