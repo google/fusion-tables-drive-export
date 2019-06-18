@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-const latLngPairs: Array<[string, string]> = [
-  ['Latitude', 'Longitude'],
-  ['latitude', 'longitude'],
-  ['Lat', 'Lng'],
-  ['Lat', 'Lon'],
-  ['Lat', 'Long'],
-  ['lat', 'lng'],
-  ['lat', 'lon'],
-  ['lat', 'long']
-];
-
 /**
  * Parse the data for geometries or point data
  */
@@ -35,13 +24,23 @@ export default function(data: string[][]): boolean {
     return true;
   }
 
-  const latLngPair = latLngPairs.find(
-    pair => columnNames.includes(pair[0]) && columnNames.includes(pair[1])
-  );
+  const hasLatLngColumns =
+    hasColumnStartingWith(columnNames, 'lat') &&
+    (hasColumnStartingWith(columnNames, 'lng') ||
+      hasColumnStartingWith(columnNames, 'lon'));
 
-  if (latLngPair) {
+  if (hasLatLngColumns) {
     return true;
   }
 
   return false;
+}
+
+/**
+ * Check whether there is a column name starting with the passed string
+ */
+function hasColumnStartingWith(columnNames: string[], start: string): boolean {
+  return columnNames.some(columnName =>
+    columnName.toLowerCase().startsWith(start)
+  );
 }
