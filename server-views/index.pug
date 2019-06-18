@@ -1,11 +1,18 @@
 extends layout.pug
 
 block content
-  h2 Export your data to Google Drive.
+  h2 Migrate your Fusion Tables map visualizations
 
   p
-    | Google Fusion Tables and the Fusion Tables API will be turned down December 3, 2019. Embedded Fusion Tables visualizations — maps, charts, tables and cards — will also stop working that day. Maps using the Fusion Tables Layer in the Maps JavaScript API v3.37 will start to see errors in August 2019.&ensp;
-    a(href="https://support.google.com/fusiontables/answer/9185417", title="Notice: Google Fusion Tables Turndown") Read more
+    | The Fusion Tables Archive Tool is an easy way to preserve existing maps generated with Google Fusion Tables. Google built it to help preserve and migrate your map visualizations before the&ensp;
+    a(href="https://support.google.com/fusiontables/answer/9185417", title="Notice: Google Fusion Tables Turndown") Fusion Tables shutdown
+    | &ensp;on December 3, 2019. You’ll be able to access the archive portion of this tool starting today until shutdown.
+
+  p
+    | To get started, sign in with your Google account below. You will need to give the tool access to your Google Drive and Fusion Tables so that it can read your tables and write archives (Google Sheets). For more information about the tool, please read this&ensp;
+    a(href="https://medium.com/@googleearth/download-your-fusion-tables-data-and-migrate-your-maps-278babd23879", title="Download your Fusion Tables data and migrate your maps") blog post
+    | . If you have more questions about the tool or the archives, please&ensp;
+    a(href="https://docs.google.com/document/d/1TrKT9FS3IryH6ahAfYX_7joMtiIq_p_vPCQ-lYyktm0/edit?usp=sharing", title="Fusion Tables Export FAQ") read this FAQ
     | .
 
   a.button.button--login(href="/auth", title="Sign in with Google to start exporting your Fusiontables")
@@ -23,3 +30,5 @@ block content
     svg.button__spinner.spinner
       use(xlink:href="#icon-spinner")
     span.button__text Sign in with Google
+
+  a(href="https://github.com/ubilabs/fusion-tables-drive-export/", title="Fusion Tables Drive Export on Github") Share feedback
