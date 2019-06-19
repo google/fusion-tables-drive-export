@@ -38,9 +38,7 @@ interface ILogFileOptions {
 export default async function(options: ILogFileOptions): Promise<void> {
   const {auth, sheet, table, driveFile, styles, hasGeometryData} = options;
   const {spreadsheetId, sheetId} = sheet;
-  const tableLink = `https://fusiontables.google.com/DataSource?docid=${
-    table.id
-  }`;
+  const tableLink = `https://fusiontables.google.com/DataSource?docid=${table.id}`;
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
   const fileType =
     driveFile.mimeType === MIME_TYPES.csv ? 'CSV' : 'Spreadsheet';

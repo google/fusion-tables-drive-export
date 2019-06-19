@@ -201,7 +201,7 @@ app.use((error: boom, req: Request, res: Response, next: any) => {
   }
 
   return res
-    .status(error.output && error.output.statusCode || 500)
+    .status((error.output && error.output.statusCode) || 500)
     .render('error', {error: error.message});
 });
 
