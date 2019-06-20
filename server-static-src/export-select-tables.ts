@@ -15,16 +15,18 @@
  */
 
 const $exportAll: HTMLInputElement = document.querySelector('#export-all');
+const $exportButton: HTMLButtonElement = document.querySelector('#export-button');
 let $exportChecks: NodeListOf<HTMLInputElement>;
 
 /* tslint:disable prefer-for-of */
 
-if ($exportAll) {
+if ($exportAll && $exportButton) {
   $exportChecks = document.querySelectorAll('.checkbox-row__input');
   $exportAll.addEventListener('change', handleExportAllChange);
   for (let i = 0; i < $exportChecks.length; ++i) {
     $exportChecks[i].addEventListener('change', handlexportCheckChange);
   }
+  setExportButtonState();
 }
 
 /**
@@ -34,6 +36,8 @@ function handleExportAllChange() {
   for (let i = 0; i < $exportChecks.length; ++i) {
     $exportChecks[i].checked = $exportAll.checked;
   }
+
+  setExportButtonState();
 }
 
 /**
@@ -49,4 +53,24 @@ function handlexportCheckChange() {
   }
 
   $exportAll.checked = allChecked;
+  setExportButtonState();
+}
+
+/**
+ * Set the state of the export button according the list state
+ */
+function setExportButtonState() {
+  let someChecked = false;
+
+  for (let i = 0; i < $exportChecks.length; ++i) {
+    if ($exportChecks[i].checked) {
+      someChecked = true;
+    }
+  }
+
+  if (someChecked) {
+    $exportButton.removeAttribute('disabled');
+  } else {
+    $exportButton.setAttribute('disabled', 'disabled');
+  }
 }
