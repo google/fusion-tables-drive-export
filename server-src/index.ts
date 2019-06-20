@@ -21,6 +21,7 @@ import cookieSession from 'cookie-session';
 import {ErrorReporting} from '@google-cloud/error-reporting';
 import {getOAuthClient, getAuthUrl} from './lib/auth';
 import findFusiontables from './drive/find-fusiontables';
+import getFusiontablesByIds from './drive/get-fusiontables-by-ids';
 import ExportLog from './lib/export-log';
 import doExport from './lib/do-export';
 import {isString} from 'util';
@@ -153,11 +154,17 @@ app.get('/export', (req, res, next) => {
 
   const auth = getOAuthClient(req);
   auth.setCredentials(tokens);
+  const {filterByName, pageToken} = req.query;
 
-  findFusiontables(auth)
-    .then(tables => {
+  findFusiontables(auth, filterByName, pageToken)
+    .then(({tables, nextPageToken}) => {
       res.set('Cache-Control', 'no-store');
-      res.render('export-select-tables', {tables, isSignedIn: Boolean(tokens)});
+      res.render('export-select-tables', {
+        tables,
+        isSignedIn: Boolean(tokens),
+        filterByName,
+        nextPageToken
+      });
     })
     .catch(error => next(boom.badImplementation(error)));
 });
@@ -173,7 +180,7 @@ app.post('/export', (req, res, next) => {
   const auth = getOAuthClient(req);
   auth.setCredentials(tokens);
 
-  findFusiontables(auth, tableIds)
+  getFusiontablesByIds(auth, tableIds)
     .then(async tables => {
       const exportId = exportLog.startExport(tokens, tables);
       const exportFolderId = await doExport({
@@ -202,9 +209,15 @@ app.get('/logout', (req, res) => {
 });
 
 app.use((error: boom, req: Request, res: Response, next: any) => {
-  errors.report(error, req);
+  console.log(error.message, error.name);
 
-  if (error && error.message === 'invalid_request') {
+  errors.report(error);
+
+  if (
+    error &&
+    (error.message === 'invalid_request' ||
+      error.message === 'No refresh token is set.')
+  ) {
     return res.redirect(303, '/logout');
   }
 

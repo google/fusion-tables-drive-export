@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
+const $nameFilterInput: HTMLInputElement = document.querySelector(
+  '.input__field'
+);
+const $nameFilterClear: HTMLAnchorElement = document.querySelector(
+  '.input__clear'
+);
 const $exportAll: HTMLInputElement = document.querySelector('#export-all');
-const $exportButton: HTMLButtonElement = document.querySelector('#export-button');
+const $exportButton: HTMLButtonElement = document.querySelector(
+  '#export-button'
+);
 let $exportChecks: NodeListOf<HTMLInputElement>;
 
 /* tslint:disable prefer-for-of */
+
+if ($nameFilterInput) {
+  $nameFilterInput.addEventListener('input', handleNameFilterInputChange);
+  handleNameFilterInputChange();
+}
 
 if ($exportAll && $exportButton) {
   $exportChecks = document.querySelectorAll('.checkbox-row__input');
@@ -27,6 +40,18 @@ if ($exportAll && $exportButton) {
     $exportChecks[i].addEventListener('change', handlexportCheckChange);
   }
   setExportButtonState();
+}
+
+/**
+ * When the input changed
+ */
+function handleNameFilterInputChange() {
+  const hasContent = Boolean($nameFilterInput.value);
+  if (hasContent) {
+    $nameFilterClear.classList.remove('hidden');
+  } else {
+    $nameFilterClear.classList.add('hidden');
+  }
 }
 
 /**

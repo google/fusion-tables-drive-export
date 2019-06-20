@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import {OAuth2Client} from 'google-auth-library';
-import getFusiontableFiles from './get-fusiontable-files';
-import {IGetTableFiles} from '../interfaces/tables-list';
+import {ITable} from './table';
 
 /**
- * Find all Fusiontables owned by user
+ * A list of tables and an optional next page token
  */
-export default async function(
-  auth: OAuth2Client,
-  filterByName?: string,
-  pageToken?: string
-): Promise<IGetTableFiles> {
-  try {
-    const query = filterByName ? `name contains '${filterByName}'` : undefined;
-    return await getFusiontableFiles({auth, limit: 100, query, pageToken});
-  } catch (error) {
-    throw error;
-  }
+export interface IGetTableFiles {
+  nextPageToken?: string;
+  tables: ITable[];
 }

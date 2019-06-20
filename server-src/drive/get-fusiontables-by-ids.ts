@@ -16,19 +16,32 @@
 
 import {OAuth2Client} from 'google-auth-library';
 import getFusiontableFiles from './get-fusiontable-files';
-import {IGetTableFiles} from '../interfaces/tables-list';
+import {ITable} from '../interfaces/table';
 
 /**
  * Find all Fusiontables owned by user
  */
 export default async function(
   auth: OAuth2Client,
-  filterByName?: string,
-  pageToken?: string
-): Promise<IGetTableFiles> {
+  ids: string[]
+): Promise<ITable[]> {
   try {
-    const query = filterByName ? `name contains '${filterByName}'` : undefined;
-    return await getFusiontableFiles({auth, limit: 100, query, pageToken});
+    let allTables: ITable[] = [];
+    let pageToken: string | undefined;
+
+    do {
+      const {tables, nextPageToken} = await getFusiontableFiles({
+        auth,
+        limit: 1000,
+        pageToken
+      });
+      pageToken = nextPageToken;
+      allTables = [...allTables, ...tables];
+    } while (pageToken);
+
+    allTables = allTables.filter(table => ids.includes(table.id as string));
+
+    return allTables;
   } catch (error) {
     throw error;
   }
