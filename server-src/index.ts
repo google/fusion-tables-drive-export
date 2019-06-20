@@ -188,6 +188,14 @@ app.post('/export', (req, res, next) => {
     .catch(error => next(boom.badImplementation(error)));
 });
 
+app.get('/privacy', (req, res) => {
+  res.redirect(301, 'https://policies.google.com/privacy');
+});
+
+app.get('/terms', (req, res) => {
+  res.redirect(301, 'https://policies.google.com/terms');
+});
+
 app.get('/logout', (req, res) => {
   req.session = undefined;
   res.redirect(303, '/');
