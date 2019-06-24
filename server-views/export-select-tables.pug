@@ -45,7 +45,7 @@ block content
                 svg
                   use(xlink:href="#open-in-new")
 
-      footer.actions
+      footer.export-actions
         if nextPageToken
           if filterByName
             a(href=`/export?filterByName=${filterByName}&pageToken=${nextPageToken}`) Next page
