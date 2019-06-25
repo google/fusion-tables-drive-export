@@ -39,6 +39,8 @@ export default function convertMarkerStyles(
       max: bucket.max || 0,
       icon: bucket.icon || ''
     }));
+  } else if (iconStyler && iconStyler.kind === 'fusiontables#fromColumn') {
+    markerStyle.columnName = iconStyler.columnName;
   }
 
   return markerStyle;
