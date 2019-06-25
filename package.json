@@ -23,7 +23,8 @@
     "prepend:header:css": "for file in server-static/*.css; do cat server-static-src/license-header.txt $file > /tmp/out && mv /tmp/out $file; done",
     "prettier:ci": "prettier --list-different '{server-static-src/*.ts,server-src/**/*.ts}'",
     "prettier:fix": "prettier --write '{server-static-src/*.ts,server-src/**/*.ts}'",
-    "deploy": "yarn run test && yarn run build && gcloud app deploy --project fusion-tables-export",
+    "deploy": "yarn run test && yarn run build && gcloud app deploy --project fusion-tables-export && yarn run deploy:dispatch",
+    "deploy:dispatch": "gcloud app deploy dispatch.yaml --project fusion-tables-export",
     "test": "yarn run prettier:ci && tslint -p . -e '**/*.json'"
   },
   "prettier": {

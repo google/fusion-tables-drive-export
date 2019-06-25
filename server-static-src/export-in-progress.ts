@@ -146,7 +146,7 @@ function renderVisualizationLink(
   style?: string
 ): void {
   let url =
-    'https://storage.googleapis.com/fusion-tables-export.appspot.com/' +
+    'https://geoviz-dot-fusion-tables-export.appspot.com/' +
     `index.html#file=${id}`;
 
   if (style) {

@@ -43,8 +43,8 @@ export default async function(options: ILogFileOptions): Promise<void> {
   const fileType =
     driveFile.mimeType === MIME_TYPES.csv ? 'CSV' : 'Spreadsheet';
   const visualizerBaseLink =
-    'https://storage.googleapis.com/' +
-    `fusion-tables-export.appspot.com/index.html#file=${driveFile.id}`;
+    'https://geoviz-dot-fusion-tables-export.appspot.com/' +
+    `index.html#file=${driveFile.id}`;
   const exportDate = new Date().toISOString();
   let rows = [];
 
