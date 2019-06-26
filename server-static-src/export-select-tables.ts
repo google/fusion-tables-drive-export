@@ -48,9 +48,9 @@ if ($exportAll && $exportButton) {
 function handleNameFilterInputChange() {
   const hasContent = Boolean($nameFilterInput.value);
   if (hasContent) {
-    $nameFilterClear.classList.remove('hidden');
+    $nameFilterClear.classList.remove('invisible');
   } else {
-    $nameFilterClear.classList.add('hidden');
+    $nameFilterClear.classList.add('invisible');
   }
 }
 

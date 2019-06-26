@@ -17,14 +17,14 @@ block content
       span
 
     form.filters(action="/export" method="GET")
-      .input.input--with-button.input--with-clear
+      .input
         input.input__field(type="text", id="filterByName", name="filterByName", placeholder="Search by name", value=filterByName)
-        button.button.input__button(type="submit")
-          svg
-            use(xlink:href="#search")
-        a.input__clear(href="/export", title="Clear filter")
+        a.text-button.input__clear(href="/export", title="Clear filter")
           svg
             use(xlink:href="#clear")
+        button.button.button--outlined.input__button(type="submit")
+          svg
+            use(xlink:href="#search")
         label.input__label(for="filterByName") Filter
 
   if tables.length
@@ -48,9 +48,9 @@ block content
       footer.export-actions
         if nextPageToken
           if filterByName
-            a(href=`/export?filterByName=${filterByName}&pageToken=${nextPageToken}`) Next page
+            a.text-button(href=`/export?filterByName=${filterByName}&pageToken=${nextPageToken}`) Next page
           else
-            a(href=`/export?pageToken=${nextPageToken}`) Next page
+            a.text-button(href=`/export?pageToken=${nextPageToken}`) Next page
 
         button#export-button.button(type="submit")
           svg.button__spinner.spinner
