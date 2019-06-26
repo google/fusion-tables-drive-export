@@ -57,5 +57,44 @@ function convertToGeoJson(value: any): string | null {
     return null;
   }
 
-  return JSON.stringify(geoJson.features[0]);
+  const feature: GeoJSON.Feature = geoJson.features[0];
+  feature.geometry = fixCoordinates(feature.geometry);
+  return JSON.stringify(feature);
+}
+
+/**
+ * Fix the coordinates for polygons
+ */
+function fixCoordinates(geometry: GeoJSON.Geometry): GeoJSON.Geometry {
+  if (geometry.type === 'Polygon') {
+    geometry.coordinates = fixPolygonCoordinates(geometry.coordinates);
+  }
+
+  if (geometry.type === 'MultiPolygon') {
+    geometry.coordinates = geometry.coordinates.map(fixPolygonCoordinates);
+  }
+
+  if (geometry.type === 'GeometryCollection') {
+    geometry.geometries = geometry.geometries.map(fixCoordinates);
+  }
+
+  return geometry;
+}
+
+/**
+ * Fix the coordinates of a polygon
+ *
+ * When the first and last coordinate are not the same, fix it.
+ */
+function fixPolygonCoordinates(allCoordinates: number[][][]): number[][][] {
+  return allCoordinates.map(coordinates => {
+    const first = coordinates[0];
+    const last = coordinates[coordinates.length - 1];
+
+    if (first[0] !== last[0] || first[1] !== last[1]) {
+      coordinates.push(first);
+    }
+
+    return coordinates;
+  });
 }
