@@ -226,6 +226,12 @@ app.use((error: boom, req: Request, res: Response, next: any) => {
     .render('error', {error: error.message});
 });
 
+app.use((req: Request, res: Response, next: any) => {
+  const isSignedIn = Boolean(req.session && req.session.tokens);
+
+  res.status(404).render('404', {isSignedIn});
+});
+
 if (module === require.main) {
   const server = app.listen(process.env.PORT || 3000, () => {
     const address = server.address() as string | AddressInfo;

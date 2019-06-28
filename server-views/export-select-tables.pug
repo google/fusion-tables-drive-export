@@ -1,67 +1,68 @@
 extends layout.pug
 
 block content
-  h2 Select the tables to export
+  main
+    h2 Select the tables to export
 
-  header.checkbox-row.checkbox-row--header
+    header.checkbox-row.checkbox-row--header
+      if tables.length
+        input#export-all(type="checkbox", name="exportAll")
+        label.checkbox-row__label(for="export-all")
+          svg.checkbox-row__checkbox.checkbox-row__checkbox--outline(large)
+            use(xlink:href="#checkbox-outline")
+          svg.checkbox-row__checkbox.checkbox-row__checkbox--checked(large)
+            use(xlink:href="#checkbox-checked")
+          span All tables on this page
+      else
+        //- An empty element so Flexbox doesn’t align the filters to the left
+        span
+
+      form.filters(action="/export" method="GET")
+        .input
+          input.input__field(type="text", id="filterByName", name="filterByName", placeholder="Search by name", value=filterByName)
+          a.text-button.input__clear(href="/export", title="Clear filter")
+            svg
+              use(xlink:href="#clear")
+          button.button.button--outlined.input__button(type="submit")
+            svg
+              use(xlink:href="#search")
+          label.input__label(for="filterByName") Filter
+
     if tables.length
-      input#export-all(type="checkbox", name="exportAll")
-      label.checkbox-row__label(for="export-all")
-        svg.checkbox-row__checkbox.checkbox-row__checkbox--outline(large)
-          use(xlink:href="#checkbox-outline")
-        svg.checkbox-row__checkbox.checkbox-row__checkbox--checked(large)
-          use(xlink:href="#checkbox-checked")
-        span All tables on this page
+      form(action="/export" method="POST")
+        ul.list
+          each table in tables
+            li.checkbox-row
+              input.checkbox-row__input(type="checkbox", name="tableIds[]", id=table.id value=table.id)
+              .active-background
+              label.checkbox-row__label(for=table.id)
+                svg.checkbox-row__checkbox.checkbox-row__checkbox--outline(large)
+                  use(xlink:href="#checkbox-outline")
+                svg.checkbox-row__checkbox.checkbox-row__checkbox--checked(large)
+                  use(xlink:href="#checkbox-checked")
+                = table.name
+                | &emsp;
+                a.unflashy(href="https://fusiontables.google.com/DataSource?docid=" + table.id, title=table.name, target="_blank", rel="noopener")
+                  svg
+                    use(xlink:href="#open-in-new")
+
+        footer.export-actions
+          if nextPageToken
+            if filterByName
+              a.text-button(href=`/export?filterByName=${filterByName}&pageToken=${nextPageToken}`) Next page
+            else
+              a.text-button(href=`/export?pageToken=${nextPageToken}`) Next page
+
+          button#export-button.button(type="submit")
+            svg.button__spinner.spinner
+              use(xlink:href="#icon-spinner")
+            span.button__text Export Selected Tables
+
     else
-      //- An empty element so Flexbox doesn’t align the filters to the left
-      span
-
-    form.filters(action="/export" method="GET")
-      .input
-        input.input__field(type="text", id="filterByName", name="filterByName", placeholder="Search by name", value=filterByName)
-        a.text-button.input__clear(href="/export", title="Clear filter")
-          svg
-            use(xlink:href="#clear")
-        button.button.button--outlined.input__button(type="submit")
-          svg
-            use(xlink:href="#search")
-        label.input__label(for="filterByName") Filter
-
-  if tables.length
-    form(action="/export" method="POST")
-      ul.list
-        each table in tables
-          li.checkbox-row
-            input.checkbox-row__input(type="checkbox", name="tableIds[]", id=table.id value=table.id)
-            .active-background
-            label.checkbox-row__label(for=table.id)
-              svg.checkbox-row__checkbox.checkbox-row__checkbox--outline(large)
-                use(xlink:href="#checkbox-outline")
-              svg.checkbox-row__checkbox.checkbox-row__checkbox--checked(large)
-                use(xlink:href="#checkbox-checked")
-              = table.name
-              | &emsp;
-              a.unflashy(href="https://fusiontables.google.com/DataSource?docid=" + table.id, title=table.name, target="_blank", rel="noopener")
-                svg
-                  use(xlink:href="#open-in-new")
-
-      footer.export-actions
-        if nextPageToken
-          if filterByName
-            a.text-button(href=`/export?filterByName=${filterByName}&pageToken=${nextPageToken}`) Next page
-          else
-            a.text-button(href=`/export?pageToken=${nextPageToken}`) Next page
-
-        button#export-button.button(type="submit")
-          svg.button__spinner.spinner
-            use(xlink:href="#icon-spinner")
-          span.button__text Export Selected Tables
-
-  else
-    .nothing-message
-      | No tables for that filter found.&ensp;
-      a(href="/export", title="Show all Fusion Tables") Show all tables
-      | .
+      .nothing-message
+        | No tables for that filter found.&ensp;
+        a(href="/export", title="Show all Fusion Tables") Show all tables
+        | .
 
   svg.svg-reference(xmlns="http://www.w3.org/2000/svg")
     symbol#open-in-new(viewBox="0 0 24 24")

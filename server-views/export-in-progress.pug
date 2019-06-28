@@ -1,51 +1,52 @@
 extends layout.pug
 
 block content
-  h2
-    a.unflashy(href="/export", title="Go back to the selection of Fusiontables to export")
-      svg.back-link-icon(large)
-        use(xlink:href="#icon-arrow-back")
-    | Exporting these tables in the background:
+  main
+    h2
+      a.unflashy(href="/export", title="Go back to the selection of Fusiontables to export")
+        svg.back-link-icon(large)
+          use(xlink:href="#icon-arrow-back")
+      | Exporting these tables in the background:
 
-  .fusiontable.fusiontable--header
-    .fusiontable__name Tables
-    .fusiontable__file Data File
-    .fusiontable__visualization Visualization
+    .fusiontable.fusiontable--header
+      .fusiontable__name Tables
+      .fusiontable__file Data File
+      .fusiontable__visualization Visualization
 
-  ul.list.fusiontable-export(data-export-id=exportId)
-    each table in tables
-      li.fusiontable.fusiontable--export(data-id=table.id)
-        .fusiontable__name= table.name
-        .fusiontable__file
-          svg.spinner
-            use(xlink:href="#icon-spinner")
-          .fusiontable__info.fusiontable__info--csv
-            svg.fusiontable__info__icon.fusiontable__info__icon--unhovered
-              use(xlink:href="#icon-info-outline")
-            svg.fusiontable__info__icon.fusiontable__info__icon--hovered
-              use(xlink:href="#icon-info")
-            .fusiontable__info__tooltip
-              | Fusion Table is too large to export as a Google Sheet. Saved as a CSV instead.
-          a.unflashy.fusiontable__link.fusiontable__link--file(href="", title="", target="_blank", rel="noopener")
-            svg.fusiontable__link__icon.fusiontable__link__icon--spreadsheet
-              use(xlink:href="#icon-spreadsheet")
-            svg.fusiontable__link__icon.fusiontable__link__icon--csv
-              use(xlink:href="#icon-csv")
-        .fusiontable__visualization
-          svg.spinner
-            use(xlink:href="#icon-spinner")
-          .fusiontable__warning.fusiontable__warning--is-large
-            svg.fusiontable__warning__icon
-              use(xlink:href="#icon-warning")
-            .fusiontable__warning__tooltip
-              | As it is a large dataset, loading the visualization could take some time.
-          small No geometry found.
+    ul.list.fusiontable-export(data-export-id=exportId)
+      each table in tables
+        li.fusiontable.fusiontable--export(data-id=table.id)
+          .fusiontable__name= table.name
+          .fusiontable__file
+            svg.spinner
+              use(xlink:href="#icon-spinner")
+            .fusiontable__info.fusiontable__info--csv
+              svg.fusiontable__info__icon.fusiontable__info__icon--unhovered
+                use(xlink:href="#icon-info-outline")
+              svg.fusiontable__info__icon.fusiontable__info__icon--hovered
+                use(xlink:href="#icon-info")
+              .fusiontable__info__tooltip
+                | Fusion Table is too large to export as a Google Sheet. Saved as a CSV instead.
+            a.unflashy.fusiontable__link.fusiontable__link--file(href="", title="", target="_blank", rel="noopener")
+              svg.fusiontable__link__icon.fusiontable__link__icon--spreadsheet
+                use(xlink:href="#icon-spreadsheet")
+              svg.fusiontable__link__icon.fusiontable__link__icon--csv
+                use(xlink:href="#icon-csv")
+          .fusiontable__visualization
+            svg.spinner
+              use(xlink:href="#icon-spinner")
+            .fusiontable__warning.fusiontable__warning--is-large
+              svg.fusiontable__warning__icon
+                use(xlink:href="#icon-warning")
+              .fusiontable__warning__tooltip
+                | As it is a large dataset, loading the visualization could take some time.
+            small No geometry found.
 
-  p.fusiontable-export-summary
-    | Check your Google Drive for the exported files.&nbsp;
-    a(href="https://drive.google.com/drive/folders/" + exportFolderId, target="_blank", rel="noopener", title="Open Export Folder in Google Drive")
-      svg
-        use(xlink:href="#icon-open-in-new")
+    p.fusiontable-export-summary
+      | Check your Google Drive for the exported files.&nbsp;
+      a(href="https://drive.google.com/drive/folders/" + exportFolderId, target="_blank", rel="noopener", title="Open Export Folder in Google Drive")
+        svg
+          use(xlink:href="#icon-open-in-new")
 
   svg.svg-reference(xmlns="http://www.w3.org/2000/svg")
     symbol#icon-open-in-new(viewBox="0 0 24 24")
