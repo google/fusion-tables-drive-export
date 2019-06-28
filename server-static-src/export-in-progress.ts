@@ -16,8 +16,9 @@
 
 import {ITableExport} from '../server-src/interfaces/table-export';
 
-let exportId: string;
 const renderedTableExports: string[] = [];
+let exportId: string;
+let alreadyShowingMultipleVisualizationsNote = false;
 
 /* tslint:disable prefer-for-of */
 
@@ -124,6 +125,10 @@ function updateTable(data: ITableExport) {
       data.styles.forEach(style =>
         renderVisualizationLink($visualization, id, name, style)
       );
+
+      if (data.styles.length > 1) {
+        renderMultipleVisualizationsNote();
+      }
     } else {
       renderVisualizationLink($visualization, id, name);
     }
@@ -134,6 +139,31 @@ function updateTable(data: ITableExport) {
   if (data.isLarge) {
     $visualization.classList.add('fusiontable__visualization--is-large');
   }
+}
+
+/**
+ * Render a note that there are multiple visualizations
+ */
+function renderMultipleVisualizationsNote() {
+  if (alreadyShowingMultipleVisualizationsNote) {
+    return;
+  }
+
+  alreadyShowingMultipleVisualizationsNote = true;
+
+  const $header = document.querySelector('.fusiontable--header');
+
+  const $container = document.createElement('div');
+  $container.className = 'fusiontable__note';
+
+  const $message = document.createElement('div');
+  $message.className = 'fusiontable__note__message';
+  $message.textContent = 'Some fusion tables have multiple styling ' +
+    'configurations. A visualization has been created for each one, along ' +
+    'with a corresponding row in the index sheet.';
+  $container.appendChild($message);
+
+  $header.parentNode.insertBefore($container, $header);
 }
 
 /**

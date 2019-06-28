@@ -90,6 +90,9 @@ svg
   overflow: auto
   border-bottom: 1px solid #e0e0e0
 
+  .fusiontable__note ~ &
+    max-height: calc(100vh - 27rem)
+
 .back-link-icon
   margin-right: .75rem
   vertical-align: text-bottom
@@ -483,18 +486,28 @@ main
     &:not(&--not-available) small
       display: none
 
-  &__error
+  &__error, &__note
     width: 100%
+
+    main > &
+      padding: 0 1.5rem
 
     &__message
       font-size: .875rem
       margin-bottom: 1.5rem
-      border: 1px solid #f9c8c8
-      background: #fce3e3
-      color: #BF1515
       border-radius: 4px
       padding: 0.5rem 1.5rem
       line-height: 2
+
+  &__error__message
+    border: 1px solid #f9c8c8
+    background: #fce3e3
+    color: #BF1515
+
+  &__note__message
+    border: 1px solid #c8e3f9
+    background: #e3f5fc
+    color: $primary
 
   &__link
     color: $grey
