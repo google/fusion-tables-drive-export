@@ -158,7 +158,8 @@ function renderMultipleVisualizationsNote() {
 
   const $message = document.createElement('div');
   $message.className = 'fusiontable__note__message';
-  $message.textContent = 'Some fusion tables have multiple styling ' +
+  $message.textContent =
+    'Some fusion tables have multiple styling ' +
     'configurations. A visualization has been created for each one, along ' +
     'with a corresponding row in the index sheet.';
   $container.appendChild($message);
