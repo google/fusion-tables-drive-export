@@ -176,7 +176,7 @@ function renderVisualizationLink(
   name: string,
   style?: string
 ): void {
-  let url = `https://geoviz-dot-fusion-tables-export.appspot.com/#file=${id}`;
+  let url = `${process.env.VISUALIZER_BASE_URI}/#file=${id}`;
 
   if (style) {
     url += `&style=${style}`;

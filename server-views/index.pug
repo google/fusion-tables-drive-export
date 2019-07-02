@@ -10,7 +10,14 @@ block content
       | &thinsp;on December 3, 2019. You’ll be able to access the archive portion of this tool starting today until shutdown.
 
     p
-      | To get started, sign in with your Google account below. You will need to give the tool access to your Google Drive and Fusion Tables so that it can read your tables and write archives (Google Sheets). For more information about the tool, please read this&thinsp;
+      | To get started, sign in with your Google account below. This tool uses the following access rights (or "scopes"):
+      ul
+        li fusiontables.readonly: to read your tables
+        li drive.metadata: to get a list of all the tables that you own
+        li drive.file: to create archives (Sheets and CSV) and to update the "ft-archive-index" Sheet.
+
+    p
+      | For more information about the tool, please read this&thinsp;
       a(href="https://medium.com/@googleearth/download-your-fusion-tables-data-and-migrate-your-maps-278babd23879", title="Download your Fusion Tables data and migrate your maps") blog post
       | . If you have more questions about the tool or the archives, please&thinsp;
       a(href="https://docs.google.com/document/d/1TrKT9FS3IryH6ahAfYX_7joMtiIq_p_vPCQ-lYyktm0/edit?usp=sharing", title="Fusion Tables Export FAQ") read this FAQ

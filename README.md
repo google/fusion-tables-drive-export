@@ -6,7 +6,7 @@ Export Google Fusion Tables to Google Drive.
 
 ### Links
 
-* Live: https://earth-voyager.appspot.com/
+* Live: https://fusion-tables-export.appspot.com/
 
 ### Team
 
@@ -29,9 +29,31 @@ After cloning the repository, install all dependencies:
 yarn # install dependencies
 ```
 
+Install the [Google Cloud SDK](https://cloud.google.com/sdk/) and initialize it by running:
+
+```sh
+gcloud init
+```
+
+### Configuration
+
+Setup the gcloud to your project ID like this:
+
+```sh
+gcloud config set project my-project-id
+```
+
+Define the visualizer url in an environment variable called `VISUALIZER_BASE_URI` like this:
+
+```sh
+export VISUALIZER_BASE_URI="https://visualizer.my-domain.com"
+```
+
+To help with environment variable handling on a project level, check out [direnv](https://direnv.net/).
+
 ### APIs
 
-Enable the [Fusion Tables API](https://console.cloud.google.com/apis/library/fusiontables.googleapis.com), the [Drive API](https://console.cloud.google.com/apis/library/drive.googleapis.com) and the [Sheets API](https://console.cloud.google.com/apis/library/sheets.googleapis.com) in your [Google Cloud Console](https://console.cloud.google.com/). [StackDriver](https://console.cloud.google.com/apis/library/clouderrorreporting.googleapis.com) needs to be activated for Error Reporting in the same Google Cloud Project.
+Various APIs are needed for this project to run. Enable the [Fusion Tables API](https://console.cloud.google.com/apis/library/fusiontables.googleapis.com), the [Drive API](https://console.cloud.google.com/apis/library/drive.googleapis.com) and the [Sheets API](https://console.cloud.google.com/apis/library/sheets.googleapis.com) in your [Google Cloud Console](https://console.cloud.google.com/). Those are needed to read Fusiontables from a user account and to store the export in Google Drive including an index sheet listing all exports. [StackDriver](https://console.cloud.google.com/apis/library/clouderrorreporting.googleapis.com) needs to be activated for Error Reporting in the same Google Cloud Project.
 
 ### Server credentials
 
@@ -53,13 +75,7 @@ yarn run start:dev # start the server
 
 ### Deploy
 
-Install the [Google Cloud SDK](https://cloud.google.com/sdk/) and initialize it by running:
-
-```sh
-gcloud init
-```
-
-Then run the following command to deploy the application:
+Run the following command to deploy the application:
 
 ```sh
 yarn run deploy
@@ -67,4 +83,4 @@ yarn run deploy
 
 ## Hosting
 
-The project is hosted at [AppEngine](https://console.cloud.google.com/appengine/start?project=forward-ellipse-230710&serviceId=default)
+The project is hosted at [AppEngine](https://console.cloud.google.com/appengine/start)

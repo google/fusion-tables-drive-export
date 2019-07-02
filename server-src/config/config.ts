@@ -37,3 +37,5 @@ export const MIME_TYPES = {
 export const IS_LARGE_TRESHOLD = 50000000; // byte
 
 export const TABLES_PER_PAGE = 100;
+
+export const VISUALIZER_BASE_URI = process.env.VISUALIZER_BASE_URI;

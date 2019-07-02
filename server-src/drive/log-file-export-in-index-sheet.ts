@@ -19,7 +19,7 @@ import {OAuth2Client} from 'google-auth-library';
 import {ISheet} from '../interfaces/sheet';
 import {ITable} from '../interfaces/table';
 import {IStyle} from '../interfaces/style';
-import {MIME_TYPES} from '../config/config';
+import {MIME_TYPES, VISUALIZER_BASE_URI} from '../config/config';
 import getStyleHash from '../lib/get-style-hash';
 
 const sheets = google.sheets('v4');
@@ -42,7 +42,7 @@ export default async function(options: ILogFileOptions): Promise<void> {
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
   const fileType =
     driveFile.mimeType === MIME_TYPES.csv ? 'CSV' : 'Spreadsheet';
-  const visualizerBaseLink = `https://geoviz-dot-fusion-tables-export.appspot.com/#file=${driveFile.id}`;
+  const visualizerBaseLink = `${VISUALIZER_BASE_URI}/#file=${driveFile.id}`;
   const exportDate = new Date().toISOString();
   let rows = [];
 
