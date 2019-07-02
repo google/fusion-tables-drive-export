@@ -55,6 +55,8 @@ export default async function(options: IDoExportOptions): Promise<string> {
   let folderId: string;
   let archiveSheet: ISheet;
 
+  console.info(`• Start export ${exportId}`);
+
   try {
     const archiveFolderId = await getArchiveFolder(auth);
     folderId = await getDriveUploadFolder(auth, archiveFolderId);
@@ -64,7 +66,7 @@ export default async function(options: IDoExportOptions): Promise<string> {
     throw error;
   }
 
-  tables.map(table =>
+  tables.map((table, index) =>
     limit(() =>
       saveTable({
         table,
@@ -72,7 +74,8 @@ export default async function(options: IDoExportOptions): Promise<string> {
         folderId,
         archiveSheet,
         exportLog,
-        exportId
+        exportId,
+        isLast: index === tables.length - 1
       })
     )
   );
@@ -90,13 +93,24 @@ interface ISaveTableOptions {
   archiveSheet: ISheet;
   exportLog: ExportLog;
   exportId: string;
+  isLast: boolean;
 }
 async function saveTable(options: ISaveTableOptions): Promise<void> {
-  const {table, auth, folderId, archiveSheet, exportLog, exportId} = options;
+  const {
+    table,
+    auth,
+    folderId,
+    archiveSheet,
+    exportLog,
+    exportId,
+    isLast
+  } = options;
   let isLarge: boolean = false;
   let hasGeometryData: boolean = false;
   let driveFile: drive_v3.Schema$File | undefined;
   let styles: IStyle[] = [];
+
+  console.info(`• Start export of table ${table.id} from export ${exportId}`);
 
   try {
     const csv = await getCsv(auth, table);
@@ -123,6 +137,14 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       isLarge,
       hasGeometryData
     });
+
+    console.info(
+      `• Successfully finished table ${table.id} from export ${exportId}`
+    );
+
+    if (isLast) {
+      console.info(`• Finished export ${exportId}`);
+    }
   } catch (error) {
     errors.report(error);
     await exportLog.logTable({
@@ -135,5 +157,13 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       isLarge,
       hasGeometryData
     });
+
+    console.info(
+      `• Finished with an error! Table ${table.id} from export ${exportId}`
+    );
+
+    if (isLast) {
+      console.info(`• Finished export ${exportId}`);
+    }
   }
 }
