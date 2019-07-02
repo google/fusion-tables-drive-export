@@ -17,6 +17,7 @@
 import {OAuth2Client} from 'google-auth-library';
 import getFusiontableFiles from './get-fusiontable-files';
 import {IGetTableFiles} from '../interfaces/tables-list';
+import {TABLES_PER_PAGE} from '../config/config';
 
 /**
  * Find all Fusiontables owned by user
@@ -28,7 +29,12 @@ export default async function(
 ): Promise<IGetTableFiles> {
   try {
     const query = filterByName ? `name contains '${filterByName}'` : undefined;
-    return await getFusiontableFiles({auth, limit: 100, query, pageToken});
+    return await getFusiontableFiles({
+      auth,
+      limit: TABLES_PER_PAGE,
+      query,
+      pageToken
+    });
   } catch (error) {
     throw error;
   }

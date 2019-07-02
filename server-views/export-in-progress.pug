@@ -15,8 +15,8 @@ block content
 
     ul.list.fusiontable-export(data-export-id=exportId)
       each table in tables
-        li.fusiontable.fusiontable--export(data-id=table.id)
-          .fusiontable__name= table.name
+        li.fusiontable.fusiontable--export(data-id=table.tableId)
+          .fusiontable__name= table.tableName
           .fusiontable__file
             svg.spinner
               use(xlink:href="#icon-spinner")

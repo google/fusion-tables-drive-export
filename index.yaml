@@ -1,0 +1,7 @@
+indexes:
+
+- kind: Table
+  ancestor: yes
+  properties:
+  - name: tableName
+    direction: asc

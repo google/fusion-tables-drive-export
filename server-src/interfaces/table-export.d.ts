@@ -24,10 +24,8 @@ import {drive_v3} from 'googleapis';
 export type ITableExport = {
   status: 'loading' | 'success' | 'error';
   error?: Error;
-  readonly table: {
-    id: string;
-    name: string;
-  };
+  tableId: string;
+  tableName: string;
   driveFile?: drive_v3.Schema$File | null;
   styles: string[];
   isLarge: boolean;

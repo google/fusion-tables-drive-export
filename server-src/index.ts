@@ -104,7 +104,7 @@ app.get('/auth/callback', (req, res, next) => {
     .catch(error => next(boom.badImplementation(error)));
 });
 
-app.get('/export/:exportId/updates', (req, res, next) => {
+app.get('/export/:exportId/updates', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
   const isSignedIn = Boolean(tokens);
   const exportId = req.params.exportId;
@@ -113,18 +113,22 @@ app.get('/export/:exportId/updates', (req, res, next) => {
     return next(boom.unauthorized());
   }
 
-  const tables = exportLog.getExportTables(exportId);
-  const allFinished = tables.every(table => table.status !== 'loading');
+  try {
+    const tables = await exportLog.getExportTables(exportId);
+    const allFinished = tables.every(table => table.status !== 'loading');
 
-  if (allFinished) {
-    req.session = undefined;
+    if (allFinished) {
+      req.session = undefined;
+    }
+
+    res.set('Cache-Control', 'no-store');
+    res.json(tables);
+  } catch (error) {
+    next(boom.badImplementation(error));
   }
-
-  res.set('Cache-Control', 'no-store');
-  res.json(tables);
 });
 
-app.get('/export/:exportId', (req, res, next) => {
+app.get('/export/:exportId', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
   const exportId = req.params.exportId;
 
@@ -132,17 +136,20 @@ app.get('/export/:exportId', (req, res, next) => {
     return res.redirect(303, '/');
   }
 
-  const tables = exportLog
-    .getExportTables(exportId)
-    .map(exportTable => exportTable.table);
+  try {
+    const tables = await exportLog.getExportTables(exportId);
+    const exportFolderId = await exportLog.getExportFolderId(exportId);
 
-  res.set('Cache-Control', 'no-store');
-  res.render('export-in-progress', {
-    tables,
-    isSignedIn: Boolean(tokens),
-    exportFolderId: exportLog.getExportFolderId(exportId),
-    exportId
-  });
+    res.set('Cache-Control', 'no-store');
+    res.render('export-in-progress', {
+      tables,
+      isSignedIn: Boolean(tokens),
+      exportFolderId,
+      exportId
+    });
+  } catch (error) {
+    next(boom.badImplementation(error));
+  }
 });
 
 app.get('/export', (req, res, next) => {
@@ -182,14 +189,14 @@ app.post('/export', (req, res, next) => {
 
   getFusiontablesByIds(auth, tableIds)
     .then(async tables => {
-      const exportId = exportLog.startExport(tokens, tables);
+      const exportId = await exportLog.startExport(tokens, tables);
       const exportFolderId = await doExport({
         auth,
         tables,
         exportLog,
         exportId
       });
-      exportLog.logExportFolder(exportId, exportFolderId);
+      await exportLog.logExportFolder(exportId, exportFolderId);
       return res.redirect(302, `/export/${exportId}`);
     })
     .catch(error => next(boom.badImplementation(error)));

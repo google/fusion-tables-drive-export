@@ -56,7 +56,7 @@ function requestUpdates() {
         .filter(
           tableExport =>
             tableExport.status !== 'loading' &&
-            renderedTableExports.indexOf(tableExport.table.id) === -1
+            renderedTableExports.indexOf(tableExport.tableId) === -1
         )
         .forEach(updateTable);
     } else {
@@ -80,7 +80,7 @@ function updateTable(data: ITableExport) {
   }
 
   const $listEntry = document.querySelector(
-    '.fusiontable[data-id="' + data.table.id + '"]'
+    '.fusiontable[data-id="' + data.tableId + '"]'
   );
 
   if (!$listEntry) {
@@ -88,7 +88,7 @@ function updateTable(data: ITableExport) {
   }
 
   $listEntry.removeAttribute('loading');
-  renderedTableExports.push(data.table.id);
+  renderedTableExports.push(data.tableId);
 
   if (data.error) {
     $listEntry.innerHTML += `

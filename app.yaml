@@ -20,9 +20,6 @@ resources:
   memory_gb: 6.1
   disk_size_gb: 10
 
-network:
-  session_affinity: true
-
 handlers:
 - url: /.*
   script: auto

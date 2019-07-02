@@ -114,7 +114,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     });
     await addFilePermissions(auth, driveFile.id as string, table.permissions);
 
-    exportLog.logTable({
+    await exportLog.logTable({
       exportId,
       tableId: table.id,
       status: 'success',
@@ -125,7 +125,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     });
   } catch (error) {
     errors.report(error);
-    exportLog.logTable({
+    await exportLog.logTable({
       exportId,
       tableId: table.id,
       status: 'error',
