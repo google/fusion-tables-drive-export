@@ -49,6 +49,12 @@ Define the visualizer url in an environment variable called `VISUALIZER_BASE_URI
 export VISUALIZER_BASE_URI="https://visualizer.my-domain.com"
 ```
 
+Setup [Google Analytics](https://analytics.google.com/) and store your key in an environment variable called `GOOGLE_ANALYTICS_KEY`:
+
+```sh
+export GOOGLE_ANALYTICS_KEY="UA-XXXXXXXXX-X"
+```
+
 To help with environment variable handling on a project level, check out [direnv](https://direnv.net/).
 
 ### APIs

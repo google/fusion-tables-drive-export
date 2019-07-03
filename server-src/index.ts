@@ -45,6 +45,13 @@ app.use(
     directives: {
       // tslint:disable quotemark
       defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        'www.googletagmanager.com',
+        'www.google-analytics.com'
+      ],
+      imgSrc: ["'self'", 'www.google-analytics.com'],
       styleSrc: ["'self'", 'fonts.googleapis.com'],
       fontSrc: ["'self'", 'fonts.gstatic.com']
       // tslint:enable quotemark

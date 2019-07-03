@@ -40,6 +40,17 @@ if ($exportAll && $exportButton) {
     $exportChecks[i].addEventListener('change', handlexportCheckChange);
   }
   setExportButtonState();
+
+  /**
+   * Track amount of shown tables
+   */
+  if ($exportChecks.length > 0) {
+    window.gtag('event', 'show', {
+      event_category: 'Export',
+      event_label: 'tableCount',
+      value: $exportChecks.length
+    });
+  }
 }
 
 /**

@@ -31,6 +31,17 @@ for (let i = 0; i < $fusiontables.length; ++i) {
 }
 
 /**
+ * Track export of tables
+ */
+if ($fusiontables.length > 0) {
+  window.gtag('event', 'export', {
+    event_category: 'Export',
+    event_label: 'tableCount',
+    value: $fusiontables.length
+  });
+}
+
+/**
  * Request updates from the server export progress
  */
 if (document.querySelectorAll('.fusiontable[loading]').length > 0) {

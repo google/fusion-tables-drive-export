@@ -55,7 +55,7 @@ export default async function(options: IDoExportOptions): Promise<string> {
   let folderId: string;
   let archiveSheet: ISheet;
 
-  console.info(`• Start export ${exportId}`);
+  console.info(`• Start export ${exportId} with ${tables.length} tables`);
 
   try {
     const archiveFolderId = await getArchiveFolder(auth);

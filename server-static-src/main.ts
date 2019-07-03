@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+declare global {
+  interface Window {
+    dataLayer: any[];
+    gtag: (...data: any[]) => void;
+  }
+}
+
+import './analytics';
 import './export-select-tables';
 import './export-in-progress';
 import './main.styl';
