@@ -1,0 +1,4 @@
+cron:
+- description: "Clear Finished Exports Progress"
+  url: /clear-exports
+  schedule: every 60 mins

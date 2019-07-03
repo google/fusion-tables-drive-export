@@ -22,14 +22,14 @@ import {ErrorReporting} from '@google-cloud/error-reporting';
 import {getOAuthClient, getAuthUrl} from './lib/auth';
 import findFusiontables from './drive/find-fusiontables';
 import getFusiontablesByIds from './drive/get-fusiontables-by-ids';
-import ExportLog from './lib/export-log';
+import ExportProgress from './lib/export-progress';
 import doExport from './lib/do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
 import {web as serverCredentials} from './config/credentials.json';
 
 const app = express();
-const exportLog = new ExportLog();
+const exportProgress = new ExportProgress();
 const errors = new ErrorReporting({
   reportUnhandledRejections: true,
   projectId: serverCredentials.project_id
@@ -109,15 +109,16 @@ app.get('/export/:exportId/updates', async (req, res, next) => {
   const isSignedIn = Boolean(tokens);
   const exportId = req.params.exportId;
 
-  if (!isSignedIn || !exportLog.isAuthorized(exportId, tokens)) {
+  if (!isSignedIn || !exportProgress.isAuthorized(exportId, tokens)) {
     return next(boom.unauthorized());
   }
 
   try {
-    const tables = await exportLog.getExportTables(exportId);
+    const tables = await exportProgress.getExportTables(exportId);
     const allFinished = tables.every(table => table.status !== 'loading');
 
     if (allFinished) {
+      exportProgress.deleteExport(exportId);
       req.session = undefined;
     }
 
@@ -132,13 +133,13 @@ app.get('/export/:exportId', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
   const exportId = req.params.exportId;
 
-  if (!tokens || !exportLog.isAuthorized(exportId, tokens)) {
+  if (!tokens || !exportProgress.isAuthorized(exportId, tokens)) {
     return res.redirect(303, '/');
   }
 
   try {
-    const tables = await exportLog.getExportTables(exportId);
-    const exportFolderId = await exportLog.getExportFolderId(exportId);
+    const tables = await exportProgress.getExportTables(exportId);
+    const exportFolderId = await exportProgress.getExportFolderId(exportId);
 
     res.set('Cache-Control', 'no-store');
     res.render('export-in-progress', {
@@ -189,17 +190,27 @@ app.post('/export', (req, res, next) => {
 
   getFusiontablesByIds(auth, tableIds)
     .then(async tables => {
-      const exportId = await exportLog.startExport(tokens, tables);
+      const exportId = await exportProgress.startExport(tokens, tables);
       const exportFolderId = await doExport({
         auth,
         tables,
-        exportLog,
+        exportProgress,
         exportId
       });
-      await exportLog.logExportFolder(exportId, exportFolderId);
+      await exportProgress.logExportFolder(exportId, exportFolderId);
       return res.redirect(302, `/export/${exportId}`);
     })
     .catch(error => next(boom.badImplementation(error)));
+});
+
+app.get('/clear-exports', (req, res) => {
+  if (req.get('X-Appengine-Cron') !== 'true') {
+    res.sendStatus(401);
+    return;
+  }
+
+  exportProgress.clearFinishedExports();
+  res.sendStatus(200);
 });
 
 app.get('/privacy', (req, res) => {

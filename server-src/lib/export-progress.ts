@@ -69,9 +69,7 @@ const excludeFromTableIndexes = [
  * A log containing the exported tables
  */
 export default class {
-  private datastore: Datastore = new Datastore({
-    keyFilename: './server-src/config/datastore-credentials.json'
-  });
+  private datastore: Datastore = new Datastore();
 
   /**
    * Create a new export
@@ -210,6 +208,31 @@ export default class {
   }
 
   /**
+   * Clear all finished exports
+   */
+  public async clearFinishedExports(): Promise<void> {
+    const query = this.datastore.createQuery('Export');
+
+    try {
+      const [fusiontableExports] = await this.datastore.runQuery(query);
+      const exportIds = fusiontableExports.map(
+        fustiontableExport => fustiontableExport[this.datastore.KEY].name
+      );
+
+      exportIds.forEach(async exportId => {
+        const tables = await this.getExportTables(exportId);
+        const allFinished = tables.every(table => table.status !== 'loading');
+
+        if (allFinished) {
+          this.deleteExport(exportId);
+        }
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Get the tables of an export
    */
   public async getExportTables(exportId: string): Promise<ITableExport[]> {
@@ -222,6 +245,31 @@ export default class {
     try {
       const [tables] = await this.datastore.runQuery(query);
       return tables.sort(sortByTableName);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Delete an export from the log
+   */
+  public async deleteExport(exportId: string): Promise<void> {
+    const exportKey = this.datastore.key(['Export', exportId]);
+
+    try {
+      const tables = await this.getExportTables(exportId);
+
+      tables.forEach(table => {
+        const key = this.datastore.key([
+          'Export',
+          exportId,
+          'Table',
+          table.tableId
+        ]);
+        this.datastore.delete(key);
+      });
+
+      this.datastore.delete(exportKey);
     } catch (error) {
       throw error;
     }

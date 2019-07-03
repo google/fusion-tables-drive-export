@@ -22,7 +22,7 @@ import {ErrorReporting} from '@google-cloud/error-reporting';
 import {ITable} from '../interfaces/table';
 import {ISheet} from '../interfaces/sheet';
 import getCsv from './get-csv';
-import ExportLog from './export-log';
+import ExportProgress from './export-progress';
 import getArchiveFolder from '../drive/get-archive-folder';
 import getFusiontableStyles from '../fusiontables/get-styles';
 import getDriveUploadFolder from '../drive/get-upload-folder';
@@ -45,12 +45,12 @@ const errors = new ErrorReporting({
  */
 interface IDoExportOptions {
   auth: OAuth2Client;
-  exportLog: ExportLog;
+  exportProgress: ExportProgress;
   exportId: string;
   tables: ITable[];
 }
 export default async function(options: IDoExportOptions): Promise<string> {
-  const {auth, exportLog, exportId, tables} = options;
+  const {auth, exportProgress, exportId, tables} = options;
   const limit = pLimit(1);
   let folderId: string;
   let archiveSheet: ISheet;
@@ -73,7 +73,7 @@ export default async function(options: IDoExportOptions): Promise<string> {
         auth,
         folderId,
         archiveSheet,
-        exportLog,
+        exportProgress,
         exportId,
         isLast: index === tables.length - 1
       })
@@ -91,7 +91,7 @@ interface ISaveTableOptions {
   auth: OAuth2Client;
   folderId: string;
   archiveSheet: ISheet;
-  exportLog: ExportLog;
+  exportProgress: ExportProgress;
   exportId: string;
   isLast: boolean;
 }
@@ -101,7 +101,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     auth,
     folderId,
     archiveSheet,
-    exportLog,
+    exportProgress,
     exportId,
     isLast
   } = options;
@@ -128,7 +128,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     });
     await addFilePermissions(auth, driveFile.id as string, table.permissions);
 
-    await exportLog.logTable({
+    await exportProgress.logTable({
       exportId,
       tableId: table.id,
       status: 'success',
@@ -147,7 +147,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     }
   } catch (error) {
     errors.report(error);
-    await exportLog.logTable({
+    await exportProgress.logTable({
       exportId,
       tableId: table.id,
       status: 'error',

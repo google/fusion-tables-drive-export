@@ -23,8 +23,9 @@
     "prepend:header:css": "for file in server-static/*.css; do cat server-static-src/license-header.txt $file > /tmp/out && mv /tmp/out $file; done",
     "prettier:ci": "prettier --list-different '{server-static-src/*.ts,server-src/**/*.ts}'",
     "prettier:fix": "prettier --write '{server-static-src/*.ts,server-src/**/*.ts}'",
-    "deploy": "yarn run test && yarn run build && gcloud app deploy && yarn run deploy:datastore-indexes && yarn run deploy:dispatch",
+    "deploy": "yarn run test && yarn run build && gcloud app deploy && yarn run deploy:datastore-indexes && yarn run deploy:cron && yarn run deploy:dispatch",
     "deploy:datastore-indexes": "gcloud datastore indexes create index.yaml",
+    "deploy:cron": "gcloud app deploy cron.yaml",
     "deploy:dispatch": "gcloud app deploy dispatch.yaml",
     "test": "yarn run prettier:ci && tslint -p . -e '**/*.json'"
   },
