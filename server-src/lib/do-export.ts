@@ -22,7 +22,7 @@ import {ErrorReporting} from '@google-cloud/error-reporting';
 import {ITable} from '../interfaces/table';
 import {ISheet} from '../interfaces/sheet';
 import getCsv from './get-csv';
-import ExportProgress from './export-progress';
+import logTableExportProgress from '../export-progress/log-table';
 import getArchiveFolder from '../drive/get-archive-folder';
 import getFusiontableStyles from '../fusiontables/get-styles';
 import getDriveUploadFolder from '../drive/get-upload-folder';
@@ -45,12 +45,11 @@ const errors = new ErrorReporting({
  */
 interface IDoExportOptions {
   auth: OAuth2Client;
-  exportProgress: ExportProgress;
   exportId: string;
   tables: ITable[];
 }
 export default async function(options: IDoExportOptions): Promise<string> {
-  const {auth, exportProgress, exportId, tables} = options;
+  const {auth, exportId, tables} = options;
   const limit = pLimit(1);
   let folderId: string;
   let archiveSheet: ISheet;
@@ -73,7 +72,6 @@ export default async function(options: IDoExportOptions): Promise<string> {
         auth,
         folderId,
         archiveSheet,
-        exportProgress,
         exportId,
         isLast: index === tables.length - 1
       })
@@ -91,20 +89,11 @@ interface ISaveTableOptions {
   auth: OAuth2Client;
   folderId: string;
   archiveSheet: ISheet;
-  exportProgress: ExportProgress;
   exportId: string;
   isLast: boolean;
 }
 async function saveTable(options: ISaveTableOptions): Promise<void> {
-  const {
-    table,
-    auth,
-    folderId,
-    archiveSheet,
-    exportProgress,
-    exportId,
-    isLast
-  } = options;
+  const {table, auth, folderId, archiveSheet, exportId, isLast} = options;
   let isLarge: boolean = false;
   let hasGeometryData: boolean = false;
   let driveFile: drive_v3.Schema$File | undefined;
@@ -129,7 +118,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     });
     await addFilePermissions(auth, driveFile.id as string, table.permissions);
 
-    await exportProgress.logTable({
+    await logTableExportProgress({
       exportId,
       tableId: table.id,
       status: 'success',
@@ -148,7 +137,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     }
   } catch (error) {
     errors.report(error);
-    await exportProgress.logTable({
+    await logTableExportProgress({
       exportId,
       tableId: table.id,
       status: 'error',

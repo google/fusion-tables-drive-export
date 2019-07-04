@@ -22,14 +22,19 @@ import {ErrorReporting} from '@google-cloud/error-reporting';
 import {getOAuthClient, getAuthUrl} from './lib/auth';
 import findFusiontables from './drive/find-fusiontables';
 import getFusiontablesByIds from './drive/get-fusiontables-by-ids';
-import ExportProgress from './lib/export-progress';
+import initExportProgress from './export-progress/init';
+import isAuthorized from './export-progress/is-authorized';
+import logExportFolder from './export-progress/log-export-folder';
+import getExportFolderId from './export-progress/get-export-folder-id';
+import getExportTables from './export-progress/get-export-tables';
+import deleteExportProgress from './export-progress/delete-export';
+import clearExportProgress from './export-progress/clear';
 import doExport from './lib/do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
 import {web as serverCredentials} from './config/credentials.json';
 
 const app = express();
-const exportProgress = new ExportProgress();
 const errors = new ErrorReporting({
   reportUnhandledRejections: true,
   projectId: serverCredentials.project_id
@@ -116,16 +121,16 @@ app.get('/export/:exportId/updates', async (req, res, next) => {
   const isSignedIn = Boolean(tokens);
   const exportId = req.params.exportId;
 
-  if (!isSignedIn || !exportProgress.isAuthorized(exportId, tokens)) {
+  if (!isSignedIn || !isAuthorized(exportId, tokens)) {
     return next(boom.unauthorized());
   }
 
   try {
-    const tables = await exportProgress.getExportTables(exportId);
+    const tables = await getExportTables(exportId);
     const allFinished = tables.every(table => table.status !== 'loading');
 
     if (allFinished) {
-      exportProgress.deleteExport(exportId);
+      deleteExportProgress(exportId);
       req.session = undefined;
     }
 
@@ -138,20 +143,21 @@ app.get('/export/:exportId/updates', async (req, res, next) => {
 
 app.get('/export/:exportId', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
+  const isSignedIn = Boolean(tokens);
   const exportId = req.params.exportId;
 
-  if (!tokens || !exportProgress.isAuthorized(exportId, tokens)) {
+  if (!tokens || !isAuthorized(exportId, tokens)) {
     return res.redirect(303, '/');
   }
 
   try {
-    const tables = await exportProgress.getExportTables(exportId);
-    const exportFolderId = await exportProgress.getExportFolderId(exportId);
+    const tables = await getExportTables(exportId);
+    const exportFolderId = await getExportFolderId(exportId);
 
     res.set('Cache-Control', 'no-store');
     res.render('export-in-progress', {
       tables,
-      isSignedIn: Boolean(tokens),
+      isSignedIn,
       exportFolderId,
       exportId
     });
@@ -197,14 +203,9 @@ app.post('/export', (req, res, next) => {
 
   getFusiontablesByIds(auth, tableIds)
     .then(async tables => {
-      const exportId = await exportProgress.startExport(tokens, tables);
-      const exportFolderId = await doExport({
-        auth,
-        tables,
-        exportProgress,
-        exportId
-      });
-      await exportProgress.logExportFolder(exportId, exportFolderId);
+      const exportId = await initExportProgress(tokens, tables);
+      const exportFolderId = await doExport({auth, tables, exportId});
+      await logExportFolder(exportId, exportFolderId);
       return res.redirect(302, `/export/${exportId}`);
     })
     .catch(error => next(boom.badImplementation(error)));
@@ -216,7 +217,7 @@ app.get('/clear-exports', (req, res) => {
     return;
   }
 
-  exportProgress.clearFinishedExports();
+  clearExportProgress();
   res.sendStatus(200);
 });
 
@@ -234,7 +235,7 @@ app.get('/logout', (req, res) => {
 });
 
 app.use((error: boom, req: Request, res: Response, next: any) => {
-  console.log(error.message, error.name);
+  console.error(error.message, error.name);
 
   errors.report(error);
 
