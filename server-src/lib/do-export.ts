@@ -124,7 +124,8 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       table,
       driveFile,
       styles,
-      hasGeometryData
+      hasGeometryData,
+      isLarge
     });
     await addFilePermissions(auth, driveFile.id as string, table.permissions);
 

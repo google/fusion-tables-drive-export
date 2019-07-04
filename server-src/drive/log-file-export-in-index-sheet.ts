@@ -34,9 +34,18 @@ interface ILogFileOptions {
   driveFile: drive_v3.Schema$File;
   styles: IStyle[];
   hasGeometryData: boolean;
+  isLarge: boolean;
 }
 export default async function(options: ILogFileOptions): Promise<void> {
-  const {auth, sheet, table, driveFile, styles, hasGeometryData} = options;
+  const {
+    auth,
+    sheet,
+    table,
+    driveFile,
+    styles,
+    hasGeometryData,
+    isLarge
+  } = options;
   const {spreadsheetId, sheetId} = sheet;
   const tableLink = `https://fusiontables.google.com/DataSource?docid=${table.id}`;
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
@@ -76,12 +85,15 @@ export default async function(options: ILogFileOptions): Promise<void> {
   } else if (styles && styles.length > 0) {
     rows = styles.map((style, index) => {
       const visualizerLink =
-        visualizerBaseLink + `&style=${getStyleHash(style)}`;
+        visualizerBaseLink +
+        `&style=${getStyleHash(style)}` +
+        (isLarge ? '&large=true' : '');
 
       return createRow(visualizerLink, styles.length > 1 ? index : undefined);
     });
   } else {
-    rows = [createRow(visualizerBaseLink)];
+    const visualizerLink = visualizerBaseLink + (isLarge ? '&large=true' : '');
+    rows = [createRow(visualizerLink)];
   }
 
   try {

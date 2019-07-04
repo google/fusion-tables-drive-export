@@ -134,14 +134,14 @@ function updateTable(data: ITableExport) {
   if (data.hasGeometryData) {
     if (data.styles.length > 0) {
       data.styles.forEach(style =>
-        renderVisualizationLink($visualization, id, name, style)
+        renderVisualizationLink($visualization, id, name, data.isLarge, style)
       );
 
       if (data.styles.length > 1) {
         renderMultipleVisualizationsNote();
       }
     } else {
-      renderVisualizationLink($visualization, id, name);
+      renderVisualizationLink($visualization, id, name, data.isLarge);
     }
   } else {
     $visualization.classList.add('fusiontable__visualization--not-available');
@@ -185,12 +185,17 @@ function renderVisualizationLink(
   $visualization: Element,
   id: string,
   name: string,
+  isLarge: boolean,
   style?: string
 ): void {
   let url = `${process.env.VISUALIZER_BASE_URI}/#file=${id}`;
 
   if (style) {
     url += `&style=${style}`;
+  }
+
+  if (isLarge) {
+    url += '&large=true';
   }
 
   const markup = `
