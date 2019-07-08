@@ -19,7 +19,8 @@ import {Buffer} from 'buffer';
 import {google} from 'googleapis';
 import fetch from 'node-fetch';
 import {OAuth2Client} from 'google-auth-library';
-import {MIME_TYPES, FIVE_MB} from '../config/config';
+import promiseRetry from 'promise-retry';
+import {MIME_TYPES, FIVE_MB, RETRY_OPTIONS} from '../config/config';
 import {ICsv} from '../interfaces/csv';
 import {IFile} from '../interfaces/file';
 
@@ -55,18 +56,30 @@ export default async function(
   }
 }
 
-/**
- * Upload the CSV as a Spreadsheet
- */
-async function uploadSpreadsheet({
-  auth,
-  csv,
-  folderId
-}: {
+interface UploadData {
   auth: OAuth2Client;
   csv: ICsv;
   folderId: string;
-}): Promise<IFile> {
+}
+
+/**
+ * Wrapper around the actual function with exponential retries
+ */
+function uploadSpreadsheet(uploadData: UploadData): Promise<IFile> {
+  return promiseRetry(
+    retry => uploadSpreadsheetWorker(uploadData).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
+ * Upload the CSV as a Spreadsheet
+ */
+async function uploadSpreadsheetWorker({
+  auth,
+  csv,
+  folderId
+}: UploadData): Promise<IFile> {
   const stream = new Readable();
   stream._read = () => {
     return;
@@ -103,17 +116,23 @@ async function uploadSpreadsheet({
 }
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+function uploadCsv(uploadData: UploadData): Promise<IFile> {
+  return promiseRetry(
+    retry => uploadCsvWorker(uploadData).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Upload the CSV as a CSV via a resumable upload
  */
-async function uploadCsv({
+async function uploadCsvWorker({
   auth,
   csv,
   folderId
-}: {
-  auth: OAuth2Client;
-  csv: ICsv;
-  folderId: string;
-}): Promise<IFile> {
+}: UploadData): Promise<IFile> {
   const contentLength = Buffer.byteLength(csv.data, 'utf8');
   const metaData = JSON.stringify({
     name: `ft-${csv.name}`,

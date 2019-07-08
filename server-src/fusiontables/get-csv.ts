@@ -16,13 +16,28 @@
 
 import fetch from 'node-fetch';
 import {OAuth2Client} from 'google-auth-library';
+import promiseRetry from 'promise-retry';
 import {ITable} from '../interfaces/table';
 import {ICsv} from '../interfaces/csv';
+import {RETRY_OPTIONS} from '../config/config';
+
+/**
+ * Wrapper around the actual function with exponential retries
+ */
+export default function getFusiontableCsv(
+  auth: OAuth2Client,
+  table: ITable
+): Promise<ICsv> {
+  return promiseRetry(
+    retry => getFusiontableCsvWorker(auth, table).catch(retry),
+    RETRY_OPTIONS
+  );
+}
 
 /**
  * Get the CSV export for a table
  */
-export default async function(
+async function getFusiontableCsvWorker(
   auth: OAuth2Client,
   table: ITable
 ): Promise<ICsv> {

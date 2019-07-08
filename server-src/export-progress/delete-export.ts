@@ -15,8 +15,9 @@
  */
 
 import promiseRetry from 'promise-retry';
-import datastore, {retryOptions} from './datastore';
+import datastore from './datastore';
 import getExportTables from './get-export-tables';
+import {RETRY_OPTIONS} from '../config/config';
 
 /**
  * Wrapper around the actual function with exponential retries
@@ -24,7 +25,7 @@ import getExportTables from './get-export-tables';
 export default function deleteExportProgress(exportId: string): Promise<void> {
   return promiseRetry(
     retry => deleteExportProgressWorker(exportId).catch(retry),
-    retryOptions
+    RETRY_OPTIONS
   );
 }
 

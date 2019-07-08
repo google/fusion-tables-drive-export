@@ -16,14 +16,32 @@
 
 import {google, drive_v3} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
-import {getDriveSubfolderName, MIME_TYPES} from '../config/config';
+import promiseRetry from 'promise-retry';
+import {
+  getDriveSubfolderName,
+  MIME_TYPES,
+  RETRY_OPTIONS
+} from '../config/config';
 
 const drive = google.drive('v3');
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+export default function getUploadFolder(
+  auth: OAuth2Client,
+  archiveFolderId: string
+): Promise<string> {
+  return promiseRetry(
+    retry => getUploadFolderWorker(auth, archiveFolderId).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Create the Fusion Tables subfolder for an export
  */
-export default async function(
+async function getUploadFolderWorker(
   auth: OAuth2Client,
   archiveFolderId: string
 ): Promise<string> {

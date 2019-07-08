@@ -15,7 +15,8 @@
  */
 
 import promiseRetry from 'promise-retry';
-import datastore, {retryOptions, excludeFromExportIndexes} from './datastore';
+import datastore, {excludeFromExportIndexes} from './datastore';
+import {RETRY_OPTIONS} from '../config/config';
 
 /**
  * Wrapper around the actual function with exponential retries
@@ -26,7 +27,7 @@ export default function logExportFolder(
 ): Promise<void> {
   return promiseRetry(
     retry => logExportFolderWorker(exportId, folderId).catch(retry),
-    retryOptions
+    RETRY_OPTIONS
   );
 }
 

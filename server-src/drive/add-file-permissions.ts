@@ -17,6 +17,8 @@
 import {google, drive_v3} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import pLimit from 'p-limit';
+import promiseRetry from 'promise-retry';
+import {RETRY_OPTIONS} from '../config/config';
 
 const drive = google.drive('v3');
 
@@ -40,9 +42,23 @@ export default function(
 }
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+function addFilePermission(
+  auth: OAuth2Client,
+  fileId: string,
+  permission: drive_v3.Schema$Permission
+): Promise<void> {
+  return promiseRetry(
+    retry => addFilePermissionWorker(auth, fileId, permission).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Add a permission to the passed fileId
  */
-async function addFilePermission(
+async function addFilePermissionWorker(
   auth: OAuth2Client,
   fileId: string,
   permission: drive_v3.Schema$Permission

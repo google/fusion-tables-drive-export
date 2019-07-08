@@ -16,21 +16,36 @@
 
 import {google} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
+import promiseRetry from 'promise-retry';
 import {ITable} from '../interfaces/table';
 import {IGetTableFiles} from '../interfaces/tables-list';
+import {RETRY_OPTIONS} from '../config/config';
 
 const drive = google.drive('v3');
 
-/**
- * Get the Fusiontables owned by user
- */
 interface IGetFusiontableFiles {
   auth: OAuth2Client;
   limit: number;
   query?: string;
   pageToken?: string;
 }
-export default async function getFusiontableFiles(
+
+/**
+ * Wrapper around the actual function with exponential retries
+ */
+export default function getFusiontableFiles(
+  params: IGetFusiontableFiles
+): Promise<IGetTableFiles> {
+  return promiseRetry(
+    retry => getFusiontableFilesWorker(params).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
+ * Get the Fusiontables owned by user
+ */
+async function getFusiontableFilesWorker(
   params: IGetFusiontableFiles
 ): Promise<IGetTableFiles> {
   const {auth, limit, query, pageToken} = params;

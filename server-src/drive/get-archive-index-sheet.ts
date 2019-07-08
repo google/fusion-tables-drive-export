@@ -16,8 +16,13 @@
 
 import {google, drive_v3, sheets_v4} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
+import promiseRetry from 'promise-retry';
 import findFile from './find-file';
-import {DRIVE_ARCHIVE_INDEX_SHEET, MIME_TYPES} from '../config/config';
+import {
+  DRIVE_ARCHIVE_INDEX_SHEET,
+  MIME_TYPES,
+  RETRY_OPTIONS
+} from '../config/config';
 import {ISheet} from '../interfaces/sheet';
 
 const drive = google.drive('v3');
@@ -62,9 +67,22 @@ export default async function(
 }
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+function getFirstSheet(
+  auth: OAuth2Client,
+  spreadsheetId: string
+): Promise<number> {
+  return promiseRetry(
+    retry => getFirstSheetWorker(auth, spreadsheetId).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Get the first sheet in a spreadsheet
  */
-async function getFirstSheet(
+async function getFirstSheetWorker(
   auth: OAuth2Client,
   spreadsheetId: string
 ): Promise<number> {
@@ -91,9 +109,22 @@ async function getFirstSheet(
 }
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+function createSheet(
+  auth: OAuth2Client,
+  archiveFolderId: string
+): Promise<ISheet> {
+  return promiseRetry(
+    retry => createSheetWorker(auth, archiveFolderId).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Create the Archive Index Sheet with a title row
  */
-async function createSheet(
+async function createSheetWorker(
   auth: OAuth2Client,
   archiveFolderId: string
 ): Promise<ISheet> {

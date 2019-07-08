@@ -16,18 +16,16 @@
 
 import {google, sheets_v4} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
+import promiseRetry from 'promise-retry';
 import {ISheet} from '../interfaces/sheet';
 import {ITable} from '../interfaces/table';
 import {IStyle} from '../interfaces/style';
 import {IFile} from '../interfaces/file';
-import {MIME_TYPES, VISUALIZER_BASE_URI} from '../config/config';
+import {MIME_TYPES, VISUALIZER_BASE_URI, RETRY_OPTIONS} from '../config/config';
 import getStyleHash from '../lib/get-style-hash';
 
 const sheets = google.sheets('v4');
 
-/**
- * Log an exported file in the index sheet
- */
 interface ILogFileOptions {
   auth: OAuth2Client;
   sheet: ISheet;
@@ -37,7 +35,25 @@ interface ILogFileOptions {
   hasGeometryData: boolean;
   isLarge: boolean;
 }
-export default async function(options: ILogFileOptions): Promise<void> {
+
+/**
+ * Wrapper around the actual function with exponential retries
+ */
+export default function logFileExportInIndexSheet(
+  options: ILogFileOptions
+): Promise<void> {
+  return promiseRetry(
+    retry => logFileExportInIndexSheetWorker(options).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
+ * Log an exported file in the index sheet
+ */
+async function logFileExportInIndexSheetWorker(
+  options: ILogFileOptions
+): Promise<void> {
   const {
     auth,
     sheet,

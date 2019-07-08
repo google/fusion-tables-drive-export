@@ -15,8 +15,8 @@
  */
 
 import promiseRetry from 'promise-retry';
-import datastore, {retryOptions} from './datastore';
-import {TABLES_PER_PAGE} from '../config/config';
+import datastore from './datastore';
+import {TABLES_PER_PAGE, RETRY_OPTIONS} from '../config/config';
 import {ITableExport} from '../interfaces/table-export';
 
 /**
@@ -27,7 +27,7 @@ export default function getExportTables(
 ): Promise<ITableExport[]> {
   return promiseRetry(
     retry => getExportTablesWorker(exportId).catch(retry),
-    retryOptions
+    RETRY_OPTIONS
   );
 }
 

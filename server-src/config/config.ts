@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {OperationOptions} from 'retry';
 
 export const DRIVE_ARCHIVE_FOLDER = 'ft-archive';
 export const DRIVE_ARCHIVE_INDEX_SHEET = 'ft-archive-index';
@@ -40,3 +41,7 @@ export const FIVE_MB = 5 * 1024 * 1024;
 export const TABLES_PER_PAGE = 100;
 
 export const VISUALIZER_BASE_URI = process.env.VISUALIZER_BASE_URI;
+
+export const RETRY_OPTIONS: OperationOptions = {
+  retries: 6
+};

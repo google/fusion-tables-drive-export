@@ -16,17 +16,32 @@
 
 import {google, fusiontables_v2} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
+import promiseRetry from 'promise-retry';
 import {IStyle} from '../interfaces/style';
 import convertMarkerStyles from './convert-marker-styles';
 import convertColorStyles from './convert-color-styles';
 import convertWeightStyles from './convert-weight-styles';
+import {RETRY_OPTIONS} from '../config/config';
 
 const fusiontables = google.fusiontables('v2');
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+export default function getFusiontableStyles(
+  auth: OAuth2Client,
+  tableId: string
+): Promise<IStyle[]> {
+  return promiseRetry(
+    retry => getFusiontableStylesWorker(auth, tableId).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Get the tables for the authenticated user account
  */
-export default async function(
+async function getFusiontableStylesWorker(
   auth: OAuth2Client,
   tableId: string
 ): Promise<IStyle[]> {

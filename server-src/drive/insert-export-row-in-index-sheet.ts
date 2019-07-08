@@ -16,14 +16,31 @@
 
 import {google, sheets_v4} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
+import promiseRetry from 'promise-retry';
 import {ISheet} from '../interfaces/sheet';
+import {RETRY_OPTIONS} from '../config/config';
 
 const sheets = google.sheets('v4');
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+export default function insertExportRowInIndexSheet(
+  auth: OAuth2Client,
+  sheet: ISheet,
+  folderId: string
+): Promise<void> {
+  return promiseRetry(
+    retry =>
+      insertExportRowInIndexSheetWorker(auth, sheet, folderId).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Add a message for this export
  */
-export default async function(
+async function insertExportRowInIndexSheetWorker(
   auth: OAuth2Client,
   sheet: ISheet,
   folderId: string

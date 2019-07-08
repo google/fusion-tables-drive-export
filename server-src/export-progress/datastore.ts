@@ -15,14 +15,9 @@
  */
 
 import {Datastore} from '@google-cloud/datastore';
-import {OperationOptions} from 'retry';
 
 const datastore = new Datastore();
 export default datastore;
-
-export const retryOptions: OperationOptions = {
-  retries: 6
-};
 
 export const excludeFromExportIndexes = ['credentials', 'exportFolderId'];
 export const excludeFromTableIndexes = [

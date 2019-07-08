@@ -16,13 +16,29 @@
 
 import {google} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
+import promiseRetry from 'promise-retry';
+import {RETRY_OPTIONS} from '../config/config';
 
 const drive = google.drive('v3');
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+export default function findFile(
+  auth: OAuth2Client,
+  name: string,
+  parentId: string
+): Promise<string | null> {
+  return promiseRetry(
+    retry => findFileWorker(auth, name, parentId).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Find a file / folder in Drive
  */
-export default async function(
+async function findFileWorker(
   auth: OAuth2Client,
   name: string,
   parentId: string

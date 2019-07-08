@@ -16,13 +16,28 @@
 
 import {google} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
+import promiseRetry from 'promise-retry';
+import {RETRY_OPTIONS} from '../config/config';
 
 const fusiontables = google.fusiontables('v2');
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+export default function getFusiontableColumns(
+  auth: OAuth2Client,
+  tableId: string
+): Promise<Array<{name: string; isImage: boolean}>> {
+  return promiseRetry(
+    retry => getFusiontableColumnsWorker(auth, tableId).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Get the tables for the authenticated user account
  */
-export default async function(
+async function getFusiontableColumnsWorker(
   auth: OAuth2Client,
   tableId: string
 ): Promise<Array<{name: string; isImage: boolean}>> {

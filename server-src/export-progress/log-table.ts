@@ -15,10 +15,11 @@
  */
 
 import promiseRetry from 'promise-retry';
-import datastore, {retryOptions, excludeFromTableIndexes} from './datastore';
+import datastore, {excludeFromTableIndexes} from './datastore';
 import {IStyle} from '../interfaces/style';
 import {IFile} from '../interfaces/file';
 import getStyleHash from '../lib/get-style-hash';
+import {RETRY_OPTIONS} from '../config/config';
 
 interface ILogTableParams {
   exportId: string;
@@ -39,7 +40,7 @@ export default function logTableExportProgress(
 ): Promise<void> {
   return promiseRetry(
     retry => logTableExportProgressWorker(params).catch(retry),
-    retryOptions
+    RETRY_OPTIONS
   );
 }
 

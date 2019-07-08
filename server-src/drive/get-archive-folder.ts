@@ -16,7 +16,12 @@
 
 import {google, drive_v3} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
-import {DRIVE_ARCHIVE_FOLDER, MIME_TYPES} from '../config/config';
+import promiseRetry from 'promise-retry';
+import {
+  DRIVE_ARCHIVE_FOLDER,
+  MIME_TYPES,
+  RETRY_OPTIONS
+} from '../config/config';
 import findFile from './find-file';
 
 const drive = google.drive('v3');
@@ -39,9 +44,19 @@ export default async function(auth: OAuth2Client): Promise<string> {
 }
 
 /**
+ * Wrapper around the actual function with exponential retries
+ */
+function createArchiveFolder(auth: OAuth2Client): Promise<string> {
+  return promiseRetry(
+    retry => createArchiveFolderWorker(auth).catch(retry),
+    RETRY_OPTIONS
+  );
+}
+
+/**
  * Create the Fusion Tables Archive folder
  */
-async function createArchiveFolder(auth: OAuth2Client): Promise<string> {
+async function createArchiveFolderWorker(auth: OAuth2Client): Promise<string> {
   try {
     const response = await drive.files.create({
       auth,

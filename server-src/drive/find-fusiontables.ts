@@ -15,14 +15,29 @@
  */
 
 import {OAuth2Client} from 'google-auth-library';
+import promiseRetry from 'promise-retry';
 import getFusiontableFiles from './get-fusiontable-files';
 import {IGetTableFiles} from '../interfaces/tables-list';
-import {TABLES_PER_PAGE} from '../config/config';
+import {TABLES_PER_PAGE, RETRY_OPTIONS} from '../config/config';
+
+/**
+ * Wrapper around the actual function with exponential retries
+ */
+export default function findFusiontables(
+  auth: OAuth2Client,
+  filterByName?: string,
+  pageToken?: string
+): Promise<IGetTableFiles> {
+  return promiseRetry(
+    retry => findFusiontablesWorker(auth, filterByName, pageToken).catch(retry),
+    RETRY_OPTIONS
+  );
+}
 
 /**
  * Find all Fusiontables owned by user
  */
-export default async function(
+async function findFusiontablesWorker(
   auth: OAuth2Client,
   filterByName?: string,
   pageToken?: string

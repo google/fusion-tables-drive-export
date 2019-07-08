@@ -15,9 +15,10 @@
  */
 
 import promiseRetry from 'promise-retry';
-import datastore, {retryOptions} from './datastore';
+import datastore from './datastore';
 import {Credentials} from 'google-auth-library';
 import hashCredentials from '../lib/hash-credentials';
+import {RETRY_OPTIONS} from '../config/config';
 
 /**
  * Wrapper around the actual function with exponential retries
@@ -28,7 +29,7 @@ export default function isAuthorized(
 ): Promise<boolean> {
   return promiseRetry(
     retry => isAuthorizedWorker(exportId, credentials).catch(retry),
-    retryOptions
+    RETRY_OPTIONS
   );
 }
 

@@ -18,14 +18,14 @@ import uuid from 'uuid/v4';
 import promiseRetry from 'promise-retry';
 import datastore, {
   excludeFromExportIndexes,
-  excludeFromTableIndexes,
-  retryOptions
+  excludeFromTableIndexes
 } from './datastore';
 import {ITable} from '../interfaces/table';
 import {ITableExport} from '../interfaces/table-export';
 import {entity} from '@google-cloud/datastore/build/src/entity';
 import {Credentials} from 'google-auth-library';
 import hashCredentials from '../lib/hash-credentials';
+import {RETRY_OPTIONS} from '../config/config';
 
 interface IExportEntity {
   key: entity.Key;
@@ -51,7 +51,7 @@ export default function initExportProgress(
 ): Promise<string> {
   return promiseRetry(
     retry => initExportProgressWorker(credentials, tables).catch(retry),
-    retryOptions
+    RETRY_OPTIONS
   );
 }
 
