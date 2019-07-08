@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import {google, drive_v3, sheets_v4} from 'googleapis';
+import {google, sheets_v4} from 'googleapis';
 import {OAuth2Client} from 'google-auth-library';
 import {ISheet} from '../interfaces/sheet';
 import {ITable} from '../interfaces/table';
 import {IStyle} from '../interfaces/style';
+import {IFile} from '../interfaces/file';
 import {MIME_TYPES, VISUALIZER_BASE_URI} from '../config/config';
 import getStyleHash from '../lib/get-style-hash';
 
@@ -31,7 +32,7 @@ interface ILogFileOptions {
   auth: OAuth2Client;
   sheet: ISheet;
   table: ITable;
-  driveFile: drive_v3.Schema$File;
+  driveFile: IFile;
   styles: IStyle[];
   hasGeometryData: boolean;
   isLarge: boolean;

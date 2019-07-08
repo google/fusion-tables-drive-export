@@ -17,7 +17,7 @@
 import promiseRetry from 'promise-retry';
 import datastore, {retryOptions, excludeFromTableIndexes} from './datastore';
 import {IStyle} from '../interfaces/style';
-import {drive_v3} from 'googleapis';
+import {IFile} from '../interfaces/file';
 import getStyleHash from '../lib/get-style-hash';
 
 interface ILogTableParams {
@@ -25,7 +25,7 @@ interface ILogTableParams {
   tableId: string;
   status: 'success' | 'error';
   error?: Error;
-  driveFile?: drive_v3.Schema$File;
+  driveFile?: IFile;
   styles: IStyle[];
   isLarge: boolean;
   hasGeometryData: boolean;

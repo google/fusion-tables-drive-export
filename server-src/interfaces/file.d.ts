@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-import {ITable} from './table';
-import {IStyle} from './style';
-import {IFile} from './file';
-
 /**
- * A table-finished emitter event data
+ * A file in Drive
  */
-export type ITableExport = {
-  status: 'loading' | 'success' | 'error';
-  error?: Error;
-  tableId: string;
-  tableName: string;
-  driveFile?: IFile | null;
-  styles: string[];
-  isLarge: boolean;
-  hasGeometryData: boolean;
+export type IFile = {
+  readonly id: string;
+  readonly name: string;
+  readonly mimeType: string;
 };

@@ -34,6 +34,7 @@ import addFilePermissions from '../drive/add-file-permissions';
 import {IS_LARGE_TRESHOLD} from '../config/config';
 import {web as serverCredentials} from '../config/credentials.json';
 import {IStyle} from '../interfaces/style';
+import {IFile} from '../interfaces/file';
 
 const errors = new ErrorReporting({
   reportUnhandledRejections: true,
@@ -96,7 +97,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
   const {table, auth, folderId, archiveSheet, exportId, isLast} = options;
   let isLarge: boolean = false;
   let hasGeometryData: boolean = false;
-  let driveFile: drive_v3.Schema$File | undefined;
+  let driveFile: IFile | undefined;
   let styles: IStyle[] = [];
 
   console.info(`• Start export of table ${table.id} from export ${exportId}`);
@@ -116,7 +117,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       hasGeometryData,
       isLarge
     });
-    await addFilePermissions(auth, driveFile.id as string, table.permissions);
+    await addFilePermissions(auth, driveFile.id, table.permissions);
 
     await logTableExportProgress({
       exportId,

@@ -15,10 +15,13 @@
  */
 
 import {Readable} from 'stream';
-import {google, drive_v3} from 'googleapis';
+import {Buffer} from 'buffer';
+import {google} from 'googleapis';
+import fetch from 'node-fetch';
 import {OAuth2Client} from 'google-auth-library';
+import {MIME_TYPES, FIVE_MB} from '../config/config';
 import {ICsv} from '../interfaces/csv';
-import {MIME_TYPES} from '../config/config';
+import {IFile} from '../interfaces/file';
 
 const drive = google.drive('v3');
 
@@ -29,26 +32,23 @@ export default async function(
   auth: OAuth2Client,
   folderId: string,
   csv: ICsv
-): Promise<drive_v3.Schema$File> {
-  if (csv.hasLargeCells) {
+): Promise<IFile> {
+  const contentLength = Buffer.byteLength(csv.data, 'utf8');
+
+  if (csv.hasLargeCells || contentLength > FIVE_MB) {
     try {
-      return doUpload({auth, csv, mimeType: MIME_TYPES.csv, folderId});
+      return uploadCsv({auth, csv, folderId});
     } catch (error) {
       throw error;
     }
   }
 
   try {
-    const file = doUpload({
-      auth,
-      csv,
-      mimeType: MIME_TYPES.spreadsheet,
-      folderId
-    });
+    const file = uploadSpreadsheet({auth, csv, folderId});
     return file;
   } catch (ignoredError) {
     try {
-      return doUpload({auth, csv, mimeType: MIME_TYPES.csv, folderId});
+      return uploadCsv({auth, csv, folderId});
     } catch (error) {
       throw error;
     }
@@ -56,19 +56,17 @@ export default async function(
 }
 
 /**
- * Upload the CSV
+ * Upload the CSV as a Spreadsheet
  */
-async function doUpload({
+async function uploadSpreadsheet({
   auth,
   csv,
-  mimeType,
   folderId
 }: {
   auth: OAuth2Client;
   csv: ICsv;
-  mimeType: string;
   folderId: string;
-}): Promise<drive_v3.Schema$File> {
+}): Promise<IFile> {
   const stream = new Readable();
   stream._read = () => {
     return;
@@ -80,7 +78,7 @@ async function doUpload({
     const file = await drive.files.create({
       auth,
       requestBody: {
-        mimeType,
+        mimeType: MIME_TYPES.spreadsheet,
         name: `ft-${csv.name}`,
         parents: [folderId]
       },
@@ -90,7 +88,78 @@ async function doUpload({
       }
     });
 
-    return file.data;
+    if (!file.data.id || !file.data.name || !file.data.mimeType) {
+      throw new Error('Failed to upload the file to Drive.');
+    }
+
+    return {
+      id: file.data.id,
+      name: file.data.name,
+      mimeType: file.data.mimeType
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Upload the CSV as a CSV via a resumable upload
+ */
+async function uploadCsv({
+  auth,
+  csv,
+  folderId
+}: {
+  auth: OAuth2Client;
+  csv: ICsv;
+  folderId: string;
+}): Promise<IFile> {
+  const contentLength = Buffer.byteLength(csv.data, 'utf8');
+  const metaData = JSON.stringify({
+    name: `ft-${csv.name}`,
+    parents: [folderId]
+  });
+
+  try {
+    const token = await auth.getAccessToken();
+
+    const metaResponse = await fetch(
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable',
+      {
+        method: 'post',
+        body: metaData,
+        headers: {
+          Authorization: `Bearer ${token.token}`,
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Content-Length': String(Buffer.byteLength(metaData, 'utf8')),
+          'X-Upload-Content-Type': MIME_TYPES.csv,
+          'X-Upload-Content-Length': String(contentLength)
+        }
+      }
+    );
+
+    const uploadUri = metaResponse.headers.get('Location');
+
+    if (metaResponse.status !== 200 || !uploadUri) {
+      throw new Error('Failed to upload the file to Drive.');
+    }
+
+    const response = await fetch(uploadUri, {
+      method: 'put',
+      body: csv.data,
+      headers: {
+        'Content-Type': MIME_TYPES.csv,
+        'Content-Length': String(contentLength)
+      }
+    });
+
+    const fileData = await response.json();
+
+    return {
+      id: fileData.id,
+      name: fileData.name,
+      mimeType: fileData.name
+    };
   } catch (error) {
     throw error;
   }
