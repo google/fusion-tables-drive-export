@@ -59,8 +59,10 @@ export default async function(options: IDoExportOptions): Promise<string> {
 
   try {
     const archiveFolderId = await getArchiveFolder(auth);
-    folderId = await getDriveUploadFolder(auth, archiveFolderId);
-    archiveSheet = await getArchiveIndexSheet(auth, archiveFolderId);
+    [folderId, archiveSheet] = await Promise.all([
+      getDriveUploadFolder(auth, archiveFolderId),
+      getArchiveIndexSheet(auth, archiveFolderId)
+    ]);
     await insertExportRowInIndexSheet(auth, archiveSheet, folderId);
   } catch (error) {
     throw error;
@@ -106,28 +108,32 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
     const csv = await getCsv(auth, table);
     isLarge = csv.data.length > IS_LARGE_TRESHOLD;
     hasGeometryData = csv.hasGeometryData || false;
-    driveFile = await uploadToDrive(auth, folderId, csv);
-    styles = await getFusiontableStyles(auth, table.id);
-    await logFileExportInIndexSheet({
-      auth,
-      sheet: archiveSheet,
-      table,
-      driveFile,
-      styles,
-      hasGeometryData,
-      isLarge
-    });
-    await addFilePermissions(auth, driveFile.id, table.permissions);
+    [driveFile, styles] = await Promise.all([
+      uploadToDrive(auth, folderId, csv),
+      getFusiontableStyles(auth, table.id)
+    ]);
 
-    await logTableExportProgress({
-      exportId,
-      tableId: table.id,
-      status: 'success',
-      driveFile,
-      styles,
-      isLarge,
-      hasGeometryData
-    });
+    await Promise.all([
+      logFileExportInIndexSheet({
+        auth,
+        sheet: archiveSheet,
+        table,
+        driveFile,
+        styles,
+        hasGeometryData,
+        isLarge
+      }),
+      addFilePermissions(auth, driveFile.id, table.permissions),
+      logTableExportProgress({
+        exportId,
+        tableId: table.id,
+        status: 'success',
+        driveFile,
+        styles,
+        isLarge,
+        hasGeometryData
+      })
+    ]);
 
     console.info(
       `• Successfully finished table ${table.id} from export ${exportId}`

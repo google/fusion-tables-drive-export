@@ -97,23 +97,24 @@ app.get('/auth', (req, res) => {
   res.redirect(303, url);
 });
 
-app.get('/auth/callback', (req, res, next) => {
+app.get('/auth/callback', async (req, res, next) => {
   if (!req.query.code) {
     return next(boom.badRequest());
   }
 
-  const auth = getOAuthClient(req);
-  auth
-    .getToken(req.query.code)
-    .then(({tokens}) => {
-      if (!req.session) {
-        req.session = {};
-      }
+  try {
+    const auth = getOAuthClient(req);
+    const {tokens} = await auth.getToken(req.query.code);
 
-      req.session.tokens = tokens;
-      res.redirect(303, '/export');
-    })
-    .catch(error => next(boom.badImplementation(error)));
+    if (!req.session) {
+      req.session = {};
+    }
+
+    req.session.tokens = tokens;
+    res.redirect(303, '/export');
+  } catch (error) {
+    next(boom.badImplementation(error));
+  }
 });
 
 app.get('/export/:exportId/updates', async (req, res, next) => {
@@ -151,8 +152,10 @@ app.get('/export/:exportId', async (req, res, next) => {
   }
 
   try {
-    const tables = await getExportTables(exportId);
-    const exportFolderId = await getExportFolderId(exportId);
+    const [tables, exportFolderId] = await Promise.all([
+      getExportTables(exportId),
+      getExportFolderId(exportId)
+    ]);
 
     res.set('Cache-Control', 'no-store');
     res.render('export-in-progress', {
@@ -166,7 +169,7 @@ app.get('/export/:exportId', async (req, res, next) => {
   }
 });
 
-app.get('/export', (req, res, next) => {
+app.get('/export', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
 
   if (!tokens) {
@@ -177,20 +180,26 @@ app.get('/export', (req, res, next) => {
   auth.setCredentials(tokens);
   const {filterByName, pageToken} = req.query;
 
-  findFusiontables(auth, filterByName, pageToken)
-    .then(({tables, nextPageToken}) => {
-      res.set('Cache-Control', 'no-store');
-      res.render('export-select-tables', {
-        tables,
-        isSignedIn: Boolean(tokens),
-        filterByName,
-        nextPageToken
-      });
-    })
-    .catch(error => next(boom.badImplementation(error)));
+  try {
+    const {tables, nextPageToken} = await findFusiontables(
+      auth,
+      filterByName,
+      pageToken
+    );
+
+    res.set('Cache-Control', 'no-store');
+    res.render('export-select-tables', {
+      tables,
+      isSignedIn: Boolean(tokens),
+      filterByName,
+      nextPageToken
+    });
+  } catch (error) {
+    next(boom.badImplementation(error));
+  }
 });
 
-app.post('/export', (req, res, next) => {
+app.post('/export', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
 
   if (!tokens) {
@@ -201,14 +210,16 @@ app.post('/export', (req, res, next) => {
   const auth = getOAuthClient(req);
   auth.setCredentials(tokens);
 
-  getFusiontablesByIds(auth, tableIds)
-    .then(async tables => {
-      const exportId = await initExportProgress(tokens, tables);
-      const exportFolderId = await doExport({auth, tables, exportId});
-      await logExportFolder(exportId, exportFolderId);
-      return res.redirect(302, `/export/${exportId}`);
-    })
-    .catch(error => next(boom.badImplementation(error)));
+  try {
+    const tables = await getFusiontablesByIds(auth, tableIds);
+    const exportId = await initExportProgress(tokens, tables);
+    const exportFolderId = await doExport({auth, tables, exportId});
+
+    await logExportFolder(exportId, exportFolderId);
+    return res.redirect(302, `/export/${exportId}`);
+  } catch (error) {
+    next(boom.badImplementation(error));
+  }
 });
 
 app.get('/clear-exports', (req, res) => {
