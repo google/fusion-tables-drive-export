@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import {drive_v3} from 'googleapis';
 import pLimit from 'p-limit';
 import {OAuth2Client} from 'google-auth-library';
 import {ErrorReporting} from '@google-cloud/error-reporting';

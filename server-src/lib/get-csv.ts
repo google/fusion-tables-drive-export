@@ -31,9 +31,11 @@ export default async function(
   auth: OAuth2Client,
   table: ITable
 ): Promise<ICsv> {
-  const csv = await getFusiontableCsv(auth, table);
+  const [csv, columns] = await Promise.all([
+    getFusiontableCsv(auth, table),
+    getFusiontableColumns(auth, table.id)
+  ]);
   const json = Papa.parse(csv.data).data;
-  const columns = await getFusiontableColumns(auth, table.id);
   const jsonWithColumnTypes = addColumnTypes(json, columns);
   const jsonWithGeoJson = convertKmlToGeoJson(jsonWithColumnTypes);
   const hasLargeCells = checkForLargeCells(jsonWithGeoJson);

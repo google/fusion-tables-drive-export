@@ -98,12 +98,7 @@ async function addFilePermissionWorker(
   try {
     await drive.permissions.create(params);
   } catch (error) {
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      await drive.permissions.create(params);
-    } catch (error) {
-      throw error;
-    }
+    throw error;
   }
 
   return;
