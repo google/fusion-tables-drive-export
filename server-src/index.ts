@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import express, {Response, Request} from 'express';
 import helmet from 'helmet';
 import boom from 'boom';
@@ -229,6 +230,17 @@ app.get('/clear-exports', (req, res) => {
   }
 
   clearExportProgress();
+  res.sendStatus(200);
+});
+
+app.get('/is-instance-ready', (req, res) => {
+  const freeMemoryPercentage = os.freemem() / os.totalmem();
+
+  if (freeMemoryPercentage < 0.4) {
+    res.sendStatus(507);
+    return;
+  }
+
   res.sendStatus(200);
 });
 

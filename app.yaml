@@ -29,3 +29,6 @@ handlers:
 
 env_variables:
   NODE_OPTIONS: --max-old-space-size=8192
+
+readiness_check:
+  path: "/is-instance-ready"
