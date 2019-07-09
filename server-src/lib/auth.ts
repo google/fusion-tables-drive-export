@@ -22,7 +22,7 @@ import {Request} from 'express';
 const SCOPE = [
   'https://www.googleapis.com/auth/fusiontables.readonly',
   'https://www.googleapis.com/auth/drive.file',
-  'https://www.googleapis.com/auth/drive.metadata'
+  'https://www.googleapis.com/auth/drive.metadata.readonly'
 ];
 
 export function getOAuthClient(req: Request): OAuth2Client {
