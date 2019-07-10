@@ -233,10 +233,12 @@ app.get('/clear-exports', (req, res) => {
   res.sendStatus(200);
 });
 
+const TWO_POINT_FIVE_MB = 2.5 * 1024 * 1024 * 1024;
 app.get('/is-instance-ready', (req, res) => {
-  const freeMemoryPercentage = os.freemem() / os.totalmem();
+  const freeMemory = os.freemem();
+  const freeMemoryPercentage = freeMemory / os.totalmem();
 
-  if (freeMemoryPercentage < 0.4) {
+  if (freeMemoryPercentage < 0.2 || freeMemory < TWO_POINT_FIVE_MB) {
     res.sendStatus(507);
     return;
   }
