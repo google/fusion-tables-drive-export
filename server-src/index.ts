@@ -238,7 +238,7 @@ app.get('/is-instance-ready', (req, res) => {
   const freeMemory = os.freemem();
   const freeMemoryPercentage = freeMemory / os.totalmem();
 
-  if (freeMemoryPercentage < 0.2 || freeMemory < TWO_POINT_FIVE_MB) {
+  if (freeMemoryPercentage < 0.2 || freeMemory < TWO_POINT_FIVE_MB) {
     res.sendStatus(507);
     return;
   }
