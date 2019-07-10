@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {isString} from 'util';
 import promiseRetry from 'promise-retry';
 import datastore, {excludeFromTableIndexes} from './datastore';
 import {IStyle} from '../interfaces/style';
@@ -25,7 +26,7 @@ interface ILogTableParams {
   exportId: string;
   tableId: string;
   status: 'success' | 'error';
-  error?: Error;
+  error?: Error | string;
   driveFile?: IFile;
   styles: IStyle[];
   isLarge: boolean;
@@ -51,6 +52,16 @@ async function logTableExportProgressWorker(params: ILogTableParams) {
   const {exportId, tableId} = params;
   const transaction = datastore.transaction();
   const key = datastore.key(['Export', exportId, 'Table', tableId]);
+
+  if (
+    params.error &&
+    isString(params.error) &&
+    params.error.startsWith('User Rate Limit Exceeded.')
+  ) {
+    params.error =
+      'Sheets API User Rate Limit Exceeded. ' +
+      'Try exporting again and don’t run exports in parallel.';
+  }
 
   try {
     await transaction.run();
