@@ -127,7 +127,7 @@ app.get('/export/:exportId/updates', async (req, res, next) => {
   const isSignedIn = isTokenValid(tokens);
   const exportId = req.params.exportId;
 
-  if (!isSignedIn || !await isAuthorized(exportId, tokens)) {
+  if (!isSignedIn || !(await isAuthorized(exportId, tokens))) {
     return next(boom.unauthorized());
   }
 
@@ -156,7 +156,7 @@ app.get('/export/:exportId', async (req, res, next) => {
   const isSignedIn = isTokenValid(tokens);
   const exportId = req.params.exportId;
 
-  if (!isSignedIn || !await isAuthorized(exportId, tokens)) {
+  if (!isSignedIn || !(await isAuthorized(exportId, tokens))) {
     return res.redirect(303, '/');
   }
 
