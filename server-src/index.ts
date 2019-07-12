@@ -21,6 +21,7 @@ import boom from 'boom';
 import cookieSession from 'cookie-session';
 import {ErrorReporting} from '@google-cloud/error-reporting';
 import {getOAuthClient, getAuthUrl} from './lib/auth';
+import isTokenValid from './lib/is-token-valid';
 import findFusiontables from './drive/find-fusiontables';
 import getFusiontablesByIds from './drive/get-fusiontables-by-ids';
 import initExportProgress from './export-progress/init';
@@ -78,7 +79,8 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-  const isSignedIn = Boolean(req.session && req.session.tokens);
+  const tokens = req.session && req.session.tokens;
+  const isSignedIn = isTokenValid(tokens);
 
   if (isSignedIn) {
     return res.redirect(303, '/export');
@@ -88,7 +90,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/auth', (req, res) => {
-  const isSignedIn = Boolean(req.session && req.session.tokens);
+  const tokens = req.session && req.session.tokens;
+  const isSignedIn = isTokenValid(tokens);
 
   if (isSignedIn) {
     return res.redirect(303, '/export');
@@ -120,7 +123,7 @@ app.get('/auth/callback', async (req, res, next) => {
 
 app.get('/export/:exportId/updates', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
-  const isSignedIn = Boolean(tokens);
+  const isSignedIn = isTokenValid(tokens);
   const exportId = req.params.exportId;
 
   if (!isSignedIn || !isAuthorized(exportId, tokens)) {
@@ -145,10 +148,10 @@ app.get('/export/:exportId/updates', async (req, res, next) => {
 
 app.get('/export/:exportId', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
-  const isSignedIn = Boolean(tokens);
+  const isSignedIn = isTokenValid(tokens);
   const exportId = req.params.exportId;
 
-  if (!tokens || !isAuthorized(exportId, tokens)) {
+  if (!isSignedIn || !isAuthorized(exportId, tokens)) {
     return res.redirect(303, '/');
   }
 
@@ -172,8 +175,9 @@ app.get('/export/:exportId', async (req, res, next) => {
 
 app.get('/export', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
+  const isSignedIn = isTokenValid(tokens);
 
-  if (!tokens) {
+  if (!isSignedIn) {
     return res.redirect(303, '/');
   }
 
@@ -191,7 +195,7 @@ app.get('/export', async (req, res, next) => {
     res.set('Cache-Control', 'no-store');
     res.render('export-select-tables', {
       tables,
-      isSignedIn: Boolean(tokens),
+      isSignedIn,
       filterByName,
       nextPageToken
     });
@@ -202,8 +206,9 @@ app.get('/export', async (req, res, next) => {
 
 app.post('/export', async (req, res, next) => {
   const tokens = req.session && req.session.tokens;
+  const isSignedIn = isTokenValid(tokens);
 
-  if (!tokens) {
+  if (!isSignedIn) {
     return res.redirect(303, '/');
   }
 
@@ -278,8 +283,8 @@ app.use((error: boom, req: Request, res: Response, next: any) => {
 });
 
 app.use((req: Request, res: Response, next: any) => {
-  const isSignedIn = Boolean(req.session && req.session.tokens);
-
+  const tokens = req.session && req.session.tokens;
+  const isSignedIn = isTokenValid(tokens);
   res.status(404).render('404', {isSignedIn});
 });
 
