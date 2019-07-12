@@ -19,7 +19,7 @@ import {Datastore} from '@google-cloud/datastore';
 const datastore = new Datastore();
 export default datastore;
 
-export const excludeFromExportIndexes = ['credentials', 'exportFolderId'];
+export const excludeFromExportIndexes = ['exportFolderId'];
 export const excludeFromTableIndexes = [
   'status',
   'error',

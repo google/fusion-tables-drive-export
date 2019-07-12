@@ -31,6 +31,7 @@ import getExportFolderId from './export-progress/get-export-folder-id';
 import getExportTables from './export-progress/get-export-tables';
 import deleteExportProgress from './export-progress/delete-export';
 import clearExportProgress from './export-progress/clear';
+import hasOtherExportsForSession from './export-progress/has-other-exports-for-session';
 import doExport from './lib/do-export';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
@@ -126,7 +127,7 @@ app.get('/export/:exportId/updates', async (req, res, next) => {
   const isSignedIn = isTokenValid(tokens);
   const exportId = req.params.exportId;
 
-  if (!isSignedIn || !isAuthorized(exportId, tokens)) {
+  if (!isSignedIn || !await isAuthorized(exportId, tokens)) {
     return next(boom.unauthorized());
   }
 
@@ -136,7 +137,11 @@ app.get('/export/:exportId/updates', async (req, res, next) => {
 
     if (allFinished) {
       deleteExportProgress(exportId);
-      req.session = undefined;
+      const hasOtherExports = await hasOtherExportsForSession(exportId, tokens);
+
+      if (!hasOtherExports) {
+        req.session = undefined;
+      }
     }
 
     res.set('Cache-Control', 'no-store');
@@ -151,7 +156,7 @@ app.get('/export/:exportId', async (req, res, next) => {
   const isSignedIn = isTokenValid(tokens);
   const exportId = req.params.exportId;
 
-  if (!isSignedIn || !isAuthorized(exportId, tokens)) {
+  if (!isSignedIn || !await isAuthorized(exportId, tokens)) {
     return res.redirect(303, '/');
   }
 
