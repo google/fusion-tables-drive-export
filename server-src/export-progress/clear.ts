@@ -16,9 +16,10 @@
 
 import promiseRetry from 'promise-retry';
 import datastore from './datastore';
-import getExportTables from './get-export-tables';
 import deleteExportProgress from './delete-export';
 import {RETRY_OPTIONS} from '../config/config';
+
+const ONE_HOUR = 1000 * 60 * 60;
 
 /**
  * Wrapper around the actual function with exponential retries
@@ -34,22 +35,19 @@ export default function clearFinishedExports(): Promise<void> {
  * Clear all finished exports
  */
 async function clearFinishedExportsWorker(): Promise<void> {
-  const query = datastore.createQuery('Export');
+  const oneHourAgo = Date.now() - ONE_HOUR;
+  const query = datastore
+    .createQuery('Export')
+    .filter('lastUpdate', '<', oneHourAgo);
 
   try {
     const [fusiontableExports] = await datastore.runQuery(query);
-    const exportIds = fusiontableExports.map(
-      fustiontableExport => fustiontableExport[datastore.KEY].name
+
+    await Promise.all(
+      fusiontableExports.map(fustiontableExport =>
+        deleteExportProgress(fustiontableExport[datastore.KEY].name)
+      )
     );
-
-    exportIds.forEach(async exportId => {
-      const tables = await getExportTables(exportId);
-      const allFinished = tables.every(table => table.status !== 'loading');
-
-      if (allFinished) {
-        deleteExportProgress(exportId);
-      }
-    });
   } catch (error) {
     throw error;
   }

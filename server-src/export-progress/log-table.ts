@@ -16,7 +16,10 @@
 
 import {isString} from 'util';
 import promiseRetry from 'promise-retry';
-import datastore, {excludeFromTableIndexes} from './datastore';
+import datastore, {
+  excludeFromTableIndexes,
+  excludeFromExportIndexes
+} from './datastore';
 import {IStyle} from '../interfaces/style';
 import {IFile} from '../interfaces/file';
 import getStyleHash from '../lib/get-style-hash';
@@ -51,7 +54,8 @@ export default function logTableExportProgress(
 async function logTableExportProgressWorker(params: ILogTableParams) {
   const {exportId, tableId} = params;
   const transaction = datastore.transaction();
-  const key = datastore.key(['Export', exportId, 'Table', tableId]);
+  const exportKey = datastore.key(['Export', exportId]);
+  const tableKey = datastore.key(['Export', exportId, 'Table', tableId]);
 
   if (
     params.error &&
@@ -65,7 +69,8 @@ async function logTableExportProgressWorker(params: ILogTableParams) {
 
   try {
     await transaction.run();
-    const [table] = await transaction.get(key);
+
+    const [table] = await transaction.get(tableKey);
     table.status = params.status;
     table.error = params.error;
     table.driveFile = params.driveFile;
@@ -73,10 +78,19 @@ async function logTableExportProgressWorker(params: ILogTableParams) {
     table.isLarge = params.isLarge;
     table.hasGeometryData = params.hasGeometryData;
     transaction.save({
-      key,
+      key: tableKey,
       excludeFromIndexes: excludeFromTableIndexes,
       data: table
     });
+
+    const [fusiontableExport] = await transaction.get(exportKey);
+    fusiontableExport.lastUpdate = Date.now();
+    transaction.save({
+      key: exportKey,
+      excludeFromIndexes: excludeFromExportIndexes,
+      data: fusiontableExport
+    });
+
     await transaction.commit();
   } catch (error) {
     transaction.rollback();

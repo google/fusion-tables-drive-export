@@ -42,6 +42,7 @@ async function logExportFolderWorker(exportId: string, folderId: string) {
     await transaction.run();
     const [fusiontableExport] = await transaction.get(key);
     fusiontableExport.exportFolderId = folderId;
+    fusiontableExport.lastUpdate = Date.now();
     transaction.save({
       key,
       excludeFromIndexes: excludeFromExportIndexes,

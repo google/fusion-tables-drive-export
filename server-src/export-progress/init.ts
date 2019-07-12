@@ -32,6 +32,7 @@ interface IExportEntity {
   excludeFromIndexes: string[];
   data: {
     credentials: string;
+    lastUpdate: number;
     exportFolderId?: string;
   };
 }
@@ -69,7 +70,8 @@ async function initExportProgressWorker(
       key: datastore.key(['Export', exportId]),
       excludeFromIndexes: excludeFromExportIndexes,
       data: {
-        credentials: hashCredentials(credentials)
+        credentials: hashCredentials(credentials),
+        lastUpdate: Date.now()
       }
     }
   ];
