@@ -26,14 +26,10 @@ const SCOPE = [
 ];
 
 export function getOAuthClient(req: Request): OAuth2Client {
-  let redirectUri = credentials.web.redirect_uris[0];
-
-  if (req.headers.host && req.headers.host !== 'localhost:3000') {
-    redirectUri = redirectUri.replace(
-      'http://localhost:3000',
-      `https://${req.headers.host}`
-    );
-  }
+  const redirectUri =
+    req.headers.host && req.headers.host === 'localhost:3000'
+      ? 'http://localhost:3000/auth/callback'
+      : `https://${req.headers.host}/auth/callback`;
 
   return new google.auth.OAuth2(
     credentials.web.client_id,
