@@ -188,7 +188,7 @@ function renderVisualizationLink(
   isLarge: boolean,
   style?: string
 ): void {
-  let url = `${process.env.VISUALIZER_BASE_URI}/#file=${id}`;
+  let url = `${process.env.VISUALIZER_BASE_URI}#file=${id}`;
 
   if (style) {
     url += `&style=${style}`;

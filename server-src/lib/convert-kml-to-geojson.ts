@@ -43,6 +43,17 @@ function convertToGeoJson(value: any): string | null {
     return null;
   }
 
+  if (value.startsWith('<Polygon><outerBoundaryIs><coordinates>')) {
+    value = value.replace(
+      /<Polygon><outerBoundaryIs><coordinates>/g,
+      '<Polygon><outerBoundaryIs><LinearRing><coordinates>'
+    );
+    value = value.replace(
+      /<\/coordinates><\/outerBoundaryIs><\/Polygon>/gi,
+      '</coordinates></LinearRing></outerBoundaryIs></Polygon>'
+    );
+  }
+
   const kmlString = `<?xml version="1.0" encoding="UTF-8"?>
     <kml xmlns="http://www.opengis.net/kml/2.2">
       <Placemark>

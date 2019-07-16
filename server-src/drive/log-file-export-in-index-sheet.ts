@@ -68,7 +68,7 @@ async function logFileExportInIndexSheetWorker(
   const fileLink = `https://drive.google.com/open?id=${driveFile.id}`;
   const fileType =
     driveFile.mimeType === MIME_TYPES.csv ? 'CSV' : 'Spreadsheet';
-  const visualizerBaseLink = `${VISUALIZER_BASE_URI}/#file=${driveFile.id}`;
+  const visualizerBaseLink = `${VISUALIZER_BASE_URI}#file=${driveFile.id}`;
   const exportDate = new Date().toISOString();
   let rows = [];
 
