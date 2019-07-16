@@ -18,7 +18,7 @@ The main steps are as follows:
 1.  Obtain OAuth credentials from Google to access Google Drive and Fusion Tables on behalf of the user.
 1.  Get the list of all Fusion Tables "tables" owned by the user.
 1.  Show the list to the user with selection boxes.  If there are many tables, paginate the list. Only the tables selected from one page of the listing can be exported at a time, which we call a `session`.
-1.  Create the archive for each selected table in a session.  (a) Read the table, (b) transform the table data and (c) write that data to a Spreadsheet or a CSV file (when the table is large), (d) set ACLs and (e) update the the “index” Sheet `ft-archive-index` in your `ft-archive` folder.
+1.  Create the archive for each selected table in a session. (a) Read the table, (b) transform the table data and (c) write that data to a Spreadsheet or a CSV file (when the table is large), (d) set ACLs and (e) update the the “index” Sheet `ft-archive-index` in your `ft-archive` folder.
 1.  Show the exporting progress.  As the archives are being created, the tool shows a dynamic session status page.  After the export is finished, this session page cannot be opened again.
 
 ## Detailed Export Steps
