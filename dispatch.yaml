@@ -13,11 +13,8 @@
 # limitations under the License.
 
 dispatch:
-- url: "geoviz.fusiontables-archive.withgoogle.com/*"
+- url: "*/geoviz/*"
   service: geoviz
 
-- url: "geoviz-dot-ft-archiver.appspot.com/*"
-  service: geoviz
-
-- url: "geoviz-dot-fusion-tables-export.appspot.com/*"
+- url: "*/geoviz"
   service: geoviz
