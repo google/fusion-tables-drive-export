@@ -87,13 +87,38 @@ There are a few configuration files in the root directory of this project. Here 
 
 ### Environment Variables
 
-The project is configured by Environment Variables. Either set them directly in your shell like this:
+Parts of this project are configured by shell environment variables. Set them directly in your shell like this:
 
 ```sh
 export MY_ENV_VARIABLE="my-value"
 ```
 
+or create a file say `env.sh` that looks like
+
+```sh
+# Shell environment variables for both the exporter and the visualizer
+export VISUALIZER_BASE_URI="https://fta.dom/geoviz"
+export GOOGLE_ANALYTICS_KEY="UA-xxxxxx"
+export GOOGLE_SIGNIN_CLIENT_ID="your-oauth-client-id.apps.googleusercontent.com"
+export GOOGLE_MAPS_API_KEY="your-maps-api-key"
+```
+
+and source that file via `. env.sh`
+
 Or use a tool like [direnv](https://direnv.net/) to make the management of Environment Variables project dependent and not global.
+
+## URL coordination between the exporter and the visualizer
+
+Let `fta.dom` to be the domain where the exporter and visualizer are hosted.  Let `vizpath` to be the path prefix that all visualizer URLs start with.  For the launched tool, the actual values are
+
+*   fta.dom = fusiontables-archive.withgoogle.com
+*   vizpath = geoviz
+
+The `vizpath` is specified in two places in this project.
+
+1.  The `VISUALIZER_BASE_URI` environment variable must have it as the path prefix, e.g. 
+such as "https://fusiontables-archive.withgoogle.com/geoviz".  The exporter generates links to the visualization in (a) the status page when exporting and (b) the `ft-archive-index` Sheet.
+1.  The dispatch.yaml file must specify that all urls starting with /vizpath and /vizpath/* are sent to the geoviz service set in App Engine.
 
 ## Browser Code
 
