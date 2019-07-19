@@ -177,7 +177,7 @@ async function uploadCsvWorker({
     return {
       id: fileData.id,
       name: fileData.name,
-      mimeType: fileData.name
+      mimeType: fileData.mimeType
     };
   } catch (error) {
     throw error;
