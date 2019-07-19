@@ -1,0 +1,21 @@
+extends layout.pug
+
+include back-link.pug
+
+block content
+  main.text-content
+    h2
+      +back-link("/", "Go back to the start page")
+      | Privacy Policy
+
+    h3 What we collect
+    p The Fusion Table Archive Tool (or "tool") collects anonymized data in logs. The tool does not collect any information that can identify you.
+
+    h3 How we use the data we collect
+    p We the data to monitor the service and to derive basic usage statistics such as estimating the number of users or the number of archives created over some time span.
+
+    h3 How we share the data we collect
+    p We do not share the data we collect with any one else.
+
+    h3 Exporting and Deleting your information
+    p As the data we collect does not identify the user, we have no data associated with "you".

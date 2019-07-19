@@ -49,6 +49,13 @@ h2
   letter-spacing: 0.15px
   margin: 0 0 1.5rem 0
 
+h3
+  font-size: 1.125rem
+  font-weight: 400
+  line-height: 1.5
+  letter-spacing: 0.15px
+  margin: 2rem 0 1rem 0
+
 a, a:hover, a:focus, a:active
   color: $primary
   font-weight: 500
@@ -329,15 +336,15 @@ main
     background: #fce3e3
     color: #BF1515
 
-  & h2, & p, & > .button
+  & h2, & h3, & p, & > .button
     margin-left: 1.5rem
     margin-right: 1.5rem
 
-  &.intro
-    p, ul
+  &.text-content
+    p, ul, ol
       color: #666
 
-  & p, &.intro ul
+  & p, &.text-content ul, &.text-content ol
     max-width: 35rem
     letter-spacing: 0.25px
 

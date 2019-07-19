@@ -1,0 +1,22 @@
+extends layout.pug
+
+include back-link.pug
+
+block content
+  main.text-content
+    h2
+      +back-link("/", "Go back to the start page")
+      | Terms of Service
+
+    h3 What we do and do not do
+    p The Fusion Table Archive Tool (or "tool") has two purposes, to create archives of your tables and to support map visualizations of these archives.
+    p Using this tool should be harmless. The tool cannot modify your pre-existing data (not created by the tool) and does not collect any personal information. This tool should have no negative effects except that the creation of new archives consumes some of your Drive quota.
+
+    h3 No Guarantees
+    p By using this tool, you are agreeing to the following. This tool has no guarantees or assurances. You have no recourse to compensation in any form.
+
+    h3 Intent
+    p We have made a concerted effort to ensure the tool
+    ol
+      li correctly preserves your table data when creating the archive for all your tables.
+      li preserves maps visualizations for most tables using Fusion Tables defaults.

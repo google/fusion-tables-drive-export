@@ -1,7 +1,7 @@
 extends layout.pug
 
 block content
-  main.intro
+  main.text-content
     h2 Migrate your Fusion Tables map visualizations
 
     p
@@ -11,10 +11,16 @@ block content
 
     p
       | To get started, sign in with your Google account below. This tool uses the following access rights (or "scopes"):
-      ul
-        li fusiontables.readonly: to read your tables
-        li drive.metadata.readonly: to get a list of all the tables that you own
-        li drive.file: to create archives (Sheets and CSV) and to update the "ft-archive-index" Sheet.
+
+    ul
+      li Read your tables (fusiontables.readonly)
+      li List the tables that you own (drive.metadata.readonly)
+      li Create and update the necessary folders, spreadsheets and files in Google drive (drive.file)
+
+    p
+     | See this&thinsp;
+     a(href="https://developers.google.com/drive/api/v2/about-auth", title="Authorizing requests with OAuth") page
+     | &thinsp;for more information on the Drive scopes.
 
     p
       | We use cookies at this site to hold access rights to Google services (Fusion Tables and Drive). The cookies are discarded when you leave this site.  No information from this site is shared anyone else.  By signing in below, you consent to our use of cookies.

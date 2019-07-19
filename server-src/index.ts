@@ -257,11 +257,17 @@ app.get('/is-instance-ready', (req, res) => {
 });
 
 app.get('/privacy', (req, res) => {
-  res.redirect(301, 'https://policies.google.com/privacy');
+  const tokens = req.session && req.session.tokens;
+  const isSignedIn = isTokenValid(tokens);
+
+  res.render('privacy', {isSignedIn});
 });
 
 app.get('/terms', (req, res) => {
-  res.redirect(301, 'https://policies.google.com/terms');
+  const tokens = req.session && req.session.tokens;
+  const isSignedIn = isTokenValid(tokens);
+
+  res.render('terms', {isSignedIn});
 });
 
 app.get('/logout', (req, res) => {
