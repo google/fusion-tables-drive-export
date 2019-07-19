@@ -33,6 +33,14 @@ export default function(data: string[][]): boolean {
     return true;
   }
 
+  const anyGeometryColumn = columnNames.find(column =>
+    column.includes('geometry')
+  );
+
+  if (anyGeometryColumn) {
+    return true;
+  }
+
   return false;
 }
 
