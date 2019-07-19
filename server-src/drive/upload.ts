@@ -135,7 +135,7 @@ async function uploadCsvWorker({
 }: UploadData): Promise<IFile> {
   const contentLength = Buffer.byteLength(csv.data, 'utf8');
   const metaData = JSON.stringify({
-    name: `ft-${csv.name}`,
+    name: `ft-${csv.name}.csv`,
     parents: [folderId]
   });
 
