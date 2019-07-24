@@ -5,12 +5,17 @@ block content
     h2 Migrate your Fusion Tables map visualizations
 
     p
-      | The Fusion Tables Archive Tool is an easy way to preserve existing maps generated with Google Fusion Tables. Google built it to help preserve and migrate your map visualizations before the&thinsp;
+      | The Fusion Tables Archive Tool is an easy way to preserve existing maps generated with Google Fusion Tables. Google built it to help preserve your data and migrate your maps before the&thinsp;
       a(href="https://support.google.com/fusiontables/answer/9185417", title="Notice: Google Fusion Tables Turndown") Fusion Tables shutdown
-      | &thinsp;on December 3, 2019. You’ll be able to access the archive portion of this tool starting today until shutdown.
+      | &thinsp;on December 3, 2019. You have access to the exporting portion of this tool starting today until shutdown. If you only want to save your Fusion Tables data as CSV & KML files, and don't need the maps, then consider using&thinsp;
+      a(href="https://takeout.google.com/", title="Google Takeout") Google Takeout
+      | &thinsp;instead.
 
     p
-      | To get started, sign in with your Google account below. This tool uses the following access rights (or "scopes"):
+      | This tool will export each selected Fusion Table to its own spreadsheet or CSV file “archive” in your Google Drive, and will generate a Google Map which references each dataset. This tool tries to preserve your map styling and basic balloon templates. Exports will be saved in a folder called “ft-archive”, and exported datasets and maps will be listed in a Google Sheet called “ft-archive-index”.
+
+    p
+      | To get started, sign in with your Google account below. This tool uses the following access rights (or “scopes”):
 
     ul
       li Read your tables (fusiontables.readonly)
@@ -23,17 +28,17 @@ block content
      | &thinsp;for more information on the Drive scopes.
 
     p
-      | We use cookies at this site to hold access rights to Google services (Fusion Tables and Drive). The cookies are discarded when you leave this site.  No information from this site is shared anyone else.  By signing in below, you consent to our use of cookies.
+      | This site uses cookies to provide access rights to Google services (Fusion Tables and Drive). The cookies are discarded when you leave this site. No information from this site is shared with anyone else. By signing in below, you consent to the use of cookies.
 
     p
       | For more information about the tool, please read this&thinsp;
-      a(href="https://medium.com/@googleearth/download-your-fusion-tables-data-and-migrate-your-maps-278babd23879", title="Download your Fusion Tables data and migrate your maps") blog post
+      a(href="https://medium.com/@googleearth/278babd23879", title="Download your Fusion Tables data and migrate your maps") blog post
       | . If you have more questions about the tool or the archives, please&thinsp;
       a(href="https://docs.google.com/document/d/1TrKT9FS3IryH6ahAfYX_7joMtiIq_p_vPCQ-lYyktm0/edit?usp=sharing", title="Fusion Tables Export FAQ") read this FAQ
       | .
 
     p
-      | This app complies with Google's&thinsp;
+      | This app complies with Google’s&thinsp;
       a(href="/privacy", title="Google Privacy policy") Privacy
       |  policy and&thinsp;
       a(href="/terms", title="Google Terms of Service") Terms of Service.
