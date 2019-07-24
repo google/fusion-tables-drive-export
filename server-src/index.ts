@@ -17,7 +17,7 @@
 import os from 'os';
 import express, {Response, Request} from 'express';
 import helmet from 'helmet';
-import boom from 'boom';
+import boom from '@hapi/boom';
 import cookieSession from 'cookie-session';
 import {ErrorReporting} from '@google-cloud/error-reporting';
 import {getOAuthClient, getAuthUrl} from './lib/auth';
