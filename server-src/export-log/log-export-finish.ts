@@ -15,41 +15,39 @@
  */
 
 import promiseRetry from 'promise-retry';
-import datastore from './datastore';
-import {Credentials} from 'google-auth-library';
-import getHash from '../lib/get-hash';
 import {RETRY_OPTIONS} from '../config/config';
+import logInBigQuery from './bigquery';
 
 /**
  * Wrapper around the actual function with exponential retries
  */
-export default function isAuthorized(
-  exportId: string,
-  credentials: Credentials
-): Promise<boolean> {
+export default function logExportFinish(
+  ipHash: string,
+  exportId: string
+): Promise<void> {
   return promiseRetry(
-    retry => isAuthorizedWorker(exportId, credentials).catch(retry),
+    retry => logExportFinishWorker(ipHash, exportId).catch(retry),
     RETRY_OPTIONS
   );
 }
 
 /**
- * Check whether an user is autheticated for that export
+ * Log the finish of an export
  */
-async function isAuthorizedWorker(
-  exportId: string,
-  credentials: Credentials
-): Promise<boolean> {
+async function logExportFinishWorker(
+  ipHash: string,
+  exportId: string
+): Promise<void> {
   try {
-    const key = datastore.key(['Export', exportId]);
-    const [fusiontableExport] = await datastore.get(key);
+    await logInBigQuery({
+      type: 'export',
+      event: 'finish',
+      exportId,
+      userId: ipHash
+    });
 
-    return (
-      fusiontableExport &&
-      fusiontableExport.credentials &&
-      fusiontableExport.credentials === getHash(credentials)
-    );
+    console.info(`• Finished export ${exportId} by user ${ipHash}`);
   } catch (error) {
-    return false;
+    throw error;
   }
 }

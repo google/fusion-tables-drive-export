@@ -55,6 +55,12 @@ Setup [Google Analytics](https://analytics.google.com/) and store your key in an
 export GOOGLE_ANALYTICS_KEY="UA-XXXXXXXXX-X"
 ```
 
+Define a secret key `SECRET_KEY` to create secure hashes for the log and progress:
+
+```sh
+export SECRET_KEY="my-secret-key"
+```
+
 To help with environment variable handling on a project level, check out [direnv](https://direnv.net/).
 
 ### APIs
@@ -65,7 +71,7 @@ Various APIs are needed for this project to run. Enable the [Fusion Tables API](
 
 You’ll need some credentials for OAuth2. Go to the [Credentials page](https://console.cloud.google.com/apis/credentials) in your Google Cloud Project in the Google Cloud Console. Create some server side credentials with `http://localhost:3000/auth/callback` and `https://YOUR_DOMAIN/auth/callback` as the authorized redirect URIs. Download the credentials as a JSON file and save it as `./server-src/config/credentials.json`.
 
-Also, create some server credentials with the role Datastore User to use the database. Download the corresponding JSON file and save it in the `./server-src/config/` folder. Store the path to that file in an env called `GOOGLE_APPLICATION_CREDENTIALS`. To setup the database index, run the following once before starting the project:
+Also, create some server credentials with the role Owner to use the Datastore and BigQuery Databases during development. Download the corresponding JSON file and save it in the `./server-src/config/` folder. Store the path to that file in an env called `GOOGLE_APPLICATION_CREDENTIALS`. To setup the database index, run the following once before starting the project:
 
 ```sh
 yarn run deploy:datastore-indexes

@@ -33,6 +33,7 @@ import deleteExportProgress from './export-progress/delete-export';
 import clearExportProgress from './export-progress/clear';
 import hasOtherExportsForSession from './export-progress/has-other-exports-for-session';
 import doExport from './lib/do-export';
+import getHash from './lib/get-hash';
 import {isString} from 'util';
 import {AddressInfo} from 'net';
 import {web as serverCredentials} from './config/credentials.json';
@@ -217,6 +218,7 @@ app.post('/export', async (req, res, next) => {
     return res.redirect(303, '/');
   }
 
+  const ip = getHash(req.ip).substr(0, 16);
   const tableIds = req.body.tableIds || [];
   const auth = getOAuthClient(req);
   auth.setCredentials(tokens);
@@ -224,7 +226,7 @@ app.post('/export', async (req, res, next) => {
   try {
     const tables = await getFusiontablesByIds(auth, tableIds);
     const exportId = await initExportProgress(tokens, tables);
-    const exportFolderId = await doExport({auth, tables, exportId});
+    const exportFolderId = await doExport({ipHash: ip, auth, tables, exportId});
 
     await logExportFolder(exportId, exportFolderId);
     return res.redirect(302, `/export/${exportId}`);

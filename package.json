@@ -34,6 +34,7 @@
     "bracketSpacing": false
   },
   "dependencies": {
+    "@google-cloud/bigquery": "^4.1.5",
     "@google-cloud/datastore": "^4.1.3",
     "@google-cloud/error-reporting": "^1.0.0",
     "@tmcw/togeojson": "^3.0.0",

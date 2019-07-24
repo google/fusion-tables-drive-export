@@ -24,7 +24,7 @@ import {ITable} from '../interfaces/table';
 import {ITableExport} from '../interfaces/table-export';
 import {entity} from '@google-cloud/datastore/build/src/entity';
 import {Credentials} from 'google-auth-library';
-import hashCredentials from '../lib/hash-credentials';
+import getHash from '../lib/get-hash';
 import {RETRY_OPTIONS} from '../config/config';
 
 interface IExportEntity {
@@ -70,7 +70,7 @@ async function initExportProgressWorker(
       key: datastore.key(['Export', exportId]),
       excludeFromIndexes: excludeFromExportIndexes,
       data: {
-        credentials: hashCredentials(credentials),
+        credentials: getHash(credentials),
         lastUpdate: Date.now()
       }
     }

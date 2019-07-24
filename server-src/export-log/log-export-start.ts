@@ -15,43 +15,43 @@
  */
 
 import promiseRetry from 'promise-retry';
-import datastore from './datastore';
-import {Credentials} from 'google-auth-library';
 import {RETRY_OPTIONS} from '../config/config';
-import getHash from '../lib/get-hash';
+import logInBigQuery from './bigquery';
 
 /**
  * Wrapper around the actual function with exponential retries
  */
-export default function hasOtherExportsForSession(
+export default function logExportStart(
+  ipHash: string,
   exportId: string,
-  credentials: Credentials
-): Promise<boolean> {
+  tableCount: number
+): Promise<void> {
   return promiseRetry(
-    retry =>
-      hasOtherExportsForSessionWorker(exportId, credentials).catch(retry),
+    retry => logExportStartWorker(ipHash, exportId, tableCount).catch(retry),
     RETRY_OPTIONS
   );
 }
 
 /**
- * Whether there are other exports for the same session credentials
+ * Log the start of an export
  */
-async function hasOtherExportsForSessionWorker(
+async function logExportStartWorker(
+  ipHash: string,
   exportId: string,
-  credentials: Credentials
-): Promise<boolean> {
-  const query = datastore
-    .createQuery('Export')
-    .filter('credentials', '=', getHash(credentials));
-
+  tableCount: number
+): Promise<void> {
   try {
-    const [fusiontableExports] = await datastore.runQuery(query);
-    const otherFusiontableExports = fusiontableExports.filter(
-      fusiontableExport => fusiontableExport[datastore.KEY].name !== exportId
-    );
+    await logInBigQuery({
+      type: 'export',
+      event: 'start',
+      exportId,
+      userId: ipHash,
+      tableCount
+    });
 
-    return otherFusiontableExports.length > 0;
+    console.info(
+      `• Start export ${exportId} with ${tableCount} tables by user ${ipHash}`
+    );
   } catch (error) {
     throw error;
   }

@@ -36,9 +36,6 @@ export const MIME_TYPES = {
   folder: 'application/vnd.google-apps.folder'
 };
 
-export const IS_LARGE_TRESHOLD = 50000000; // chars
-export const FIVE_MB = 5 * 1024 * 1024;
-
 export const TABLES_PER_PAGE = 100;
 
 export const VISUALIZER_BASE_URI = process.env.VISUALIZER_BASE_URI;

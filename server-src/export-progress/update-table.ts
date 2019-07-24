@@ -25,7 +25,7 @@ import {IFile} from '../interfaces/file';
 import getStyleHash from '../lib/get-style-hash';
 import {RETRY_OPTIONS} from '../config/config';
 
-interface ILogTableParams {
+interface IUpdateTableParams {
   exportId: string;
   tableId: string;
   status: 'success' | 'error';
@@ -39,19 +39,19 @@ interface ILogTableParams {
 /**
  * Wrapper around the actual function with exponential retries
  */
-export default function logTableExportProgress(
-  params: ILogTableParams
+export default function updateTableExportProgress(
+  params: IUpdateTableParams
 ): Promise<void> {
   return promiseRetry(
-    retry => logTableExportProgressWorker(params).catch(retry),
+    retry => updateTableExportProgressWorker(params).catch(retry),
     RETRY_OPTIONS
   );
 }
 
 /**
- * Log an table export
+ * Update the table export progress
  */
-async function logTableExportProgressWorker(params: ILogTableParams) {
+async function updateTableExportProgressWorker(params: IUpdateTableParams) {
   const {exportId, tableId} = params;
   const transaction = datastore.transaction();
   const exportKey = datastore.key(['Export', exportId]);

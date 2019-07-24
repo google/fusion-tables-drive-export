@@ -25,6 +25,9 @@ const SCOPE = [
   'https://www.googleapis.com/auth/drive.metadata.readonly'
 ];
 
+/**
+ * Create an OAuth client
+ */
 export function getOAuthClient(req: Request): OAuth2Client {
   const redirectUri =
     req.headers.host && req.headers.host === 'localhost:3000'
@@ -38,6 +41,9 @@ export function getOAuthClient(req: Request): OAuth2Client {
   );
 }
 
+/**
+ * Get the URL for authentication
+ */
 export function getAuthUrl(req: Request): string {
   const oauth2Client = getOAuthClient(req);
   return oauth2Client.generateAuthUrl({scope: SCOPE});

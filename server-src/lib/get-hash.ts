@@ -15,14 +15,16 @@
  */
 
 import crypto from 'crypto';
-import {Credentials} from 'google-auth-library';
+import {isString} from 'util';
 
 /**
- * Create a hash from the credentials
+ * Create a secure hash from some data
  */
-export default function(credentials: Credentials): string {
+export default function(data: any): string {
+  const dataString = isString(data) ? data : JSON.stringify(data);
+
   return crypto
-    .createHash('sha256')
-    .update(JSON.stringify(credentials))
+    .createHmac('sha256', process.env.SECRET_KEY || 'secret-key')
+    .update(dataString)
     .digest('hex');
 }

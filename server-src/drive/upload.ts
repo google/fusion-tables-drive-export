@@ -20,11 +20,12 @@ import {google} from 'googleapis';
 import fetch from 'node-fetch';
 import {OAuth2Client} from 'google-auth-library';
 import promiseRetry from 'promise-retry';
-import {MIME_TYPES, FIVE_MB, RETRY_OPTIONS} from '../config/config';
+import {MIME_TYPES, RETRY_OPTIONS} from '../config/config';
 import {ICsv} from '../interfaces/csv';
 import {IFile} from '../interfaces/file';
 
 const drive = google.drive('v3');
+const FIVE_MB = 5 * 1024 * 1024;
 
 /**
  * Upload the CSV

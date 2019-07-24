@@ -21,7 +21,7 @@ import {ErrorReporting} from '@google-cloud/error-reporting';
 import {ITable} from '../interfaces/table';
 import {ISheet} from '../interfaces/sheet';
 import getCsv from './get-csv';
-import logTableExportProgress from '../export-progress/log-table';
+import updateTableExportProgress from '../export-progress/update-table';
 import getArchiveFolder from '../drive/get-archive-folder';
 import getFusiontableStyles from '../fusiontables/get-styles';
 import getDriveUploadFolder from '../drive/get-upload-folder';
@@ -30,7 +30,10 @@ import getArchiveIndexSheet from '../drive/get-archive-index-sheet';
 import insertExportRowInIndexSheet from '../drive/insert-export-row-in-index-sheet';
 import logFileExportInIndexSheet from '../drive/log-file-export-in-index-sheet';
 import addFilePermissions from '../drive/add-file-permissions';
-import {IS_LARGE_TRESHOLD} from '../config/config';
+import logExportStart from '../export-log/log-export-start';
+import logTableStart from '../export-log/log-table-start';
+import logTableFinish from '../export-log/log-table-finish';
+import logExportFinish from '../export-log/log-export-finish';
 import {web as serverCredentials} from '../config/credentials.json';
 import {IStyle} from '../interfaces/style';
 import {IFile} from '../interfaces/file';
@@ -40,21 +43,24 @@ const errors = new ErrorReporting({
   projectId: serverCredentials.project_id
 });
 
+const TWENTY_MB = 20 * 1024 * 1024;
+
 /**
  * Export a table from FusionTables and save it to Drive
  */
 interface IDoExportOptions {
+  ipHash: string;
   auth: OAuth2Client;
   exportId: string;
   tables: ITable[];
 }
 export default async function(options: IDoExportOptions): Promise<string> {
-  const {auth, exportId, tables} = options;
+  const {ipHash, auth, exportId, tables} = options;
   const limit = pLimit(1);
   let folderId: string;
   let archiveSheet: ISheet;
 
-  console.info(`• Start export ${exportId} with ${tables.length} tables`);
+  logExportStart(ipHash, exportId, tables.length);
 
   try {
     const archiveFolderId = await getArchiveFolder(auth);
@@ -71,6 +77,7 @@ export default async function(options: IDoExportOptions): Promise<string> {
     limit(() =>
       saveTable({
         table,
+        ipHash,
         auth,
         folderId,
         archiveSheet,
@@ -88,6 +95,7 @@ export default async function(options: IDoExportOptions): Promise<string> {
  */
 interface ISaveTableOptions {
   table: ITable;
+  ipHash: string;
   auth: OAuth2Client;
   folderId: string;
   archiveSheet: ISheet;
@@ -95,27 +103,29 @@ interface ISaveTableOptions {
   isLast: boolean;
 }
 async function saveTable(options: ISaveTableOptions): Promise<void> {
-  const {table, auth, folderId, archiveSheet, exportId, isLast} = options;
+  const {table, ipHash, auth, exportId, isLast} = options;
+  let fileSize: number = 0;
   let isLarge: boolean = false;
   let hasGeometryData: boolean = false;
   let driveFile: IFile | undefined;
   let styles: IStyle[] = [];
 
-  console.info(`• Start export of table ${table.id} from export ${exportId}`);
+  logTableStart(ipHash, exportId, table.id);
 
   try {
     const csv = await getCsv(auth, table);
-    isLarge = csv.data.length > IS_LARGE_TRESHOLD;
+    fileSize = Buffer.byteLength(csv.data, 'utf8');
+    isLarge = fileSize > TWENTY_MB;
     hasGeometryData = csv.hasGeometryData || false;
     [driveFile, styles] = await Promise.all([
-      uploadToDrive(auth, folderId, csv),
+      uploadToDrive(auth, options.folderId, csv),
       getFusiontableStyles(auth, table.id)
     ]);
 
     await Promise.all([
       logFileExportInIndexSheet({
         auth,
-        sheet: archiveSheet,
+        sheet: options.archiveSheet,
         table,
         driveFile,
         styles,
@@ -123,7 +133,7 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
         isLarge
       }),
       addFilePermissions(auth, driveFile.id, table.permissions),
-      logTableExportProgress({
+      updateTableExportProgress({
         exportId,
         tableId: table.id,
         status: 'success',
@@ -134,16 +144,14 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       })
     ]);
 
-    console.info(
-      `• Successfully finished table ${table.id} from export ${exportId}`
-    );
+    logTableFinish(ipHash, exportId, table.id, 'success', fileSize);
 
     if (isLast) {
-      console.info(`• Finished export ${exportId}`);
+      logExportFinish(ipHash, exportId);
     }
   } catch (error) {
     errors.report(error);
-    await logTableExportProgress({
+    await updateTableExportProgress({
       exportId,
       tableId: table.id,
       status: 'error',
@@ -154,12 +162,10 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       hasGeometryData
     });
 
-    console.info(
-      `• Finished with an error! Table ${table.id} from export ${exportId}`
-    );
+    logTableFinish(ipHash, exportId, table.id, 'error', fileSize);
 
     if (isLast) {
-      console.info(`• Finished export ${exportId}`);
+      logExportFinish(ipHash, exportId);
     }
   }
 }
