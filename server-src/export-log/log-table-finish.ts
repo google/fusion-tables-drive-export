@@ -65,7 +65,7 @@ async function logTableFinishWorker(
 
     console.info(
       `• ${statusText}! Finished table ${hashedTableId} with ${dataSizeMb}MB ` +
-      `from export ${exportId} by user ${ipHash}`
+        `from export ${exportId} by user ${ipHash}`
     );
   } catch (error) {
     throw error;

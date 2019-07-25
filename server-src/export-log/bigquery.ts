@@ -38,7 +38,7 @@ interface LogData {
  * Insert something into the BigQuery log table
  */
 export default async function logData(data: LogData): Promise<void> {
-  if (!initialized || !table) {
+  if (!initialized || !table) {
     throw new Error('Database is not initialized.');
   }
 
