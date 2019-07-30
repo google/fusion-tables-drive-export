@@ -48,7 +48,7 @@ async function logTableFinishWorker(
   status: 'success' | 'error',
   dataSize: number
 ): Promise<void> {
-  const hashedTableId = getHash(tableId).substr(0, 20);
+  const hashedTableId = getHash(tableId).substr(0, 5);
   const dataSizeMb = Math.round(dataSize / 1024 / 1024) || 1;
   const statusText = status.substr(0, 1).toUpperCase() + status.substr(1);
 

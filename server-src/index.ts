@@ -218,7 +218,7 @@ app.post('/export', async (req, res, next) => {
     return res.redirect(303, '/');
   }
 
-  const ip = getHash(req.ip).substr(0, 16);
+  const ip = getHash(req.ip).substr(0, 4);
   const tableIds = req.body.tableIds || [];
   const auth = getOAuthClient(req);
   auth.setCredentials(tokens);

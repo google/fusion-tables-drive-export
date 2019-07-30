@@ -41,7 +41,7 @@ async function logTableStartWorker(
   exportId: string,
   tableId: string
 ): Promise<void> {
-  const hashedTableId = getHash(tableId).substr(0, 20);
+  const hashedTableId = getHash(tableId).substr(0, 5);
 
   try {
     await logInBigQuery({
