@@ -42,14 +42,16 @@ export default function(data: string[][]): boolean {
   }
 
   const firstRow = data[1];
-  const geometryContent = firstRow && firstRow.find(cell => {
-    try {
-      const geoJson = JSON.parse(cell);
-      return geoJson && geoJson.type && geoJson.type === 'Feature';
-    } catch (error) {
-      return false;
-    }
-  });
+  const geometryContent =
+    firstRow &&
+    firstRow.find(cell => {
+      try {
+        const geoJson = JSON.parse(cell);
+        return geoJson && geoJson.type && geoJson.type === 'Feature';
+      } catch (error) {
+        return false;
+      }
+    });
 
   if (geometryContent) {
     return true;
