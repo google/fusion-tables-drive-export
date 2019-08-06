@@ -18,7 +18,7 @@
  * Parse the data for geometries or point data
  */
 export default function(data: string[][]): boolean {
-  const columnNames = data[0];
+  const columnNames = data[0].map(columnName => columnName.toLowerCase());
 
   if (columnNames.includes('geometry')) {
     return true;
