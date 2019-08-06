@@ -60,7 +60,7 @@ export default async function(options: IDoExportOptions): Promise<string> {
   let folderId: string;
   let archiveSheet: ISheet;
 
-  logExportStart(ipHash, exportId, tables.length);
+  logExportStart(exportId, tables.length);
 
   try {
     const archiveFolderId = await getArchiveFolder(auth);
@@ -76,6 +76,7 @@ export default async function(options: IDoExportOptions): Promise<string> {
   tables.map((table, index) =>
     limit(() =>
       saveTable({
+        tableId: index + 1,
         table,
         ipHash,
         auth,
@@ -94,6 +95,7 @@ export default async function(options: IDoExportOptions): Promise<string> {
  * Save a table from FusionTables to Drive
  */
 interface ISaveTableOptions {
+  tableId: number;
   table: ITable;
   ipHash: string;
   auth: OAuth2Client;
@@ -103,14 +105,14 @@ interface ISaveTableOptions {
   isLast: boolean;
 }
 async function saveTable(options: ISaveTableOptions): Promise<void> {
-  const {table, ipHash, auth, exportId, isLast} = options;
+  const {tableId, table, ipHash, auth, exportId, isLast} = options;
   let fileSize: number = 0;
   let isLarge: boolean = false;
   let hasGeometryData: boolean = false;
   let driveFile: IFile | undefined;
   let styles: IStyle[] = [];
 
-  logTableStart(ipHash, exportId, table.id);
+  logTableStart(exportId, tableId);
 
   try {
     const csv = await getCsv(auth, table);
@@ -144,10 +146,10 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       })
     ]);
 
-    logTableFinish(ipHash, exportId, table.id, 'success', fileSize);
+    logTableFinish(exportId, tableId, 'success', fileSize);
 
     if (isLast) {
-      logExportFinish(ipHash, exportId);
+      logExportFinish(exportId);
     }
   } catch (error) {
     errors.report(error);
@@ -162,10 +164,10 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       hasGeometryData
     });
 
-    logTableFinish(ipHash, exportId, table.id, 'error', fileSize);
+    logTableFinish(exportId, tableId, 'error', fileSize);
 
     if (isLast) {
-      logExportFinish(ipHash, exportId);
+      logExportFinish(exportId);
     }
   }
 }

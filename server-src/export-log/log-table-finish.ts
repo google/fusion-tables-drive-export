@@ -14,60 +14,20 @@
  * limitations under the License.
  */
 
-import promiseRetry from 'promise-retry';
-import {RETRY_OPTIONS} from '../config/config';
-import logInBigQuery from './bigquery';
-import getHash from '../lib/get-hash';
-
-/**
- * Wrapper around the actual function with exponential retries
- */
-export default function logTableFinish(
-  ipHash: string,
-  exportId: string,
-  tableId: string,
-  status: 'success' | 'error',
-  dataSize: number
-): Promise<void> {
-  return promiseRetry(
-    retry =>
-      logTableFinishWorker(ipHash, exportId, tableId, status, dataSize).catch(
-        retry
-      ),
-    RETRY_OPTIONS
-  );
-}
-
 /**
  * Log the finish of a table export
  */
-async function logTableFinishWorker(
-  ipHash: string,
+export default function logTableFinish(
   exportId: string,
-  tableId: string,
+  tableId: number,
   status: 'success' | 'error',
   dataSize: number
-): Promise<void> {
-  const hashedTableId = getHash(tableId).substr(0, 5);
+): void {
   const dataSizeMb = Math.round(dataSize / 1024 / 1024) || 1;
   const statusText = status.substr(0, 1).toUpperCase() + status.substr(1);
 
-  try {
-    await logInBigQuery({
-      type: 'table',
-      event: 'finish',
-      userId: ipHash,
-      exportId,
-      tableId: hashedTableId,
-      tableStatus: status,
-      exportedFileSize: dataSizeMb
-    });
-
-    console.info(
-      `• ${statusText}! Finished table ${hashedTableId} with ${dataSizeMb}MB ` +
-        `from export ${exportId} by user ${ipHash}`
-    );
-  } catch (error) {
-    throw error;
-  }
+  console.info(
+    `• ${statusText}! Finished table ${tableId} with ${dataSizeMb}MB ` +
+      `from export ${exportId}.`
+  );
 }

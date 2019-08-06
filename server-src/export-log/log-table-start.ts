@@ -14,48 +14,9 @@
  * limitations under the License.
  */
 
-import promiseRetry from 'promise-retry';
-import {RETRY_OPTIONS} from '../config/config';
-import logInBigQuery from './bigquery';
-import getHash from '../lib/get-hash';
-
-/**
- * Wrapper around the actual function with exponential retries
- */
-export default function logTableStart(
-  ipHash: string,
-  exportId: string,
-  tableId: string
-): Promise<void> {
-  return promiseRetry(
-    retry => logTableStartWorker(ipHash, exportId, tableId).catch(retry),
-    RETRY_OPTIONS
-  );
-}
-
 /**
  * Log the start of a table export
  */
-async function logTableStartWorker(
-  ipHash: string,
-  exportId: string,
-  tableId: string
-): Promise<void> {
-  const hashedTableId = getHash(tableId).substr(0, 5);
-
-  try {
-    await logInBigQuery({
-      type: 'table',
-      event: 'start',
-      userId: ipHash,
-      exportId,
-      tableId: hashedTableId
-    });
-
-    console.info(
-      `• Start export of table ${hashedTableId} from export ${exportId} by user ${ipHash}`
-    );
-  } catch (error) {
-    throw error;
-  }
+export default function logTableStart(exportId: string, tableId: number): void {
+  console.info(`• Start export of table ${tableId} from export ${exportId}.`);
 }

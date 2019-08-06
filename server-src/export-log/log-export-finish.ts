@@ -14,40 +14,9 @@
  * limitations under the License.
  */
 
-import promiseRetry from 'promise-retry';
-import {RETRY_OPTIONS} from '../config/config';
-import logInBigQuery from './bigquery';
-
-/**
- * Wrapper around the actual function with exponential retries
- */
-export default function logExportFinish(
-  ipHash: string,
-  exportId: string
-): Promise<void> {
-  return promiseRetry(
-    retry => logExportFinishWorker(ipHash, exportId).catch(retry),
-    RETRY_OPTIONS
-  );
-}
-
 /**
  * Log the finish of an export
  */
-async function logExportFinishWorker(
-  ipHash: string,
-  exportId: string
-): Promise<void> {
-  try {
-    await logInBigQuery({
-      type: 'export',
-      event: 'finish',
-      exportId,
-      userId: ipHash
-    });
-
-    console.info(`• Finished export ${exportId} by user ${ipHash}`);
-  } catch (error) {
-    throw error;
-  }
+export default function logExportFinish(exportId: string): void {
+  console.info(`• Finished export ${exportId}.`);
 }

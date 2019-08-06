@@ -14,45 +14,12 @@
  * limitations under the License.
  */
 
-import promiseRetry from 'promise-retry';
-import {RETRY_OPTIONS} from '../config/config';
-import logInBigQuery from './bigquery';
-
-/**
- * Wrapper around the actual function with exponential retries
- */
-export default function logExportStart(
-  ipHash: string,
-  exportId: string,
-  tableCount: number
-): Promise<void> {
-  return promiseRetry(
-    retry => logExportStartWorker(ipHash, exportId, tableCount).catch(retry),
-    RETRY_OPTIONS
-  );
-}
-
 /**
  * Log the start of an export
  */
-async function logExportStartWorker(
-  ipHash: string,
+export default function logExportStart(
   exportId: string,
   tableCount: number
-): Promise<void> {
-  try {
-    await logInBigQuery({
-      type: 'export',
-      event: 'start',
-      exportId,
-      userId: ipHash,
-      tableCount
-    });
-
-    console.info(
-      `• Start export ${exportId} with ${tableCount} tables by user ${ipHash}`
-    );
-  } catch (error) {
-    throw error;
-  }
+): void {
+  console.info(`• Start export ${exportId} with ${tableCount} tables.`);
 }
