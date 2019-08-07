@@ -341,26 +341,25 @@ main
     margin-right: 1.5rem
 
   &.text-content
+    h2, p, ol, ul
+      margin-left: 3rem
+      margin-right: 3rem
+
     p, ul, ol
       color: #666
 
   & p, &.text-content ul, &.text-content ol
-    max-width: 35rem
     letter-spacing: 0.25px
 
   & form
     margin-bottom: 0
 
   & .actions
-    max-width: 35rem
     display: flex
     justify-content: space-between
     align-items: center
     margin-top: 1.5rem
-    padding: 0 1.5rem
-
-    & > *
-      margin-right: 1.5rem
+    padding: 0 3rem
 
 /**
  *          CHECKBOX LIST
@@ -385,7 +384,7 @@ main
 
   & input[type="checkbox"]
     position: absolute
-    top: -9999px
+    top: 0px
     left: -9999px
     appearance: none
     opacity: 0
