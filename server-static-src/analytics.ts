@@ -17,15 +17,47 @@
 /**
  * Google Analytics
  */
-var $googleTagmanagerScript = document.createElement('script');
-$googleTagmanagerScript.type = 'text/javascript';
-$googleTagmanagerScript.async = true;
-$googleTagmanagerScript.src = `https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_KEY}`;
-document.head.appendChild($googleTagmanagerScript);
+// tslint:disable no-string-literal only-arrow-functions
+(function(i, s, o, g, r, a, m) {
+  i['GoogleAnalyticsObject'] = r;
+  (i[r] =
+    i[r] ||
+    function() {
+      (i[r].q = i[r].q || []).push(arguments);
+    }),
+    (i[r].l = 1 * new Date());
+  (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+  a.async = 1;
+  a.src = g;
+  m.parentNode.insertBefore(a, m);
+})(
+  window,
+  document,
+  'script',
+  'https://www.google-analytics.com/analytics.js',
+  'ga'
+);
 
-window.dataLayer = window.dataLayer || [];
-window.gtag = function() {
-  window.dataLayer.push(arguments);
+ga('create', process.env.GOOGLE_ANALYTICS_KEY, 'auto');
+
+const isExportProgress = document.location.pathname.match(
+  /\/export\/[a-z0-9-]+/i
+);
+if (isExportProgress) {
+  ga('send', 'pageview', '/export/progress');
+} else {
+  ga('send', 'pageview');
+}
+
+export const getTableCountLabel = (count: number) => {
+  if (count < 10) {
+    return 'count < 10';
+  }
+  if (count < 25) {
+    return 'count < 25';
+  }
+  if (count < 50) {
+    return 'count < 50';
+  }
+  return 'count >= 50';
 };
-window.gtag('js', new Date());
-window.gtag('config', process.env.GOOGLE_ANALYTICS_KEY);

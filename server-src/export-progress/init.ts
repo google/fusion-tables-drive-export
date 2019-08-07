@@ -86,6 +86,7 @@ async function initExportProgressWorker(
         tableName: table.name,
         styles: [],
         isLarge: false,
+        latency: 0,
         hasGeometryData: false
       }
     })

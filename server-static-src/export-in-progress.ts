@@ -15,6 +15,7 @@
  */
 
 import {ITableExport} from '../server-src/interfaces/table-export';
+import {getTableCountLabel} from './analytics';
 
 const renderedTableExports: string[] = [];
 let exportId: string;
@@ -34,10 +35,18 @@ for (let i = 0; i < $fusiontables.length; ++i) {
  * Track export of tables
  */
 if ($fusiontables.length > 0) {
-  window.gtag('event', 'export', {
-    event_category: 'Export',
-    event_label: 'tableCount',
-    value: $fusiontables.length
+  const count = Math.round($fusiontables.length / 10) * 10;
+  ga('send', {
+    hitType: 'event',
+    eventCategory: 'Export',
+    eventAction: 'Export Table Count',
+    eventValue: count
+  });
+  ga('send', {
+    hitType: 'event',
+    eventCategory: 'Export',
+    eventAction: 'Export Table Count',
+    eventLabel: getTableCountLabel(count)
   });
 }
 
@@ -76,6 +85,14 @@ function requestUpdates() {
 
     if (recheck) {
       setTimeout(requestUpdates, 4000);
+    } else {
+      ga(
+        'send',
+        'timing',
+        'Export',
+        'Export Latency',
+        window.performance && window.performance.now()
+      );
     }
   };
   request.onerror = requestUpdates;
@@ -101,6 +118,9 @@ function updateTable(data: ITableExport) {
   $listEntry.removeAttribute('loading');
   renderedTableExports.push(data.tableId);
 
+  const {fileSize, driveFile, latency} = data;
+  const fileType = driveFile ? driveFile.mimeType : undefined;
+
   if (data.error) {
     $listEntry.innerHTML += `
       <div class="fusiontable__error">
@@ -108,6 +128,16 @@ function updateTable(data: ITableExport) {
           ${data.error}
         </div>
       </div>`;
+
+    ga('send', 'event', 'Table Filesize', 'Table Failure', fileType, fileSize);
+    ga('send', 'event', 'Table Filesize', 'Table Failure', fileSize);
+    ga('send', 'timing', 'Table Latency', 'Table Failure', latency, fileType);
+    ga('send', 'event', 'Table Latency', 'Table Failure', String(latency).length);
+  } else {
+    ga('send', 'event', 'Table Filesize', 'Table Success', fileType, fileSize);
+    ga('send', 'event', 'Table Filesize', 'Table Success', fileSize);
+    ga('send', 'timing', 'Table Latency', 'Table Success', latency, fileType);
+    ga('send', 'event', 'Table Latency', 'Table Success', String(latency).length);
   }
 
   if (!data.driveFile) {

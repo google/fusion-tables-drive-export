@@ -16,8 +16,7 @@
 
 declare global {
   interface Window {
-    dataLayer: any[];
-    gtag: (...data: any[]) => void;
+    ga: any;
   }
 }
 

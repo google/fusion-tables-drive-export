@@ -33,6 +33,8 @@ interface IUpdateTableParams {
   driveFile?: IFile;
   styles: IStyle[];
   isLarge: boolean;
+  fileSize?: number;
+  latency: number;
   hasGeometryData: boolean;
 }
 
@@ -76,6 +78,8 @@ async function updateTableExportProgressWorker(params: IUpdateTableParams) {
     table.driveFile = params.driveFile;
     table.styles = params.styles.map(getStyleHash);
     table.isLarge = params.isLarge;
+    table.fileSize = params.fileSize;
+    table.latency = params.latency;
     table.hasGeometryData = params.hasGeometryData;
     transaction.save({
       key: tableKey,

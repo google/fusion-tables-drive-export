@@ -28,6 +28,8 @@ export type ITableExport = {
   tableName: string;
   driveFile?: IFile | null;
   styles: string[];
+  fileSize?: number;
+  latency: number;
   isLarge: boolean;
   hasGeometryData: boolean;
 };

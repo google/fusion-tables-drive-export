@@ -43,8 +43,6 @@ const errors = new ErrorReporting({
   projectId: serverCredentials.project_id
 });
 
-const TWENTY_MB = 20 * 1024 * 1024;
-
 /**
  * Export a table from FusionTables and save it to Drive
  */
@@ -105,8 +103,10 @@ interface ISaveTableOptions {
   isLast: boolean;
 }
 async function saveTable(options: ISaveTableOptions): Promise<void> {
-  const {tableId, table, ipHash, auth, exportId, isLast} = options;
+  const {tableId, table, auth, exportId, isLast} = options;
+  const saveStart = Date.now();
   let fileSize: number = 0;
+  let roundedFileSize: number = 0;
   let isLarge: boolean = false;
   let hasGeometryData: boolean = false;
   let driveFile: IFile | undefined;
@@ -116,8 +116,9 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
 
   try {
     const csv = await getCsv(auth, table);
-    fileSize = Buffer.byteLength(csv.data, 'utf8');
-    isLarge = fileSize > TWENTY_MB;
+    fileSize = Buffer.byteLength(csv.data, 'utf8') / 1024 / 1024;
+    roundedFileSize = Math.pow(2, Math.floor(Math.log(fileSize) / Math.log(2)));
+    isLarge = fileSize > 20;
     hasGeometryData = csv.hasGeometryData || false;
     [driveFile, styles] = await Promise.all([
       uploadToDrive(auth, options.folderId, csv),
@@ -142,11 +143,13 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
         driveFile,
         styles,
         isLarge,
+        fileSize: roundedFileSize,
+        latency: Date.now() - saveStart,
         hasGeometryData
       })
     ]);
 
-    logTableFinish(exportId, tableId, 'success', fileSize);
+    logTableFinish(exportId, tableId, 'success', roundedFileSize);
 
     if (isLast) {
       logExportFinish(exportId);
@@ -161,10 +164,12 @@ async function saveTable(options: ISaveTableOptions): Promise<void> {
       driveFile,
       styles,
       isLarge,
+      fileSize: roundedFileSize,
+      latency: Date.now() - saveStart,
       hasGeometryData
     });
 
-    logTableFinish(exportId, tableId, 'error', fileSize);
+    logTableFinish(exportId, tableId, 'error', roundedFileSize);
 
     if (isLast) {
       logExportFinish(exportId);
