@@ -132,12 +132,24 @@ function updateTable(data: ITableExport) {
     ga('send', 'event', 'Table Filesize', 'Table Failure', fileType, fileSize);
     ga('send', 'event', 'Table Filesize', 'Table Failure', fileSize);
     ga('send', 'timing', 'Table Latency', 'Table Failure', latency, fileType);
-    ga('send', 'event', 'Table Latency', 'Table Failure', String(latency).length);
+    ga(
+      'send',
+      'event',
+      'Table Latency',
+      'Table Failure',
+      String(latency).length
+    );
   } else {
     ga('send', 'event', 'Table Filesize', 'Table Success', fileType, fileSize);
     ga('send', 'event', 'Table Filesize', 'Table Success', fileSize);
     ga('send', 'timing', 'Table Latency', 'Table Success', latency, fileType);
-    ga('send', 'event', 'Table Latency', 'Table Success', String(latency).length);
+    ga(
+      'send',
+      'event',
+      'Table Latency',
+      'Table Success',
+      String(latency).length
+    );
   }
 
   if (!data.driveFile) {
