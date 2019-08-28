@@ -61,6 +61,13 @@ Define a secret key `SECRET_KEY` to create secure hashes for the log and progres
 export SECRET_KEY="my-secret-key"
 ```
 
+Define two cookie keys `COOKIE_KEY_1` and `COOKIE_KEY_2` to create secure cookies:
+
+```sh
+export COOKIE_KEY_1="my-secret-key"
+export COOKIE_KEY_2="my-secret-key"
+```
+
 To help with environment variable handling on a project level, check out [direnv](https://direnv.net/).
 
 ### APIs

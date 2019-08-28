@@ -68,8 +68,8 @@ app.use(
   cookieSession({
     name: 'fusiontables',
     keys: [
-      'WLTiBCAZtthrUGMUK4Yjx(TBNvisYkHLeT)XGaEU',
-      'hzACNQ^TykcjCGBgcPR(UCTtv9pvaogGqJtHFQND'
+      process.env.COOKIE_KEY_1 || 'WLTiBCAZtthrUGMUK4Yjx(TBNvisYkHLeT)XGaEU',
+      process.env.COOKIE_KEY_2 || 'hzACNQ^TykcjCGBgcPR(UCTtv9pvaogGqJtHFQND'
     ],
     maxAge: 24 * 60 * 60 * 1000
   })
