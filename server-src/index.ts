@@ -46,6 +46,7 @@ const errors = new ErrorReporting({
 
 app.set('view engine', 'pug');
 app.set('views', './server-views');
+app.use(express.static('./server-views/html'));
 app.use(express.urlencoded({extended: true}));
 app.use(helmet());
 app.use(helmet.referrerPolicy({policy: 'same-origin'}));
