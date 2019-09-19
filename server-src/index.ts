@@ -38,6 +38,9 @@ import {isString} from 'util';
 import {AddressInfo} from 'net';
 import {web as serverCredentials} from './config/credentials.json';
 
+// tslint:disable-next-line: no-var-requires
+require('@google-cloud/debug-agent').start();
+
 const app = express();
 const errors = new ErrorReporting({
   reportUnhandledRejections: true,
