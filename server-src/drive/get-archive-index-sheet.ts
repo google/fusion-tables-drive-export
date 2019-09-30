@@ -104,6 +104,14 @@ async function getFirstSheetWorker(
 
     return sheetId;
   } catch (error) {
+    if (error.response.data.error.code === 404) {
+      throw new Error(
+        `The file "${DRIVE_ARCHIVE_INDEX_SHEET}" was created by a deprecated ` +
+        `version of the exporter. Please rename or remove it to allow the ` +
+        `application to create a new one.`
+      );
+    }
+
     throw error;
   }
 }
