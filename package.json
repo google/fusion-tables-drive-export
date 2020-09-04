@@ -47,7 +47,7 @@
     "json2csv": "^4.4.1",
     "node-fetch": "^2.3.0",
     "p-limit": "^2.2.0",
-    "papaparse": "^5.0.0",
+    "papaparse": "^5.2.0",
     "promise-retry": "^1.1.1",
     "pug": "^2.0.3",
     "uuid": "^3.3.2",
