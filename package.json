@@ -51,7 +51,7 @@
     "promise-retry": "^1.1.1",
     "pug": "^2.0.3",
     "uuid": "^3.3.2",
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.6.0"
   },
   "devDependencies": {
     "@types/cookie-session": "^2.0.36",
